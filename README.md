@@ -3,6 +3,8 @@
   <p>WordPress option with some safeguards</p>
 </div>
 
+[![wp](https://github.com/syntatis/wp-option/actions/workflows/wp.yml/badge.svg)](https://github.com/syntatis/wp-option/actions/workflows/wp.yml)
+
 ---
 
 A simple wrapper that adds validation around dealing with WordPress options.
