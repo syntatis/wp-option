@@ -39,8 +39,7 @@ class InputValidatorTest extends TestCase
 	/**
 	 * @dataProvider dataValidateInvalidType
 	 *
-	 * @param mixed $value     The value to validate.
-	 * @param mixed $givenType The type of the value to validate.
+	 * @param mixed $value The value to validate.
 	 */
 	public function testValidateInvalidType(string $type): void
 	{
