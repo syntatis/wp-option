@@ -1,9 +1,9 @@
 <div align="center">
   <strong>☔ wp-option</strong>
   <p>WordPress option with some safeguards</p>
-</div>
 
-[![wp](https://github.com/syntatis/wp-option/actions/workflows/wp.yml/badge.svg)](https://github.com/syntatis/wp-option/actions/workflows/wp.yml)
+  [![wp](https://github.com/syntatis/wp-option/actions/workflows/wp.yml/badge.svg)](https://github.com/syntatis/wp-option/actions/workflows/wp.yml)
+</div>
 
 ---
 
