@@ -11,7 +11,7 @@ A simple wrapper that adds validation around dealing with WordPress options.
 
 ## Why?
 
-WordPress option can handle various type of values including strings, booleans, arrays, and integers. However, it lacks the capability to check the type of value being stored or retrieved. The retrieved value can vary depending on the type of value stored in the option:
+WordPress option can handle various type of values including strings, booleans, arrays, and integers. However, it lacks the capability to check the type of value being stored or retrieved. The retrieved value can vary depending on the type value stored in the option, for example:
 
 - `false` returns `string(0) ""`
 - `true` returns `string(1) "1"`

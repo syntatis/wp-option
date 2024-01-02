@@ -71,6 +71,41 @@ class OptionTest extends TestCase
 		$this->assertSame(2, get_option($optionName, '2'));
 	}
 
+	public function testHasDefaultPassedStrictValid(): void
+	{
+		$optionName = 'foo_bar_default';
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([
+			$optionName => [
+				'type' => 'integer',
+				'default' => 1,
+			],
+		]);
+		$option->register();
+
+		$this->assertSame(1, get_option($optionName));
+		$this->assertSame(2, get_option($optionName, 2));
+	}
+
+	public function testHasDefaultPassedStrictInvalid(): void
+	{
+		$optionName = 'foo_bar_default';
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([
+			$optionName => [
+				'type' => 'integer',
+				'default' => 1,
+			],
+		]);
+		$option->register();
+
+		$this->assertSame(1, get_option($optionName));
+
+		$this->expectException(TypeError::class);
+
+		get_option($optionName, '2'); // Default should be set to an integer, not a string.
+	}
+
 	public function testHasPrefix(): void
 	{
 		$optionName = 'foo_bar_prefix';
