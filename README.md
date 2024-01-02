@@ -58,6 +58,31 @@ add_option('wporg_custom_option', '1');
 get_option('wporg_custom_option'); // int(1)
 ```
 
+By default, when a default is not set for the option registered, the value returned will be a `null`, instead of a `false` [as how WordPress handles it](https://developer.wordpress.org/reference/functions/get_option/).
+
+```php
+get_option('wporg_custom_option'); // null
+```
+
+If the option is defined in the schema, the default value will be returned instead.
+
+```php
+use Syntatis\WP\Hook\Hook;
+use Syntatis\WP\Option\Option;
+
+$option = new Option(new Hook());
+$option->setSchema([
+  'wporg_custom_option' => [
+    'type' => 'integer',
+    'default' => 0,
+  ],
+]);
+$option->register();
+
+get_option('wporg_custom_option'); // int(0)
+```
+
+
 For more advanced usage, please refer to the [Wiki](https://github.com/syntatis/wp-option/wiki).
 
 ## Reference
