@@ -31,7 +31,7 @@ composer require wp-option
 
 First, create an instance of the `Option` class from the library and define the schema of the options. The schema is an array of options where the key is the name of the option and the value is an array of the option's schema defining the:
 
-- `type` (string): The type of the option value. The value can be one of the following: `string`, `boolean`, `integer`, `array`, `object`, `null`.
+- `type` (string): The type of the option value. The value can be one of the following: `string`, `boolean`, `integer`, `float`, and `array`.
 - `default` (mixed): The default value of the option. Ideally, the value should be of the same type as the `type` value.
 
 ```php
