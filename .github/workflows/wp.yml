@@ -25,6 +25,36 @@ on:
       - "phpunit.xml.dist"
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Setup Composer cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: php-7.4-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: php-7.4-composer-
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.4
+          tools: composer:v2
+
+      - name: Install dependencies
+        run: composer install --prefer-dist
+
+      - name: Lint codes
+        run: composer phpcs
+
   test:
     runs-on: ubuntu-latest
 
@@ -98,7 +128,6 @@ jobs:
 
       - name: Run test
         run: |
-          composer phpcs
           composer phpstan
           vendor/bin/phpunit --coverage-clover coverage.xml
         env:
