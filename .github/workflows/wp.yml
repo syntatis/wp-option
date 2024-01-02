@@ -57,7 +57,8 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-
+    if: ${{ success() }}
+    needs: lint
     env:
       WP_DB_TEST_NAME: wp_test
       WP_DB_TEST_PASS: wp_test
