@@ -1,0 +1,19 @@
+parameters:
+	level: 9
+	paths:
+		- app
+	checkGenericClassInNonGenericObjectType: false
+	ignoreErrors:
+		-
+			messages:
+				- '#^Method (\S+)::cast\(\) should return (\S+\|null) but returns mixed\.$#'
+			paths:
+				- app/TypeCasters/*
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			path: app/TypeCasters/TypeString.php
+
+		-
+			message: '#^Dead catch \- Throwable is never thrown in the try block\.$#'
+			path: app/TypeCasters/TypeString.php
