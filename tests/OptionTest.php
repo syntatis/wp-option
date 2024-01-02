@@ -55,6 +55,22 @@ class OptionTest extends TestCase
 		delete_option($optionName);
 	}
 
+	public function testHasDefaultPassed(): void
+	{
+		$optionName = 'foo_bar_default';
+		$option = new Option($this->hook);
+		$option->setSchema([
+			$optionName => [
+				'type' => 'integer',
+				'default' => 1,
+			],
+		]);
+		$option->register();
+
+		$this->assertSame(1, get_option($optionName));
+		$this->assertSame(2, get_option($optionName, '2'));
+	}
+
 	public function testHasPrefix(): void
 	{
 		$optionName = 'foo_bar_prefix';

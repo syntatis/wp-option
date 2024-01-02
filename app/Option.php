@@ -92,7 +92,7 @@ final class Option
 				static function ($default, $option, $passedDefault) use ($optionDefault, $defaultResolver) {
 					$value = $passedDefault ? $default : $optionDefault;
 
-					return $defaultResolver->resolve($optionDefault);
+					return $defaultResolver->resolve($value);
 				},
 				$optionPriority,
 				3,
