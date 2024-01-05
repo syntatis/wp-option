@@ -37,6 +37,11 @@ final class SiteOption
 	/** @phpstan-var array<string, OptionSchema> */
 	private array $schema = [];
 
+	/**
+	 * Holds the current state of the option.
+	 *
+	 * @var array<string, string>
+	 */
 	private array $states = [];
 
 	/**
@@ -78,7 +83,6 @@ final class SiteOption
 			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
 			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName) {
-				/** @see https://github.com/WordPress/wordpress-develop/blob/87dfd5514b52aef456b7232b1959873e69e651da/src/wp-includes/option.php#L1918-L1922 */
 				$this->states[$optionName] = 'adding';
 
 				return $value;
@@ -91,8 +95,17 @@ final class SiteOption
 			$this->hook->addFilter(
 				'default_site_option_' . $optionName,
 				function ($default) use ($schema, $defaultResolver, $optionType, $optionName) {
-					/** @see https://github.com/WordPress/wordpress-develop/blob/87dfd5514b52aef456b7232b1959873e69e651da/src/wp-includes/option.php#L1918-L1922 */
-					if (isset($this->states[$optionName]) && $this->states[$optionName] === 'adding') {
+					$state = $this->states[$optionName] ?? null;
+
+					/**
+					 * WordPress will check the cache before making a database call. If the option is not found in the cache,
+					 * it will return the default value passed on the `get_site_option` function. At this point, when
+					 * adding an option the default should be a `false`, otherwise it will skip adding the value
+					 * being added.
+					 *
+					 * @see https://github.com/WordPress/wordpress-develop/blob/87dfd5514b52aef456b7232b1959873e69e651da/src/wp-includes/option.php#L1918-L1922
+					 */
+					if ($state === 'adding') {
 						return $default;
 					}
 
@@ -143,7 +156,14 @@ final class SiteOption
 			$this->hook->addFilter(
 				'site_option_' . $optionName,
 				function ($value) use ($outputResolver, $optionName) {
-					/** @see https://github.com/WordPress/wordpress-develop/blob/87dfd5514b52aef456b7232b1959873e69e651da/src/wp-includes/option.php#L1918-L1922 */
+					/**
+					 * WordPress will check the cache before making a database call. If the option is not found in the cache,
+					 * it will return the default value passed on the `get_site_option` function. At this point, when
+					 * adding an option the default should be a `false`, otherwise it will skip adding the value
+					 * being added.
+					 *
+					 * @see https://github.com/WordPress/wordpress-develop/blob/87dfd5514b52aef456b7232b1959873e69e651da/src/wp-includes/option.php#L1918-L1922
+					 */
 					if (isset($this->states[$optionName]) && $this->states[$optionName] === 'adding') {
 						return $value;
 					}

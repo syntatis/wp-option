@@ -23,9 +23,10 @@ class SiteOptionTest extends TestCase
 	/**
 	 * @dataProvider dataHasDefaultSet
 	 *
-	 * @param mixed $default The default value to return
+	 * @param mixed $default         The default value to return.
+	 * @param mixed $defaultReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testHasDefaultSet(string $type, $default): void
+	public function testHasDefaultSet(string $type, $default, $defaultReturned): void
 	{
 		$optionName = 'foo_bar_default';
 		$option = new SiteOption($this->hook);
@@ -37,11 +38,11 @@ class SiteOptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_site_option($optionName));
+		$this->assertSame($defaultReturned, get_site_option($optionName));
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultSet
+	 * @dataProvider dataHasDefaultSetStrictValid
 	 *
 	 * @param mixed $default The default value to return
 	 */
@@ -61,7 +62,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultSetInvalid
+	 * @dataProvider dataHasDefaultSetStrictInvalid
 	 *
 	 * @param mixed $default The default value to return
 	 */
@@ -121,7 +122,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultPassedValid
+	 * @dataProvider dataHasDefaultPassedStrictValid
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
@@ -144,7 +145,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultPassedInvalid
+	 * @dataProvider dataHasDefaultPassedStrictInvalid
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
@@ -172,11 +173,11 @@ class SiteOptionTest extends TestCase
 	/**
 	 * @dataProvider dataHasPrefix
 	 *
-	 * @param string $type    The default value passed in the schema.
-	 * @param mixed  $value   The value to add with `add_site_option`.
-	 * @param mixed  $default The value to set ad the default when calling `get_site_option`.
+	 * @param string $type          The default value passed in the schema.
+	 * @param mixed  $value         The value to add with `add_site_option`.
+	 * @param mixed  $defaultPassed The value to set ad the default when calling `get_site_option`.
 	 */
-	public function testHasPrefix(string $type, $value, $default): void
+	public function testHasPrefix(string $type, $value, $defaultPassed): void
 	{
 		$optionName = 'foo_bar_prefix';
 		$option = new SiteOption($this->hook, 'syntatis_');
@@ -192,10 +193,22 @@ class SiteOptionTest extends TestCase
 
 		$this->assertTrue(add_site_option('syntatis_' . $optionName, $value));
 		$this->assertSame($value, get_site_option('syntatis_' . $optionName));
-		$this->assertSame($value, get_site_option('syntatis_' . $optionName, $default));
+		$this->assertSame($value, get_site_option('syntatis_' . $optionName, $defaultPassed));
 	}
 
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataHasDefaultSet(): iterable
+	{
+		yield ['string', 123, '123'];
+		yield ['boolean', 'true', true];
+		yield ['integer', '2', 2];
+		yield ['float', '2.5', 2.5];
+		yield ['array', 'bar', ['bar']];
+	}
+
+	public function dataHasDefaultSetStrictValid(): iterable
 	{
 		yield ['string', 'foo-bar-value-1'];
 		yield ['boolean', true];
@@ -205,7 +218,7 @@ class SiteOptionTest extends TestCase
 		yield ['array', ['foo', 'bar']];
 	}
 
-	public function dataHasDefaultSetInvalid(): iterable
+	public function dataHasDefaultSetStrictInvalid(): iterable
 	{
 		yield ['string', true];
 		yield ['boolean', 'true'];
@@ -235,16 +248,16 @@ class SiteOptionTest extends TestCase
 		yield ['array', ['foo'], 'bar', ['bar']];
 	}
 
-	public function dataHasDefaultPassedValid(): iterable
+	public function dataHasDefaultPassedStrictValid(): iterable
 	{
 		yield ['string', 'Hello World', '123', '123'];
-		yield ['boolean', false, true, true];
+		yield ['boolean', true, null, null];
 		yield ['integer', 1, 2, 2];
 		yield ['float', 1.2, 2.5, 2.5];
 		yield ['array', ['foo'], ['bar'], ['bar']];
 	}
 
-	public function dataHasDefaultPassedInvalid(): iterable
+	public function dataHasDefaultPassedStrictInvalid(): iterable
 	{
 		yield ['string', 'Hello World', 123, '123'];
 		yield ['boolean', true, '0', false];
@@ -255,6 +268,8 @@ class SiteOptionTest extends TestCase
 
 	public function dataHasPrefix(): iterable
 	{
-		yield ['string', 'Hello World!', 'Foobar!'];
+		yield ['string', 'Hello World!', 12];
+		yield ['boolean', false, 'true'];
+		yield ['integer', 1, true];
 	}
 }
