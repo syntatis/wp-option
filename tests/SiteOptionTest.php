@@ -169,11 +169,18 @@ class SiteOptionTest extends TestCase
 		get_site_option($optionName, $defaultPassed);
 	}
 
-	public function testHasPrefix(): void
+	/**
+	 * @dataProvider dataHasPrefix
+	 *
+	 * @param string $type    The default value passed in the schema.
+	 * @param mixed  $value   The value to add with `add_site_option`.
+	 * @param mixed  $default The value to set ad the default when calling `get_site_option`.
+	 */
+	public function testHasPrefix(string $type, $value, $default): void
 	{
 		$optionName = 'foo_bar_prefix';
 		$option = new SiteOption($this->hook, 'syntatis_');
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$optionName => ['type' => $type]]);
 
 		$this->assertFalse(has_filter('default_site_option_syntatis_' . $optionName));
 		$this->assertFalse(has_filter('site_option_syntatis_' . $optionName));
@@ -183,8 +190,9 @@ class SiteOptionTest extends TestCase
 		$this->assertTrue(has_filter('default_site_option_syntatis_' . $optionName));
 		$this->assertTrue(has_filter('site_option_syntatis_' . $optionName));
 
-		$this->assertTrue(add_site_option('syntatis_' . $optionName, 'Hello world!'));
-		$this->assertSame('Hello world!', get_site_option('syntatis_' . $optionName));
+		$this->assertTrue(add_site_option('syntatis_' . $optionName, $value));
+		$this->assertSame($value, get_site_option('syntatis_' . $optionName));
+		$this->assertSame($value, get_site_option('syntatis_' . $optionName, $default));
 	}
 
 	public function dataHasDefaultSet(): iterable
@@ -243,5 +251,10 @@ class SiteOptionTest extends TestCase
 		yield ['integer', 1, '2', 2];
 		yield ['float', 1.2, '2.5', 2.5];
 		yield ['array', ['foo'], 'bar', ['bar']];
+	}
+
+	public function dataHasPrefix(): iterable
+	{
+		yield ['string', 'Hello World!', 'Foobar!'];
 	}
 }
