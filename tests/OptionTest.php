@@ -42,6 +42,48 @@ class OptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataHasDefaultSet
+	 *
+	 * @param mixed $default The default value to return
+	 */
+	public function testHasDefaultSetStrictValid(string $type, $default): void
+	{
+		$optionName = 'foo_bar_default';
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([
+			$optionName => [
+				'type' => $type,
+				'default' => $default,
+			],
+		]);
+		$option->register();
+
+		$this->assertSame($default, get_option($optionName));
+	}
+
+	/**
+	 * @dataProvider dataHasDefaultSetInvalid
+	 *
+	 * @param mixed $default The default value to return
+	 */
+	public function testHasDefaultSetStrictInvalid(string $type, $default): void
+	{
+		$optionName = 'foo_bar_default';
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([
+			$optionName => [
+				'type' => $type,
+				'default' => $default,
+			],
+		]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+
+		get_option($optionName);
+	}
+
+	/**
 	 * @dataProvider dataHasNoDefaultSet
 	 *
 	 * @param mixed $default The default value to return
@@ -58,7 +100,7 @@ class OptionTest extends TestCase
 
 	public function testHasDefaultPassed(): void
 	{
-		$optionName = 'foo_bar_default';
+		$optionName = 'foo_bar_default_passed';
 		$option = new Option($this->hook);
 		$option->setSchema([
 			$optionName => [
@@ -74,7 +116,7 @@ class OptionTest extends TestCase
 
 	public function testHasDefaultPassedStrictValid(): void
 	{
-		$optionName = 'foo_bar_default';
+		$optionName = 'foo_bar_default_passed';
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
 			$optionName => [
@@ -90,7 +132,7 @@ class OptionTest extends TestCase
 
 	public function testHasDefaultPassedStrictInvalid(): void
 	{
-		$optionName = 'foo_bar_default';
+		$optionName = 'foo_bar_default_passed';
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
 			$optionName => [
@@ -820,6 +862,15 @@ class OptionTest extends TestCase
 		yield ['integer', 123];
 		yield ['float', 1.23];
 		yield ['array', ['foo', 'bar']];
+	}
+
+	public function dataHasDefaultSetInvalid(): iterable
+	{
+		yield ['string', true];
+		yield ['boolean', 'true'];
+		yield ['integer', ['foo']];
+		yield ['float', '1.23'];
+		yield ['array', false];
 	}
 
 	public function dataHasNoDefaultSet(): iterable

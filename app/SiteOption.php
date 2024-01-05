@@ -10,6 +10,7 @@ use Syntatis\WP\Option\Resolvers\OutputResolver;
 
 use function array_merge;
 use function is_array;
+use function is_bool;
 
 /**
  * @phpstan-import-type OptionType from Option
@@ -76,13 +77,45 @@ final class SiteOption
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
-			$isNotOption = $optionCache[$optionName] ?? true;
+			$isNotOption = ! $optionCache || (isset($optionCache[$optionName]) && $optionCache[$optionName] === true);
 
 			if ($isNotOption) {
 				$this->hook->addFilter(
 					'default_site_option_' . $optionName,
-					static function ($default, $option, $networkId) use ($optionDefault, $defaultResolver) {
-						return $defaultResolver->resolve($optionDefault);
+					static function ($default, $option, $networkId) use ($schema, $defaultResolver, $optionType) {
+						/**
+						 * WordPress by default will always return the default as `false`. It's currently not possible to identify
+						 * whether the `$default` is coming from the argument passed on the `get_site_option` function, or if
+						 * it's the default value WordPress set.
+						 */
+						if ($optionType === 'boolean') {
+							if ($default === true) {
+								return true;
+							}
+
+							/**
+							 * If the default value is not a boolean, it could mean the `get_site_option` function is
+							 * passed with a default argument e.g. `get_site_option('foo', 1)`.
+							 */
+							if (! is_bool($default)) {
+								return $defaultResolver->resolve($default);
+							}
+
+							/**
+							 * Otherwise, check if the schema has a default value set, and pass that instead.
+							 */
+							if (isset($schema['default'])) {
+								return $defaultResolver->resolve($schema['default']);
+							}
+
+							return null;
+						}
+
+						if ($default !== false) {
+							return $defaultResolver->resolve($default);
+						}
+
+						return $defaultResolver->resolve($schema['default'] ?? null);
 					},
 					$optionPriority,
 					3,
