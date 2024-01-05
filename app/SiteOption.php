@@ -37,6 +37,8 @@ final class SiteOption
 	/** @phpstan-var array<string, OptionSchema> */
 	private array $schema = [];
 
+	private array $states = [];
+
 	/**
 	 * @param string|null $prefix The option prefix to apply to all the option anme registered in the schema e.g. 'my_plugin_'.
 	 * @param int         $strict The level of strictness to apply to the option values.
@@ -66,8 +68,6 @@ final class SiteOption
 			return;
 		}
 
-		$optionCache = $this->optionCache();
-
 		foreach ($this->schema as $optionName => $schema) {
 			$optionName = $this->prefix . $optionName;
 			$optionType = $schema['type'];
@@ -77,12 +77,27 @@ final class SiteOption
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
-			$isNotOption = ! $optionCache || (isset($optionCache[$optionName]) && $optionCache[$optionName] === true);
+			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName) {
+				$this->states[$optionName] = $value;
 
-			if ($isNotOption) {
-				$this->hook->addFilter(
-					'default_site_option_' . $optionName,
-					static function ($default, $option, $networkId) use ($schema, $defaultResolver, $optionType) {
+				return $value;
+			}, $optionPriority);
+
+			$this->hook->addAction('add_site_option_' . $optionName, function () use ($optionName): void {
+				unset($this->states[$optionName]);
+			}, $optionPriority);
+
+			$this->hook->addFilter(
+				'default_site_option_' . $optionName,
+				function ($default) use ($schema, $defaultResolver, $optionType, $optionName) {
+					if (isset($this->states[$optionName])) {
+						return $default;
+					}
+
+					$notOptionCache = $this->notOptionCache();
+					$isNotOption = isset($notOptionCache[$optionName]) && $notOptionCache[$optionName] === true;
+
+					if ($isNotOption) {
 						/**
 						 * WordPress by default will always return the default as `false`. It's currently not possible to identify
 						 * whether the `$default` is coming from the argument passed on the `get_site_option` function, or if
@@ -116,26 +131,41 @@ final class SiteOption
 						}
 
 						return $defaultResolver->resolve($schema['default'] ?? null);
-					},
-					$optionPriority,
-					3,
-				);
-			} else {
-				$this->hook->addFilter(
-					'site_option_' . $optionName,
-					static function ($value) use ($outputResolver) {
-						return $outputResolver->resolve($value);
-					},
-					$optionPriority,
-				);
-			}
+					}
+
+					return $default;
+				},
+				$optionPriority,
+			);
+
+			$this->hook->addFilter(
+				'site_option_' . $optionName,
+				function ($value) use ($outputResolver, $optionName) {
+					if (isset($this->states[$optionName])) {
+						return $value;
+					}
+
+					$notOptionCache = $this->notOptionCache();
+					$isNotOption = isset($notOptionCache[$optionName]) && $notOptionCache[$optionName] === true;
+
+					/**
+					 * If it is not an option, the value may have resolved from the `default_site_option_` hook,
+					 */
+					if ($isNotOption) {
+						return $value;
+					}
+
+					return $outputResolver->resolve($value);
+				},
+				$optionPriority,
+			);
 		}
 
 		$this->hook->run();
 	}
 
 	/** @return array<string, bool> */
-	private function optionCache(): ?array
+	private function notOptionCache(): array
 	{
 		$networkId = get_current_network_id();
 		$notOptionsKey = $networkId . ':notoptions';

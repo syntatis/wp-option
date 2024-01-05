@@ -183,9 +183,8 @@ class SiteOptionTest extends TestCase
 		$this->assertTrue(has_filter('default_site_option_syntatis_' . $optionName));
 		$this->assertTrue(has_filter('site_option_syntatis_' . $optionName));
 
-		add_option('syntatis_' . $optionName, 'Hello world!');
-
-		$this->assertSame('Hello world!', get_option('syntatis_' . $optionName));
+		$this->assertTrue(add_site_option('syntatis_' . $optionName, 'Hello world!'));
+		$this->assertSame('Hello world!', get_site_option('syntatis_' . $optionName));
 	}
 
 	public function dataHasDefaultSet(): iterable
