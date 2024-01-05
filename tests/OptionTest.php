@@ -39,20 +39,21 @@ class OptionTest extends TestCase
 		$option->register();
 
 		$this->assertSame($default, get_option($optionName));
-
-		delete_option($optionName);
 	}
 
-	public function testHasNoDefaultSet(): void
+	/**
+	 * @dataProvider dataHasNoDefaultSet
+	 *
+	 * @param mixed $default The default value to return
+	 */
+	public function testHasNoDefaultSet(string $type): void
 	{
 		$optionName = 'foo_bar_no_default';
 		$option = new Option($this->hook);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$optionName => ['type' => $type]]);
 		$option->register();
 
 		$this->assertNull(get_option($optionName));
-
-		delete_option($optionName);
 	}
 
 	public function testHasDefaultPassed(): void
@@ -815,9 +816,19 @@ class OptionTest extends TestCase
 	{
 		yield ['string', 'foo-bar-value-1'];
 		yield ['boolean', true];
+		yield ['boolean', false];
 		yield ['integer', 123];
 		yield ['float', 1.23];
 		yield ['array', ['foo', 'bar']];
+	}
+
+	public function dataHasNoDefaultSet(): iterable
+	{
+		yield ['string'];
+		yield ['boolean'];
+		yield ['integer'];
+		yield ['float'];
+		yield ['array'];
 	}
 
 	public function dataTypeString(): iterable

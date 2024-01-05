@@ -6,16 +6,16 @@ namespace Syntatis\WP\Option;
 
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Resolvers\DefaultResolver;
-use Syntatis\WP\Option\Resolvers\InputValidator;
 use Syntatis\WP\Option\Resolvers\OutputResolver;
 
 use function array_merge;
+use function is_array;
 
 /**
- * @phpstan-type OptionType value-of<Option::TYPES>
- * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int}
+ * @phpstan-import-type OptionType from Option
+ * @phpstan-import-type OptionSchema from Option
  */
-final class Option
+final class SiteOption
 {
 	public const TYPES = [
 		'string',
@@ -61,6 +61,12 @@ final class Option
 
 	public function register(): void
 	{
+		if (! is_multisite()) {
+			return;
+		}
+
+		$optionCache = $this->optionCache();
+
 		foreach ($this->schema as $optionName => $schema) {
 			$optionName = $this->prefix . $optionName;
 			$optionType = $schema['type'];
@@ -70,39 +76,38 @@ final class Option
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
-			if ($this->strict === 1) {
-				$inputValidator = new InputValidator($optionType);
+			$isNotOption = $optionCache[$optionName] ?? true;
 
-				$this->hook->addAction(
-					'add_option',
-					static fn ($name, $value) => $inputValidator->validate($value),
-					$optionPriority,
-					2,
-				);
-				$this->hook->addAction(
-					'update_option',
-					static fn ($name, $oldValue, $newValue) => $inputValidator->validate($newValue),
+			if ($isNotOption) {
+				$this->hook->addFilter(
+					'default_site_option_' . $optionName,
+					static function ($default, $option, $networkId) use ($optionDefault, $defaultResolver) {
+						return $defaultResolver->resolve($optionDefault);
+					},
 					$optionPriority,
 					3,
 				);
+			} else {
+				$this->hook->addFilter(
+					'site_option_' . $optionName,
+					static function ($value) use ($outputResolver) {
+						return $outputResolver->resolve($value);
+					},
+					$optionPriority,
+				);
 			}
-
-			$this->hook->addFilter(
-				'default_option_' . $optionName,
-				static function ($default, $option, $passedDefault) use ($optionDefault, $defaultResolver) {
-					return $defaultResolver->resolve($passedDefault ? $default : $optionDefault);
-				},
-				$optionPriority,
-				3,
-			);
-
-			$this->hook->addFilter(
-				'option_' . $optionName,
-				static fn ($value) => $outputResolver->resolve($value),
-				$optionPriority,
-			);
 		}
 
 		$this->hook->run();
+	}
+
+	/** @return array<string, bool> */
+	private function optionCache(): ?array
+	{
+		$networkId = get_current_network_id();
+		$notOptionsKey = $networkId . ':notoptions';
+		$notOptionsCache = wp_cache_get($notOptionsKey, 'site-options');
+
+		return is_array($notOptionsCache) ? $notOptionsCache : [];
 	}
 }
