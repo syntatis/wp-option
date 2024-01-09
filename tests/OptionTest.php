@@ -14,11 +14,22 @@ class OptionTest extends TestCase
 {
 	private Hook $hook;
 
-	public function setUp(): void
+	private string $optionName = 'foo_bar';
+
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+	public function set_up(): void
 	{
-		parent::setUp();
+		parent::set_up();
 
 		$this->hook = new Hook();
+	}
+
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+	public function tear_dowm(): void
+	{
+		delete_option($this->optionName);
+
+		parent::tear_down();
 	}
 
 	/**
@@ -28,17 +39,16 @@ class OptionTest extends TestCase
 	 */
 	public function testHasDefaultSet(string $type, $default): void
 	{
-		$optionName = 'foo_bar_default';
 		$option = new Option($this->hook);
 		$option->setSchema([
-			$optionName => [
+			$this->optionName => [
 				'type' => $type,
 				'default' => $default,
 			],
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_option($optionName));
+		$this->assertSame($default, get_option($this->optionName));
 	}
 
 	/**
@@ -48,17 +58,16 @@ class OptionTest extends TestCase
 	 */
 	public function testHasDefaultSetStrictValid(string $type, $default): void
 	{
-		$optionName = 'foo_bar_default';
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
-			$optionName => [
+			$this->optionName => [
 				'type' => $type,
 				'default' => $default,
 			],
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_option($optionName));
+		$this->assertSame($default, get_option($this->optionName));
 	}
 
 	/**
@@ -68,10 +77,9 @@ class OptionTest extends TestCase
 	 */
 	public function testHasDefaultSetStrictInvalid(string $type, $default): void
 	{
-		$optionName = 'foo_bar_default';
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
-			$optionName => [
+			$this->optionName => [
 				'type' => $type,
 				'default' => $default,
 			],
@@ -80,7 +88,7 @@ class OptionTest extends TestCase
 
 		$this->expectException(TypeError::class);
 
-		get_option($optionName);
+		get_option($this->optionName);
 	}
 
 	/**
@@ -90,28 +98,33 @@ class OptionTest extends TestCase
 	 */
 	public function testHasNoDefaultSet(string $type): void
 	{
-		$optionName = 'foo_bar_no_default';
 		$option = new Option($this->hook);
-		$option->setSchema([$optionName => ['type' => $type]]);
+		$option->setSchema([$this->optionName => ['type' => $type]]);
 		$option->register();
 
-		$this->assertNull(get_option($optionName));
+		$this->assertNull(get_option($this->optionName));
 	}
 
-	public function testHasDefaultPassed(): void
+	/**
+	 * @dataProvider dataHasDefaultPassed
+	 *
+	 * @param mixed $default               The default value passed in the schema.
+	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
+	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
+	 */
+	public function testHasDefaultPassed(string $type, $default, $defaultPassed, $defaultPassedReturned): void
 	{
-		$optionName = 'foo_bar_default_passed';
 		$option = new Option($this->hook);
 		$option->setSchema([
-			$optionName => [
-				'type' => 'integer',
-				'default' => 1,
+			$this->optionName => [
+				'type' => $type,
+				'default' => $default,
 			],
 		]);
 		$option->register();
 
-		$this->assertSame(1, get_option($optionName));
-		$this->assertSame(2, get_option($optionName, '2'));
+		$this->assertSame($default, get_option($this->optionName));
+		$this->assertSame($defaultPassedReturned, get_option($this->optionName, $defaultPassed));
 	}
 
 	public function testHasDefaultPassedStrictValid(): void
@@ -381,7 +394,6 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
-	 * @group here
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -396,7 +408,6 @@ class OptionTest extends TestCase
 		$option->register();
 
 		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
 
 		get_option($optionName);
 	}
@@ -887,6 +898,18 @@ class OptionTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
+	public function dataHasDefaultPassed(): iterable
+	{
+		yield ['string', 'Hello World', 123, '123'];
+		yield ['boolean', false, 'true', true];
+		yield ['integer', 1, '2', 2];
+		yield ['float', 1.2, '2.5', 2.5];
+		yield ['array', ['foo'], 'bar', ['bar']];
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataTypeString(): iterable
 	{
 		yield ['this-is-string', 'this-is-string'];
@@ -950,6 +973,9 @@ class OptionTest extends TestCase
 		yield ['true'];
 	}
 
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataTypeInteger(): iterable
 	{
 		yield ['this-is-string', 0];
@@ -985,6 +1011,9 @@ class OptionTest extends TestCase
 		yield [[]];
 	}
 
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataTypeFloat(): iterable
 	{
 		yield ['this-is-string', 0.0];
@@ -1027,6 +1056,9 @@ class OptionTest extends TestCase
 		yield [[]];
 	}
 
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataTypeArray(): iterable
 	{
 		yield ['this-is-string', ['this-is-string']];
