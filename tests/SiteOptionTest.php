@@ -279,6 +279,26 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataGetTypeBooleanStrictValid
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeBooleanStrictValid($value): void
+	{
+		$optionName = 'foo_bar_boolean';
+
+		add_site_option($optionName, $value);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->assertSame($value, get_site_option($optionName));
+
+		delete_site_option($optionName);
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
 	public function dataHasDefaultSet(): iterable
@@ -383,10 +403,17 @@ class SiteOptionTest extends TestCase
 		yield [true];
 		yield [[]];
 
-		// WordPress will convert to empty string.
+		/**
+		 * WordPress will convert to empty string.
+		 *
+		 * @todo Handle this case.
+		 */
 		// yield [false];
 	}
 
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataGetTypeBoolean(): iterable
 	{
 		yield ['this-is-string', true];
@@ -400,5 +427,17 @@ class SiteOptionTest extends TestCase
 		yield [null, false];
 		yield [[], false];
 		yield ['false', true];
+	}
+
+	public function dataGetTypeBooleanStrictValid(): iterable
+	{
+		yield [true];
+
+		/**
+		 * WordPress will convert to empty string.
+		 *
+		 * @todo Handle this case.
+		 */
+		// yield [false];
 	}
 }
