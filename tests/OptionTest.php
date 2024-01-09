@@ -902,11 +902,11 @@ class OptionTest extends TestCase
 
 	public function dataTypeStringStrictInvalid(): iterable
 	{
-		// yield [1];
-		// yield [1.2];
+		yield [1];
+		yield [1.2];
 		yield [false];
-		// yield [true];
-		// yield [[]];
+		yield [true];
+		yield [[]];
 	}
 
 	public function dataTypeBoolean(): iterable
