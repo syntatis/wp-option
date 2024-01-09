@@ -197,6 +197,65 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataGetTypeString
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeString($value, $expect): void
+	{
+		$optionName = 'foo_bar_string';
+
+		add_site_option($optionName, $value);
+
+		$option = new SiteOption($this->hook);
+		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($optionName));
+
+		delete_site_option($optionName);
+	}
+
+	/**
+	 * @dataProvider dataGetTypeStringStrictValid
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeStringStrictValid($value): void
+	{
+		$optionName = 'foo_bar_string';
+
+		add_site_option($optionName, $value);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->register();
+
+		$this->assertSame($value, get_site_option($optionName));
+	}
+
+	/**
+	 * @dataProvider dataGetTypeStringStrictInvalid
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeStringStrictInvalid($value): void
+	{
+		$optionName = 'foo_bar_string';
+
+		add_site_option($optionName, $value);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+
+		get_site_option($optionName);
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
 	public function dataHasDefaultSet(): iterable
@@ -271,5 +330,37 @@ class SiteOptionTest extends TestCase
 		yield ['string', 'Hello World!', 12];
 		yield ['boolean', false, 'true'];
 		yield ['integer', 1, true];
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataGetTypeString(): iterable
+	{
+		yield ['this-is-string', 'this-is-string'];
+		yield [1, '1'];
+		yield [1.2, '1.2'];
+		yield [false, ''];
+		yield [true, '1'];
+		yield [null, ''];
+		yield [[], null];
+	}
+
+	public function dataGetTypeStringStrictValid(): iterable
+	{
+		yield ['this-is-string'];
+		yield [''];
+		yield [' '];
+	}
+
+	public function dataGetTypeStringStrictInvalid(): iterable
+	{
+		yield [1];
+		yield [1.2];
+		yield [true];
+		yield [[]];
+
+		// WordPress will convert to empty string.
+		// yield [false];
 	}
 }

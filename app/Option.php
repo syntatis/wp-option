@@ -98,7 +98,9 @@ final class Option
 
 			$this->hook->addFilter(
 				'option_' . $optionName,
-				static fn ($value) => $outputResolver->resolve($value),
+				static function ($value) use ($outputResolver) {
+					return $outputResolver->resolve($value);
+				},
 				$optionPriority,
 			);
 		}

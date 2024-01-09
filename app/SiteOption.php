@@ -88,7 +88,7 @@ final class SiteOption
 				return $value;
 			}, $optionPriority);
 
-			$this->hook->addAction('add_site_option_' . $optionName, function () use ($optionName): void {
+			$this->hook->addAction('add_site_option_' . $optionName, function ($value) use ($optionName): void {
 				unset($this->states[$optionName]);
 			}, $optionPriority);
 
