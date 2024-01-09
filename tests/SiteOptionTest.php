@@ -299,6 +299,26 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataGetTypeBooleanStrictInvalid
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeBooleanStrictInvalid($value): void
+	{
+		$optionName = 'foo_bar_boolean';
+
+		add_site_option($optionName, $value);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+
+		get_site_option($optionName);
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
 	public function dataHasDefaultSet(): iterable
@@ -439,5 +459,21 @@ class SiteOptionTest extends TestCase
 		 * @todo Handle this case.
 		 */
 		// yield [false];
+	}
+
+	public function dataGetTypeBooleanStrictInvalid(): iterable
+	{
+		yield ['this-is-string'];
+		yield [''];
+		yield [0];
+		yield [1.2];
+		yield [-1];
+		yield [false];
+		yield [[]];
+		yield ['false'];
+		yield ['true'];
+
+		// :shrug:
+		// yield [null];
 	}
 }
