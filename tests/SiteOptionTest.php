@@ -233,6 +233,8 @@ class SiteOptionTest extends TestCase
 		$option->register();
 
 		$this->assertSame($value, get_site_option($optionName));
+
+		delete_site_option($optionName);
 	}
 
 	/**
@@ -253,6 +255,27 @@ class SiteOptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		get_site_option($optionName);
+	}
+
+	/**
+	 * @dataProvider dataGetTypeBoolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeBoolean($value, $expect): void
+	{
+		$optionName = 'foo_bar_boolean';
+
+		add_site_option($optionName, $value);
+
+		$option = new SiteOption($this->hook);
+		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($optionName));
+
+		delete_site_option($optionName);
 	}
 
 	/**
@@ -362,5 +385,20 @@ class SiteOptionTest extends TestCase
 
 		// WordPress will convert to empty string.
 		// yield [false];
+	}
+
+	public function dataGetTypeBoolean(): iterable
+	{
+		yield ['this-is-string', true];
+		yield ['', false];
+		yield [0, false];
+		yield [1, true];
+		yield [1.2, true];
+		yield [-1, true]; // -1 is considered true, like any other non-zero (whether negative or positive) number!
+		yield [false, false];
+		yield [true, true];
+		yield [null, false];
+		yield [[], false];
+		yield ['false', true];
 	}
 }
