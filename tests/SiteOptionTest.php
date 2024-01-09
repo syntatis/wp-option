@@ -197,7 +197,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetTypeString
+	 * @dataProvider dataTypeString
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -218,7 +218,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetTypeStringStrictValid
+	 * @dataProvider dataTypeStringStrictValid
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -238,7 +238,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetTypeStringStrictInvalid
+	 * @dataProvider dataTypeStringStrictInvalid
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -258,7 +258,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetTypeBoolean
+	 * @dataProvider dataTypeBoolean
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -279,7 +279,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetTypeBooleanStrictValid
+	 * @dataProvider dataTypeBooleanStrictValid
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -299,7 +299,7 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetTypeBooleanStrictInvalid
+	 * @dataProvider dataTypeBooleanStrictInvalid
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -398,7 +398,7 @@ class SiteOptionTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataGetTypeString(): iterable
+	public function dataTypeString(): iterable
 	{
 		yield ['this-is-string', 'this-is-string'];
 		yield [1, '1'];
@@ -409,14 +409,14 @@ class SiteOptionTest extends TestCase
 		yield [[], null];
 	}
 
-	public function dataGetTypeStringStrictValid(): iterable
+	public function dataTypeStringStrictValid(): iterable
 	{
 		yield ['this-is-string'];
 		yield [''];
 		yield [' '];
 	}
 
-	public function dataGetTypeStringStrictInvalid(): iterable
+	public function dataTypeStringStrictInvalid(): iterable
 	{
 		yield [1];
 		yield [1.2];
@@ -434,7 +434,7 @@ class SiteOptionTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataGetTypeBoolean(): iterable
+	public function dataTypeBoolean(): iterable
 	{
 		yield ['this-is-string', true];
 		yield ['', false];
@@ -449,7 +449,7 @@ class SiteOptionTest extends TestCase
 		yield ['false', true];
 	}
 
-	public function dataGetTypeBooleanStrictValid(): iterable
+	public function dataTypeBooleanStrictValid(): iterable
 	{
 		yield [true];
 
@@ -461,7 +461,7 @@ class SiteOptionTest extends TestCase
 		// yield [false];
 	}
 
-	public function dataGetTypeBooleanStrictInvalid(): iterable
+	public function dataTypeBooleanStrictInvalid(): iterable
 	{
 		yield ['this-is-string'];
 		yield [''];
@@ -472,8 +472,5 @@ class SiteOptionTest extends TestCase
 		yield [[]];
 		yield ['false'];
 		yield ['true'];
-
-		// :shrug:
-		// yield [null];
 	}
 }

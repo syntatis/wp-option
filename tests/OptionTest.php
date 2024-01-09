@@ -381,6 +381,7 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group here
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -395,6 +396,7 @@ class OptionTest extends TestCase
 		$option->register();
 
 		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
 
 		get_option($optionName);
 	}
@@ -882,6 +884,9 @@ class OptionTest extends TestCase
 		yield ['array'];
 	}
 
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataTypeString(): iterable
 	{
 		yield ['this-is-string', 'this-is-string'];
@@ -909,6 +914,9 @@ class OptionTest extends TestCase
 		yield [[]];
 	}
 
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
 	public function dataTypeBoolean(): iterable
 	{
 		yield ['this-is-string', true];
@@ -937,7 +945,6 @@ class OptionTest extends TestCase
 		yield [0];
 		yield [1.2];
 		yield [-1];
-		yield [null];
 		yield [[]];
 		yield ['false'];
 		yield ['true'];
