@@ -275,24 +275,36 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeString
+	 * @dataProvider dataGetTypeString
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
 	public function testGetTypeString($value, $expect): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
 		$option = new Option($this->hook);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($optionName));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
 
-		delete_option($optionName);
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataGetTypeString(): iterable
+	{
+		yield ['Hello World!', 'Hello World!'];
+		yield [1, '1'];
+		yield [1.2, '1.2'];
+		yield [true, '1'];
+		yield [false, ''];
+		yield [null, ''];
+		yield [[], ''];
+		yield [['foo'], '["foo"]'];
+		yield [['foo' => 'bar'], '{"foo":"bar"}'];
 	}
 
 	/**
@@ -967,20 +979,6 @@ class OptionTest extends TestCase
 		yield ['integer', 1, 2];
 		yield ['float', 1.2, 2.5];
 		yield ['array', ['foo'], ['bar']];
-	}
-
-	/**
-	 * Non-strict. Value may be coerced.
-	 */
-	public function dataTypeString(): iterable
-	{
-		yield ['Hello World!', 'Hello World!'];
-		yield [1, '1'];
-		yield [1.2, '1.2'];
-		yield [false, ''];
-		yield [true, '1'];
-		yield [null, ''];
-		yield [[], null];
 	}
 
 	public function dataTypeStringStrictValid(): iterable
