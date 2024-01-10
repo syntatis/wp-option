@@ -33,11 +33,37 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultSet
+	 * @dataProvider dataNoDefaultSet
+	 * @testdox it should return `null` when no default is set
 	 *
 	 * @param mixed $default The default value to return
 	 */
-	public function testHasDefaultSet(string $type, $default): void
+	public function testNoDefaultSet(string $type): void
+	{
+		$option = new Option($this->hook);
+		$option->setSchema([$this->optionName => ['type' => $type]]);
+		$option->register();
+
+		$this->assertNull(get_option($this->optionName));
+	}
+
+	public function dataNoDefaultSet(): iterable
+	{
+		yield ['string'];
+		yield ['boolean'];
+		yield ['integer'];
+		yield ['float'];
+		yield ['array'];
+	}
+
+	/**
+	 * @dataProvider dataDefaultSet
+	 * @testdox it should return the default value when set, and coerce the value if necessary on a non-strict mode
+	 *
+	 * @param mixed $default The default value to return
+	 * @param mixed $return  The default value returned or coerced by the function `get_site_option`.
+	 */
+	public function testDefaultSet(string $type, $default, $return): void
 	{
 		$option = new Option($this->hook);
 		$option->setSchema([
@@ -48,15 +74,29 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_option($this->optionName));
+		$this->assertSame($return, get_option($this->optionName));
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultSet
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataDefaultSet(): iterable
+	{
+		yield ['string', 123, '123'];
+		yield ['boolean', 1, true];
+		yield ['boolean', '', false];
+		yield ['integer', '123', 123];
+		yield ['float', '1.23', 1.23];
+		yield ['array', 'foo', ['foo']];
+	}
+
+	/**
+	 * @dataProvider dataDefaultSetStrictValid
+	 * @testdox it should return the default value when set, on a strict mode
 	 *
 	 * @param mixed $default The default value to return
 	 */
-	public function testHasDefaultSetStrictValid(string $type, $default): void
+	public function testDefaultSetStrictValid(string $type, $default): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
@@ -70,12 +110,23 @@ class OptionTest extends TestCase
 		$this->assertSame($default, get_option($this->optionName));
 	}
 
+	public function dataDefaultSetStrictValid(): iterable
+	{
+		yield ['string', 'Hello World!'];
+		yield ['boolean', true];
+		yield ['boolean', false];
+		yield ['integer', 123];
+		yield ['float', 1.23];
+		yield ['array', ['foo', 'bar']];
+	}
+
 	/**
-	 * @dataProvider dataHasDefaultSetInvalid
+	 * @dataProvider dataDefaultSetInvalid
+	 * @testdox it should throw an exception when the default value is invalid, on a strict mode
 	 *
 	 * @param mixed $default The default value to return
 	 */
-	public function testHasDefaultSetStrictInvalid(string $type, $default): void
+	public function testDefaultSetStrictInvalid(string $type, $default): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
@@ -91,28 +142,23 @@ class OptionTest extends TestCase
 		get_option($this->optionName);
 	}
 
-	/**
-	 * @dataProvider dataHasNoDefaultSet
-	 *
-	 * @param mixed $default The default value to return
-	 */
-	public function testHasNoDefaultSet(string $type): void
+	public function dataDefaultSetInvalid(): iterable
 	{
-		$option = new Option($this->hook);
-		$option->setSchema([$this->optionName => ['type' => $type]]);
-		$option->register();
-
-		$this->assertNull(get_option($this->optionName));
+		yield ['string', true];
+		yield ['boolean', 'true'];
+		yield ['integer', ['foo']];
+		yield ['float', '1.23'];
+		yield ['array', false];
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultPassed
+	 * @dataProvider dataDefaultPassed
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
 	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testHasDefaultPassed(string $type, $default, $defaultPassed, $defaultPassedReturned): void
+	public function testDefaultPassed(string $type, $default, $defaultPassed, $defaultPassedReturned): void
 	{
 		$option = new Option($this->hook);
 		$option->setSchema([
@@ -123,8 +169,20 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_option($this->optionName));
 		$this->assertSame($defaultPassedReturned, get_option($this->optionName, $defaultPassed));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataDefaultPassed(): iterable
+	{
+		yield ['string', 'Hello World', 123, '123'];
+		yield ['boolean', false, 'true', true];
+		yield ['boolean', true, '', false];
+		yield ['integer', 1, '2', 2];
+		yield ['float', 1.2, '2.5', 2.5];
+		yield ['array', ['foo'], 'bar', ['bar']];
 	}
 
 	/**
@@ -134,7 +192,7 @@ class OptionTest extends TestCase
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
 	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testHasDefaultPassedStrictValid(string $type, $default, $defaultPassed, $defaultPassedReturned): void
+	public function testHasDefaultPassedStrictValid(string $type, $default, $defaultPassed): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
@@ -145,18 +203,18 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_option($this->optionName));
-		$this->assertSame($defaultPassedReturned, get_option($this->optionName, $defaultPassed));
+		$this->assertSame($defaultPassed, get_option($this->optionName, $defaultPassed));
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultPassedStrictInvalid
+	 * @dataProvider dataDefaultPassedStrictInvalid
+	 * @testdox it should throw an exception when the default value is invalid, on a strict mode
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
 	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testHasDefaultPassedStrictInvalid(string $type, $default, $defaultPassed): void
+	public function testDefaultPassedStrictInvalid(string $type, $default, $defaultPassed): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
@@ -174,23 +232,46 @@ class OptionTest extends TestCase
 		get_option($this->optionName, $defaultPassed);
 	}
 
-	public function testHasPrefix(): void
+	public function dataDefaultPassedStrictInvalid(): iterable
 	{
-		$optionName = 'foo_bar_prefix';
-		$option = new Option($this->hook, 'syntatis_');
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		yield ['string', 'Hello World', 123];
+		yield ['boolean', true, '0'];
+		yield ['integer', 1, '2'];
+		yield ['float', 1.2, '2.5'];
+		yield ['array', ['foo'], 'bar'];
+	}
 
-		$this->assertFalse(has_filter('default_option_syntatis_' . $optionName));
-		$this->assertFalse(has_filter('option_syntatis_' . $optionName));
+	/**
+	 * @dataProvider dataPrefixSet
+	 *
+	 * @param string $type  The default value passed in the schema.
+	 * @param mixed  $value The value to add with `add_site_option`.
+	 */
+	public function testPrefixSet(string $type, $value): void
+	{
+		$option = new Option($this->hook, 'syntatis_');
+		$option->setSchema([$this->optionName => ['type' => $type]]);
+
+		$this->assertFalse(has_filter('default_option_syntatis_' . $this->optionName));
+		$this->assertFalse(has_filter('option_syntatis_' . $this->optionName));
 
 		$option->register();
 
-		$this->assertTrue(has_filter('default_option_syntatis_' . $optionName));
-		$this->assertTrue(has_filter('option_syntatis_' . $optionName));
+		$this->assertTrue(has_filter('default_option_syntatis_' . $this->optionName));
+		$this->assertTrue(has_filter('option_syntatis_' . $this->optionName));
 
-		add_option('syntatis_' . $optionName, 'Hello world!');
+		add_option('syntatis_' . $this->optionName, $value);
 
-		$this->assertSame('Hello world!', get_option('syntatis_' . $optionName));
+		$this->assertSame($value, get_option('syntatis_' . $this->optionName));
+	}
+
+	public function dataPrefixSet(): iterable
+	{
+		yield ['string', 'Hello World!'];
+		yield ['boolean', true];
+		yield ['integer', 1];
+		yield ['float', 1.2];
+		yield ['array', ['foo']];
 	}
 
 	/**
@@ -879,62 +960,13 @@ class OptionTest extends TestCase
 		update_option($optionName, $value);
 	}
 
-	public function dataHasDefaultSet(): iterable
-	{
-		yield ['string', 'foo-bar-value-1'];
-		yield ['boolean', true];
-		yield ['boolean', false];
-		yield ['integer', 123];
-		yield ['float', 1.23];
-		yield ['array', ['foo', 'bar']];
-	}
-
-	public function dataHasDefaultSetInvalid(): iterable
-	{
-		yield ['string', true];
-		yield ['boolean', 'true'];
-		yield ['integer', ['foo']];
-		yield ['float', '1.23'];
-		yield ['array', false];
-	}
-
-	public function dataHasNoDefaultSet(): iterable
-	{
-		yield ['string'];
-		yield ['boolean'];
-		yield ['integer'];
-		yield ['float'];
-		yield ['array'];
-	}
-
-	/**
-	 * Non-strict. Value may be coerced.
-	 */
-	public function dataHasDefaultPassed(): iterable
-	{
-		yield ['string', 'Hello World', 123, '123'];
-		yield ['boolean', false, 'true', true];
-		yield ['integer', 1, '2', 2];
-		yield ['float', 1.2, '2.5', 2.5];
-		yield ['array', ['foo'], 'bar', ['bar']];
-	}
-
 	public function dataHasDefaultPassedStrictValid(): iterable
 	{
-		yield ['string', 'Hello World', '123', '123'];
-		yield ['boolean', true, null, null];
-		yield ['integer', 1, 2, 2];
-		yield ['float', 1.2, 2.5, 2.5];
-		yield ['array', ['foo'], ['bar'], ['bar']];
-	}
-
-	public function dataHasDefaultPassedStrictInvalid(): iterable
-	{
-		yield ['string', 'Hello World', 123];
-		yield ['boolean', true, '0'];
-		yield ['integer', 1, '2'];
-		yield ['float', 1.2, '2.5'];
-		yield ['array', ['foo'], 'bar'];
+		yield ['string', 'Hello World', '123'];
+		yield ['boolean', true, null];
+		yield ['integer', 1, 2];
+		yield ['float', 1.2, 2.5];
+		yield ['array', ['foo'], ['bar']];
 	}
 
 	/**
@@ -942,7 +974,7 @@ class OptionTest extends TestCase
 	 */
 	public function dataTypeString(): iterable
 	{
-		yield ['this-is-string', 'this-is-string'];
+		yield ['Hello World!', 'Hello World!'];
 		yield [1, '1'];
 		yield [1.2, '1.2'];
 		yield [false, ''];
