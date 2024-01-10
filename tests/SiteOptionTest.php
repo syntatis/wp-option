@@ -151,7 +151,7 @@ class SiteOptionTest extends TestCase
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
 	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testHasDefaultPassedStrictInvalid(string $type, $default, $defaultPassed, $defaultPassedReturned): void
+	public function testHasDefaultPassedStrictInvalid(string $type, $default, $defaultPassed): void
 	{
 		$optionName = 'foo_bar_default_passed';
 		$option = new SiteOption($this->hook, null, 1);
@@ -381,11 +381,11 @@ class SiteOptionTest extends TestCase
 
 	public function dataHasDefaultPassedStrictInvalid(): iterable
 	{
-		yield ['string', 'Hello World', 123, '123'];
-		yield ['boolean', true, '0', false];
-		yield ['integer', 1, '2', 2];
-		yield ['float', 1.2, '2.5', 2.5];
-		yield ['array', ['foo'], 'bar', ['bar']];
+		yield ['string', 'Hello World', 123];
+		yield ['boolean', true, '0'];
+		yield ['integer', 1, '2'];
+		yield ['float', 1.2, '2.5'];
+		yield ['array', ['foo'], 'bar'];
 	}
 
 	public function dataHasPrefix(): iterable

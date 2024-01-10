@@ -127,39 +127,51 @@ class OptionTest extends TestCase
 		$this->assertSame($defaultPassedReturned, get_option($this->optionName, $defaultPassed));
 	}
 
-	public function testHasDefaultPassedStrictValid(): void
+	/**
+	 * @dataProvider dataHasDefaultPassedStrictValid
+	 *
+	 * @param mixed $default               The default value passed in the schema.
+	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
+	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
+	 */
+	public function testHasDefaultPassedStrictValid(string $type, $default, $defaultPassed, $defaultPassedReturned): void
 	{
-		$optionName = 'foo_bar_default_passed';
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
-			$optionName => [
-				'type' => 'integer',
-				'default' => 1,
+			$this->optionName => [
+				'type' => $type,
+				'default' => $default,
 			],
 		]);
 		$option->register();
 
-		$this->assertSame(1, get_option($optionName));
-		$this->assertSame(2, get_option($optionName, 2));
+		$this->assertSame($default, get_option($this->optionName));
+		$this->assertSame($defaultPassedReturned, get_option($this->optionName, $defaultPassed));
 	}
 
-	public function testHasDefaultPassedStrictInvalid(): void
+	/**
+	 * @dataProvider dataHasDefaultPassedStrictInvalid
+	 *
+	 * @param mixed $default               The default value passed in the schema.
+	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
+	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
+	 */
+	public function testHasDefaultPassedStrictInvalid(string $type, $default, $defaultPassed): void
 	{
-		$optionName = 'foo_bar_default_passed';
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
-			$optionName => [
-				'type' => 'integer',
-				'default' => 1,
+			$this->optionName => [
+				'type' => $type,
+				'default' => $default,
 			],
 		]);
 		$option->register();
 
-		$this->assertSame(1, get_option($optionName));
+		$this->assertSame($default, get_option($this->optionName));
 
 		$this->expectException(TypeError::class);
 
-		get_option($optionName, '2'); // Default should be set to an integer, not a string.
+		get_option($this->optionName, $defaultPassed);
 	}
 
 	public function testHasPrefix(): void
@@ -905,6 +917,24 @@ class OptionTest extends TestCase
 		yield ['integer', 1, '2', 2];
 		yield ['float', 1.2, '2.5', 2.5];
 		yield ['array', ['foo'], 'bar', ['bar']];
+	}
+
+	public function dataHasDefaultPassedStrictValid(): iterable
+	{
+		yield ['string', 'Hello World', '123', '123'];
+		yield ['boolean', true, null, null];
+		yield ['integer', 1, 2, 2];
+		yield ['float', 1.2, 2.5, 2.5];
+		yield ['array', ['foo'], ['bar'], ['bar']];
+	}
+
+	public function dataHasDefaultPassedStrictInvalid(): iterable
+	{
+		yield ['string', 'Hello World', 123];
+		yield ['boolean', true, '0'];
+		yield ['integer', 1, '2'];
+		yield ['float', 1.2, '2.5'];
+		yield ['array', ['foo'], 'bar'];
 	}
 
 	/**
