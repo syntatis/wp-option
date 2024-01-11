@@ -870,66 +870,78 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeFloatValid
+	 * @group type-float
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
 	public function testGetTypeFloatValid($value, $expect): void
 	{
-		$optionName = 'foo_bar_float';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'float']]);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($optionName));
-
-		delete_option($optionName);
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeFloatValid
+	 * @group type-float
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
 	public function testAddTypeFloatValid($value, $expect): void
 	{
-		$optionName = 'foo_bar_float';
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'float']]);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
-		$this->assertSame($expect, get_option($optionName));
-
-		delete_option($optionName);
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeFloatValid
+	 * @group type-float
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
 	public function testUpdateTypeFloatValid($value, $expect): void
 	{
-		$optionName = 'foo_bar_float';
-
-		add_option($optionName, 100.0);
+		add_option($this->optionName, ['__syntatis' => 100.12]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'float']]);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
 
-		$this->assertSame($expect, get_option($optionName));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
 
-		delete_option($optionName);
+	public function dataTypeFloatValid(): iterable
+	{
+		yield [1.2, 1.2]; // Positive
+		yield [-1.2, -1.2]; // Negative
+		yield [1.2e3, 1.2e3]; // Scientific notation
+		yield [7E-10, 7E-10]; // Scientific notation
+		yield [1_234_567.89, 1_234_567.89];
+
+		/**
+		 * This exception occurs even in the `strict_mode`, where an integer is coerced into a float.
+		 * This behavior is based on the assumption that integers can be safely converted to floats
+		 * without any loss of precision or functionality.
+		 */
+		yield [1, 1.0];
+		yield [-1, -1.0];
+		yield [0, 0.0];
+
+		yield [null, null];
 	}
 
 	/**
@@ -1127,24 +1139,6 @@ class OptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		update_option($optionName, $value);
-	}
-
-	public function dataTypeFloatValid(): iterable
-	{
-		yield [1.2, 1.2]; // Positive
-		yield [-1.2, -1.2]; // Negative
-		yield [1.2e3, 1.2e3]; // Scientific notation
-		yield [7E-10, 7E-10]; // Scientific notation
-		yield [1_234_567.89, 1_234_567.89];
-
-		/**
-		 * This exception occurs even in the `strict_mode`, where an integer is coerced into a float.
-		 * This behavior is based on the assumption that integers can be safely converted to floats
-		 * without any loss of precision or functionality.
-		 */
-		yield [1, 1.0];
-		yield [-1, -1.0];
-		yield [0, 0.0];
 	}
 
 	public function dataTypeFloatInvalid(): iterable
