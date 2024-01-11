@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option;
 
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Resolvers\DefaultResolver;
-use Syntatis\WP\Option\Resolvers\OutputResolver;
+use Syntatis\WP\Option\Support\DefaultResolver;
+use Syntatis\WP\Option\Support\OutputResolver;
 
 use function array_merge;
 use function is_array;

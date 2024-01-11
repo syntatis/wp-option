@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option;
 
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Resolvers\DefaultResolver;
-use Syntatis\WP\Option\Resolvers\InputValidator;
-use Syntatis\WP\Option\Resolvers\OutputResolver;
+use Syntatis\WP\Option\Support\DefaultResolver;
+use Syntatis\WP\Option\Support\InputSanitizer;
+use Syntatis\WP\Option\Support\InputValidator;
+use Syntatis\WP\Option\Support\OutputResolver;
 
 use function array_merge;
 
@@ -67,6 +68,7 @@ final class Option
 			$optionDefault = $schema['default'] ?? null;
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
+			$inputSanitizer = new InputSanitizer($optionType);
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
@@ -86,6 +88,15 @@ final class Option
 					3,
 				);
 			}
+
+			$this->hook->addFilter(
+				'sanitize_option_' . $optionName,
+				static function ($value, $option, $originalValue) use ($inputSanitizer) {
+					return $inputSanitizer->sanitize($originalValue);
+				},
+				$optionPriority,
+				3,
+			);
 
 			$this->hook->addFilter(
 				'default_option_' . $optionName,

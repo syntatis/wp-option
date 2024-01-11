@@ -8,9 +8,6 @@ use Syntatis\WP\Option\Contracts\Castable;
 use Throwable;
 use TypeError;
 
-use function is_array;
-use function json_encode;
-
 /**
  * Cast a value to a string.
  *
@@ -41,11 +38,7 @@ class TypeString implements Castable
 		}
 
 		try {
-			if (is_array($this->value)) {
-				return $this->value === [] ? '' : json_encode($this->value);
-			}
-
-			return (string) $this->value;
+			return $this->value === null ? null : (string) $this->value;
 		} catch (Throwable $th) {
 			return null;
 		}

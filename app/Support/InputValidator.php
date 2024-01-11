@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Resolvers;
+namespace Syntatis\WP\Option\Support;
 
 use Syntatis\WP\Option\Option;
 use TypeError;

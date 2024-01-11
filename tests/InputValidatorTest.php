@@ -6,7 +6,7 @@ namespace Syntatis\WP\Option\Tests;
 
 use stdClass;
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Resolvers\InputValidator;
+use Syntatis\WP\Option\Support\InputValidator;
 use TypeError;
 
 class InputValidatorTest extends TestCase

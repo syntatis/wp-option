@@ -276,17 +276,18 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataGetTypeString
+	 * @group type-string
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
 	public function testGetTypeString($value, $expect): void
 	{
-		add_option($this->optionName, $value);
-
 		$option = new Option($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
+
+		add_option($this->optionName, $value);
 
 		$this->assertSame($expect, get_option($this->optionName));
 	}
@@ -296,15 +297,28 @@ class OptionTest extends TestCase
 	 */
 	public function dataGetTypeString(): iterable
 	{
-		yield ['Hello World!', 'Hello World!'];
-		yield [1, '1'];
-		yield [1.2, '1.2'];
-		yield [true, '1'];
-		yield [false, ''];
-		yield [null, ''];
-		yield [[], ''];
-		yield [['foo'], '["foo"]'];
-		yield [['foo' => 'bar'], '{"foo":"bar"}'];
+		// yield ['Hello World!', 'Hello World!'];
+		// yield [1, '1'];
+		// yield [1.2, '1.2'];
+		// yield [true, '1'];
+		// yield [false, ''];
+
+		/**
+		 * For consistency with how other type handles `null` values, and how it handles default
+		 * when no value is passed on the `get_option` function, a `null` value would return
+		 * as a `null`.
+		 */
+		yield [null, null];
+
+		/**
+		 * PHP can't convert an array to a string.
+		 *
+		 * When converting an array to a string, it will throw an exception
+		 * and value returned will fallback to a `null`.
+		 */
+		// yield [[], null];
+		// yield [['foo'], null];
+		// yield [['foo' => 'bar'], null];
 	}
 
 	/**

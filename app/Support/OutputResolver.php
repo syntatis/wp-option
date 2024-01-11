@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Resolvers;
+namespace Syntatis\WP\Option\Support;
 
 use Syntatis\WP\Option\Contracts\Castable;
 use Syntatis\WP\Option\Contracts\Resolvable;
