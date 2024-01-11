@@ -206,6 +206,15 @@ class OptionTest extends TestCase
 		$this->assertSame($defaultPassed, get_option($this->optionName, $defaultPassed));
 	}
 
+	public function dataHasDefaultPassedStrictValid(): iterable
+	{
+		yield ['string', 'Hello World', '123'];
+		yield ['boolean', true, null];
+		yield ['integer', 1, 2];
+		yield ['float', 1.2, 2.5];
+		yield ['array', ['foo'], ['bar']];
+	}
+
 	/**
 	 * @dataProvider dataDefaultPassedStrictInvalid
 	 * @testdox it should throw an exception when the default value is invalid, on a strict mode
@@ -684,11 +693,12 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeIntegerValid
-	 * @group test-integer
+	 * @group type-integer
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeIntegerValid($value): void
+	public function testGetTypeIntegerValid($value, $expect): void
 	{
 		add_option($this->optionName, ['__syntatis' => $value]);
 
@@ -696,16 +706,17 @@ class OptionTest extends TestCase
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeIntegerValid
-	 * @group test-integer
+	 * @group type-integer
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testAddTypeIntegerValid($value): void
+	public function testAddTypeIntegerValid($value, $expect): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
@@ -718,11 +729,12 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeIntegerValid
-	 * @group test-integer
+	 * @group type-integer
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testUpdateTypeIntegerValid($value): void
+	public function testUpdateTypeIntegerValid($value, $expect): void
 	{
 		add_option($this->optionName, ['__syntatis' => 1]);
 
@@ -737,69 +749,80 @@ class OptionTest extends TestCase
 
 	public function dataTypeIntegerValid(): iterable
 	{
-		yield [1]; // Positive
-		yield [-1]; // Negative
-		yield [0123]; // Octal
-		yield [0x1A]; // Hexadecimal
-		yield [0b11111111]; // Binary
-		yield [1_234_567];
+		yield [1, 1]; // Positive
+		yield [-1, -1]; // Negative
+		yield [0123, 0123]; // Octal
+		yield [0x1A, 0x1A]; // Hexadecimal
+		yield [0b11111111, 0b11111111]; // Binary
+		yield [1_234_567, 1_234_567];
+		yield [null, null];
 	}
 
 	/**
 	 * @dataProvider dataTypeIntegerInvalid
+	 * @group type-integer
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeIntegerInvalid($value): void
 	{
-		$optionName = 'foo_bar_integer';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'integer']]);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		get_option($optionName);
+		get_option($this->optionName);
 	}
 
 	/**
 	 * @dataProvider dataTypeIntegerInvalid
+	 * @group type-integer
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testAddTypeIntegerInvalid($value): void
 	{
-		$optionName = 'foo_bar_integer';
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'integer']]);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type integer, ' . gettype($value) . ' type given.');
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 	}
 
 	/**
 	 * @dataProvider dataTypeIntegerInvalid
+	 * @group type-integer
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testUpdateTypeIntegerInvalid($value): void
 	{
-		$optionName = 'foo_bar_integer';
-
-		add_option($optionName, 1);
+		add_option($this->optionName, 1);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'integer']]);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type integer, ' . gettype($value) . ' type given.');
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
+	}
+
+	public function dataTypeIntegerInvalid(): iterable
+	{
+		yield ['Hello world!'];
+		yield [''];
+		yield [1.2];
+		yield [false];
+		yield [true];
+		yield [[]];
 	}
 
 	/**
@@ -1082,26 +1105,6 @@ class OptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		update_option($optionName, $value);
-	}
-
-	public function dataHasDefaultPassedStrictValid(): iterable
-	{
-		yield ['string', 'Hello World', '123'];
-		yield ['boolean', true, null];
-		yield ['integer', 1, 2];
-		yield ['float', 1.2, 2.5];
-		yield ['array', ['foo'], ['bar']];
-	}
-
-	public function dataTypeIntegerInvalid(): iterable
-	{
-		yield ['this-is-string'];
-		yield [''];
-		yield [1.2];
-		yield [false];
-		yield [true];
-		yield [null];
-		yield [[]];
 	}
 
 	/**
