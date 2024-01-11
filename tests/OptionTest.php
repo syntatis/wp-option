@@ -298,7 +298,6 @@ class OptionTest extends TestCase
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
