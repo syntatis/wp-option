@@ -534,9 +534,10 @@ class OptionTest extends TestCase
 	 * @dataProvider dataTypeBooleanStrictValid
 	 * @group test-boolean
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testUpdateTypeBooleanStrictValid($value): void
+	public function testUpdateTypeBooleanStrictValid($value, $expect): void
 	{
 		add_option($this->optionName, true);
 
@@ -546,51 +547,51 @@ class OptionTest extends TestCase
 
 		update_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	public function dataTypeBooleanStrictValid(): iterable
 	{
-		yield [true];
-		yield [false];
+		yield [true, true];
+		yield [false, false];
+		yield [null, null];
 	}
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeBooleanStrictInvalid($value): void
 	{
-		$optionName = 'foo_bar_boolean';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		get_option($optionName);
+		get_option($this->optionName);
 	}
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testAddTypeBooleanStrictInvalid($value): void
 	{
-		$optionName = 'foo_bar_boolean';
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 	}
 
 	/**
@@ -600,18 +601,31 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeBooleanStrictInvalid($value): void
 	{
-		$optionName = 'foo_bar_boolean';
-
-		add_option($optionName, false);
+		add_option($this->optionName, false);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
+	}
+
+	public function dataTypeBooleanStrictInvalid(): iterable
+	{
+		yield ['Hello world!'];
+		yield [''];
+		yield [' '];
+		yield [0];
+		yield [1];
+		yield [1.2];
+		yield [-1];
+		yield [[]];
+		yield [['foo']];
+		yield ['false'];
+		yield ['true'];
 	}
 
 	/**
@@ -1037,18 +1051,6 @@ class OptionTest extends TestCase
 		yield ['integer', 1, 2];
 		yield ['float', 1.2, 2.5];
 		yield ['array', ['foo'], ['bar']];
-	}
-
-	public function dataTypeBooleanStrictInvalid(): iterable
-	{
-		yield ['this-is-string'];
-		yield [''];
-		yield [0];
-		yield [1.2];
-		yield [-1];
-		yield [[]];
-		yield ['false'];
-		yield ['true'];
 	}
 
 	/**
