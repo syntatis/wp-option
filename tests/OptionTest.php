@@ -292,11 +292,12 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeString($value, $expect): void
 	{
+		add_option($this->optionName, ['__syntatis' => $value]);
+
 		$option = new Option($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		add_option($this->optionName, $value);
 
 		$this->assertSame($expect, get_option($this->optionName));
 	}
@@ -574,7 +575,7 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeBooleanStrictInvalid($value): void
 	{
-		add_option($this->optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
@@ -766,7 +767,7 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeIntegerInvalid($value): void
 	{
-		add_option($this->optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
@@ -827,23 +828,45 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeFloat
+	 * @group type-float
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
 	public function testGetTypeFloat($value, $expect): void
 	{
-		$optionName = 'foo_bar_float';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook);
-		$option->setSchema([$optionName => ['type' => 'float']]);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($optionName));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
 
-		delete_option($optionName);
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeFloat(): iterable
+	{
+		yield ['Hello world!', 0.0];
+		yield ['', 0.0];
+		yield [0, 0.0];
+		yield [1, 1.0];
+		yield [1.2, 1.2];
+		yield [-1, -1.0];
+		yield [false, 0.0];
+		yield [true, 1.0];
+
+		/**
+		 * As certain types have undefined behavior when converting to `int`,
+		 * this is also the case when converting to float.
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
+
+		yield [null, null];
 	}
 
 	/**
@@ -1105,23 +1128,6 @@ class OptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		update_option($optionName, $value);
-	}
-
-	/**
-	 * Non-strict. Value may be coerced.
-	 */
-	public function dataTypeFloat(): iterable
-	{
-		yield ['this-is-string', 0.0];
-		yield ['', 0.0];
-		yield [0, 0.0];
-		yield [1, 1.0];
-		yield [1.2, 1.2];
-		yield [-1, -1.0];
-		yield [false, 0.0];
-		yield [true, 1.0];
-		yield [null, 0.0];
-		yield [[], null];
 	}
 
 	public function dataTypeFloatValid(): iterable
