@@ -630,23 +630,56 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeInteger
+	 * @group type-integer
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
 	public function testGetTypeInteger($value, $expect): void
 	{
-		$optionName = 'foo_bar_integer';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook);
-		$option->setSchema([$optionName => ['type' => 'integer']]);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($optionName));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
 
-		delete_option($optionName);
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeInteger(): iterable
+	{
+		yield ['Hello world!', 0];
+		yield ['', 0];
+		yield [0, 0];
+		yield [1, 1];
+		yield [1.2, 1];
+		yield [1.23, 1];
+		yield [-1, -1];
+		yield [false, 0];
+		yield [true, 1];
+
+		/**
+		 * The behaviour of converting to int is undefined for other types.
+		 * Do not rely on any observed behaviour, as it can change without
+		 * notice. Similar to how it handles the string type, an array
+		 * would return as a `null`.
+		 *
+		 * @see https://www.php.net/manual/en/language.types.integer.php
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
+
+		/**
+		 * PHP internally would cast a `null` to `0`, but for consistency
+		 * with the other types, and how it handles default when no value
+		 * is passed on the `get_option` function, a `null` value would
+		 * return as a `null`.
+		 */
+		yield [null, null];
 	}
 
 	/**
@@ -1051,23 +1084,6 @@ class OptionTest extends TestCase
 		yield ['integer', 1, 2];
 		yield ['float', 1.2, 2.5];
 		yield ['array', ['foo'], ['bar']];
-	}
-
-	/**
-	 * Non-strict. Value may be coerced.
-	 */
-	public function dataTypeInteger(): iterable
-	{
-		yield ['this-is-string', 0];
-		yield ['', 0];
-		yield [0, 0];
-		yield [1, 1];
-		yield [1.2, 1];
-		yield [-1, -1];
-		yield [false, 0];
-		yield [true, 1];
-		yield [null, 0];
-		yield [[], null];
 	}
 
 	public function dataTypeIntegerValid(): iterable
