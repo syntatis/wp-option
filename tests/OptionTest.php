@@ -375,7 +375,7 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeStringStrictValid($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => 'initial-value']);
+		add_option($this->optionName, ['__syntatis' => 'Initial value!']);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
@@ -439,7 +439,7 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeStringStrictInvalid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => 'initial-value']);
+		add_option($this->optionName, ['__syntatis' => 'Initial value!']);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
@@ -548,7 +548,7 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeBooleanStrictValid($value, $expect): void
 	{
-		add_option($this->optionName, true);
+		add_option($this->optionName, ['__syntatis' => true]);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
@@ -803,7 +803,7 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeIntegerInvalid($value): void
 	{
-		add_option($this->optionName, 1);
+		add_option($this->optionName, ['__syntatis' => 1]);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
