@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option;
 
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Support\DefaultResolver;
 use Syntatis\WP\Option\Support\InputSanitizer;
 use Syntatis\WP\Option\Support\InputValidator;
 use Syntatis\WP\Option\Support\OutputResolver;
@@ -70,7 +69,6 @@ final class Option
 
 			$inputSanitizer = new InputSanitizer($optionType);
 			$outputResolver = new OutputResolver($optionType, $this->strict);
-			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
 			if ($this->strict === 1) {
 				$inputValidator = new InputValidator($optionType);
@@ -81,6 +79,7 @@ final class Option
 					$optionPriority,
 					2,
 				);
+
 				$this->hook->addAction(
 					'update_option',
 					static fn ($name, $oldValue, $newValue) => $inputValidator->validate($newValue),
@@ -100,8 +99,8 @@ final class Option
 
 			$this->hook->addFilter(
 				'default_option_' . $optionName,
-				static function ($default, $option, $passedDefault) use ($optionDefault, $defaultResolver) {
-					return $defaultResolver->resolve($passedDefault ? $default : $optionDefault);
+				static function ($default, $option, $passedDefault) use ($optionDefault, $outputResolver) {
+					return $outputResolver->resolve($passedDefault ? $default : $optionDefault);
 				},
 				$optionPriority,
 				3,

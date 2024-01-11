@@ -297,11 +297,11 @@ class OptionTest extends TestCase
 	 */
 	public function dataGetTypeString(): iterable
 	{
-		// yield ['Hello World!', 'Hello World!'];
-		// yield [1, '1'];
-		// yield [1.2, '1.2'];
-		// yield [true, '1'];
-		// yield [false, ''];
+		yield ['Hello World!', 'Hello World!'];
+		yield [1, '1'];
+		yield [1.2, '1.2'];
+		yield [true, '1'];
+		yield [false, ''];
 
 		/**
 		 * For consistency with how other type handles `null` values, and how it handles default
@@ -316,65 +316,73 @@ class OptionTest extends TestCase
 		 * When converting an array to a string, it will throw an exception
 		 * and value returned will fallback to a `null`.
 		 */
-		// yield [[], null];
-		// yield [['foo'], null];
-		// yield [['foo' => 'bar'], null];
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
 	}
 
 	/**
 	 * @dataProvider dataTypeStringStrictValid
+	 * @group type-string
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeStringStrictValid($value): void
+	public function testGetTypeStringStrictValid($value, $expect): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeStringStrictValid
+	 * @group type-string
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testAddTypeStringStrictValid($value): void
+	public function testAddTypeStringStrictValid($value, $expect): void
 	{
-		$optionName = 'foo_bar_string';
-
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeStringStrictValid
+	 * @group type-string
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testUpdateTypeStringStrictValid($value): void
+	public function testUpdateTypeStringStrictValid($value, $expect): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_option($optionName, 'initial-value');
+		add_option($this->optionName, ['__syntatis' => 'initial-value']);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeStringStrictValid(): iterable
+	{
+		yield ['Hello World!', 'Hello World!'];
+		yield ['', ''];
+		yield [' ', ' '];
+		yield [null, null];
 	}
 
 	/**
@@ -993,13 +1001,6 @@ class OptionTest extends TestCase
 		yield ['integer', 1, 2];
 		yield ['float', 1.2, 2.5];
 		yield ['array', ['foo'], ['bar']];
-	}
-
-	public function dataTypeStringStrictValid(): iterable
-	{
-		yield ['this-is-string'];
-		yield [''];
-		yield [' '];
 	}
 
 	public function dataTypeStringStrictInvalid(): iterable
