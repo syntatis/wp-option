@@ -718,6 +718,7 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeIntegerValid
+	 * @group test-integer
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
