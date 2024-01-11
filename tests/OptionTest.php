@@ -601,7 +601,7 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeBooleanStrictInvalid($value): void
 	{
-		add_option($this->optionName, false);
+		add_option($this->optionName, ['__syntatis' => true]);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
@@ -684,38 +684,36 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeIntegerValid
+	 * @group test-integer
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeIntegerValid($value): void
 	{
-		$optionName = 'foo_bar_integer';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'integer']]);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeIntegerValid
+	 * @group test-integer
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testAddTypeIntegerValid($value): void
 	{
-		$optionName = 'foo_bar_integer';
-
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'integer']]);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	/**
@@ -725,17 +723,25 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeIntegerValid($value): void
 	{
-		$optionName = 'foo_bar_integer';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => 1]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'integer']]);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeIntegerValid(): iterable
+	{
+		yield [1]; // Positive
+		yield [-1]; // Negative
+		yield [0123]; // Octal
+		yield [0x1A]; // Hexadecimal
+		yield [0b11111111]; // Binary
+		yield [1_234_567];
 	}
 
 	/**
@@ -1084,16 +1090,6 @@ class OptionTest extends TestCase
 		yield ['integer', 1, 2];
 		yield ['float', 1.2, 2.5];
 		yield ['array', ['foo'], ['bar']];
-	}
-
-	public function dataTypeIntegerValid(): iterable
-	{
-		yield [1]; // Positive
-		yield [-1]; // Negative
-		yield [0123]; // Octal
-		yield [0x1A]; // Hexadecimal
-		yield [0b11111111]; // Binary
-		yield [1_234_567];
 	}
 
 	public function dataTypeIntegerInvalid(): iterable
