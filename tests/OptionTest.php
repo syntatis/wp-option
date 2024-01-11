@@ -453,77 +453,106 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeBoolean
+	 * @group type-boolean
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeBoolean($value, bool $expect): void
+	public function testGetTypeBoolean($value, $expect): void
 	{
-		$optionName = 'foo_bar_boolean';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($optionName));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
 
-		delete_option($optionName);
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeBoolean(): iterable
+	{
+		yield ['Hello world!', true];
+		yield ['', false];
+		yield [0, false];
+		yield [1, true];
+		yield [1.2, true];
+		yield [false, false];
+		yield [true, true];
+		yield [[], false];
+
+		/**
+		 * -1 is considered true, like any other non-zero (whether negative or positive) number!
+		 *
+		 * @see https://www.php.net/manual/en/language.types.boolean.php
+		 */
+		yield [-1, true];
+
+		/**
+		 * A `null` value would return as a `null`.
+		 */
+		yield [null, null];
 	}
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group test-boolean
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeBooleanStrictValid($value): void
 	{
-		$optionName = 'foo_bar_boolean';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group test-boolean
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testAddTypeBooleanStrictValid($value): void
 	{
-		$optionName = 'foo_bar_boolean';
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group test-boolean
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testUpdateTypeBooleanStrictValid($value): void
 	{
-		$optionName = 'foo_bar_boolean';
-
-		add_option($optionName, true);
+		add_option($this->optionName, true);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($optionName));
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeBooleanStrictValid(): iterable
+	{
+		yield [true];
+		yield [false];
 	}
 
 	/**
@@ -1008,30 +1037,6 @@ class OptionTest extends TestCase
 		yield ['integer', 1, 2];
 		yield ['float', 1.2, 2.5];
 		yield ['array', ['foo'], ['bar']];
-	}
-
-	/**
-	 * Non-strict. Value may be coerced.
-	 */
-	public function dataTypeBoolean(): iterable
-	{
-		yield ['this-is-string', true];
-		yield ['', false];
-		yield [0, false];
-		yield [1, true];
-		yield [1.2, true];
-		yield [-1, true]; // -1 is considered true, like any other non-zero (whether negative or positive) number!
-		yield [false, false];
-		yield [true, true];
-		yield [null, false];
-		yield [[], false];
-		yield ['false', true];
-	}
-
-	public function dataTypeBooleanStrictValid(): iterable
-	{
-		yield [true];
-		yield [false];
 	}
 
 	public function dataTypeBooleanStrictInvalid(): iterable
