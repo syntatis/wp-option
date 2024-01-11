@@ -38,7 +38,7 @@ class TypeString implements Castable
 		}
 
 		try {
-			return $this->value === null ? null : (string) $this->value;
+			return (string) $this->value;
 		} catch (Throwable $th) {
 			return null;
 		}
