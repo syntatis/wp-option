@@ -387,61 +387,68 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
+	 * @group type-string
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeStringStrictInvalid($value): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		get_option($optionName);
+		get_option($this->optionName);
 	}
 
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
+	 * @group type-string
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testAddTypeStringStrictInvalid($value): void
 	{
-		$optionName = 'foo_bar_string';
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 	}
 
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
+	 * @group type-string
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testUpdateTypeStringStrictInvalid($value): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_option($optionName, 'initial-value');
+		add_option($this->optionName, ['__syntatis' => 'initial-value']);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
+	}
+
+	public function dataTypeStringStrictInvalid(): iterable
+	{
+		yield [1];
+		yield [1.2];
+		yield [false];
+		yield [true];
+		yield [[]];
 	}
 
 	/**
@@ -1001,15 +1008,6 @@ class OptionTest extends TestCase
 		yield ['integer', 1, 2];
 		yield ['float', 1.2, 2.5];
 		yield ['array', ['foo'], ['bar']];
-	}
-
-	public function dataTypeStringStrictInvalid(): iterable
-	{
-		yield [1];
-		yield [1.2];
-		yield [false];
-		yield [true];
-		yield [[]];
 	}
 
 	/**
