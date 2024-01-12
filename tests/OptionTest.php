@@ -93,6 +93,7 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultSetStrictValid
+	 * @group strict-mode
 	 * @testdox it should return the default value when set, on a strict mode
 	 *
 	 * @param mixed $default The default value to return
@@ -122,7 +123,8 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataDefaultSetInvalid
+	 * @dataProvider dataDefaultSetStrictInvalid
+	 * @group strict-mode
 	 * @testdox it should throw an exception when the default value is invalid, on a strict mode
 	 *
 	 * @param mixed $default The default value to return
@@ -143,7 +145,7 @@ class OptionTest extends TestCase
 		get_option($this->optionName);
 	}
 
-	public function dataDefaultSetInvalid(): iterable
+	public function dataDefaultSetStrictInvalid(): iterable
 	{
 		yield ['string', true];
 		yield ['boolean', 'true'];
@@ -188,6 +190,7 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataHasDefaultPassedStrictValid
+	 * @group strict-mode
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
@@ -218,6 +221,7 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultPassedStrictInvalid
+	 * @group strict-mode
 	 * @testdox it should throw an exception when the default value is invalid, on a strict mode
 	 *
 	 * @param mixed $default               The default value passed in the schema.
@@ -334,6 +338,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictValid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -352,6 +357,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictValid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -370,6 +376,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictValid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -398,6 +405,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -417,6 +425,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -435,6 +444,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -508,7 +518,8 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictValid
-	 * @group test-boolean
+	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -525,7 +536,8 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictValid
-	 * @group test-boolean
+	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -542,7 +554,8 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictValid
-	 * @group test-boolean
+	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -570,6 +583,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
 	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -589,6 +603,7 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
 	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -606,6 +621,8 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -693,8 +710,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeIntegerValid
+	 * @dataProvider dataTypeIntegerStrictValid
 	 * @group type-integer
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -711,8 +729,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeIntegerValid
+	 * @dataProvider dataTypeIntegerStrictValid
 	 * @group type-integer
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -729,8 +748,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeIntegerValid
+	 * @dataProvider dataTypeIntegerStrictValid
 	 * @group type-integer
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -760,8 +780,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeIntegerInvalid
+	 * @dataProvider dataTypeIntegerStrictInvalid
 	 * @group type-integer
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -779,8 +800,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeIntegerInvalid
+	 * @dataProvider dataTypeIntegerStrictInvalid
 	 * @group type-integer
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -797,8 +819,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeIntegerInvalid
+	 * @dataProvider dataTypeIntegerStrictInvalid
 	 * @group type-integer
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -870,8 +893,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeFloatValid
+	 * @dataProvider dataTypeFloatStrictValid
 	 * @group type-float
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
@@ -888,8 +912,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeFloatValid
+	 * @dataProvider dataTypeFloatStrictValid
 	 * @group type-float
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
@@ -906,8 +931,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeFloatValid
+	 * @dataProvider dataTypeFloatStrictValid
 	 * @group type-float
+	 * @group strict-mode
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
@@ -946,8 +972,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeFloatInvalid
+	 * @dataProvider dataTypeFloatStrictInvalid
 	 * @group type-float
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -965,8 +992,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeFloatInvalid
+	 * @dataProvider dataTypeFloatStrictInvalid
 	 * @group type-float
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -977,13 +1005,15 @@ class OptionTest extends TestCase
 		$option->register();
 
 		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type float, ' . gettype($value) . ' type given.');
 
 		add_option($this->optionName, $value);
 	}
 
 	/**
-	 * @dataProvider dataTypeFloatInvalid
+	 * @dataProvider dataTypeFloatStrictInvalid
 	 * @group type-float
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -996,6 +1026,7 @@ class OptionTest extends TestCase
 		$option->register();
 
 		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type float, ' . gettype($value) . ' type given.');
 
 		update_option($this->optionName, $value);
 	}
@@ -1013,11 +1044,12 @@ class OptionTest extends TestCase
 	 * @dataProvider dataTypeArray
 	 * @group type-array
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeArray($value, array $expect): void
+	public function testGetTypeArray($value, $expect): void
 	{
-		add_option($this->optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'array']]);
@@ -1047,8 +1079,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeArrayValid
+	 * @dataProvider dataTypeArrayStrictValid
 	 * @group type-array
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -1064,8 +1097,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeArrayValid
+	 * @dataProvider dataTypeArrayStrictValid
 	 * @group type-array
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -1081,8 +1115,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeArrayValid
+	 * @dataProvider dataTypeArrayStrictValid
 	 * @group type-array
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -1104,17 +1139,19 @@ class OptionTest extends TestCase
 		yield [[], []];
 		yield [['foo'], ['foo']];
 		yield [['foo' => 'bar'], ['foo' => 'bar']];
+		yield [null, null];
 	}
 
 	/**
-	 * @dataProvider dataTypeArrayInvalid
+	 * @dataProvider dataTypeArrayStrictInvalid
 	 * @group type-array
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeArrayStrictInvalid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => ['foo']]);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'array']]);
@@ -1126,8 +1163,9 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeArrayInvalid
+	 * @dataProvider dataTypeArrayStrictInvalid
 	 * @group type-array
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -1138,13 +1176,15 @@ class OptionTest extends TestCase
 		$option->register();
 
 		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
 
 		add_option($this->optionName, $value);
 	}
 
 	/**
-	 * @dataProvider dataTypeArrayInvalid
+	 * @dataProvider dataTypeArrayStrictInvalid
 	 * @group type-array
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -1157,6 +1197,7 @@ class OptionTest extends TestCase
 		$option->register();
 
 		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
 
 		update_option($this->optionName, $value);
 	}
