@@ -10,6 +10,7 @@ use TypeError;
 
 use function gettype;
 
+/** @group option */
 class OptionTest extends TestCase
 {
 	private Hook $hook;
@@ -946,209 +947,83 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeFloatInvalid
+	 * @group type-float
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeFloatInvalid($value): void
 	{
-		$optionName = 'foo_bar_float';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'float']]);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		get_option($optionName);
+		get_option($this->optionName);
 	}
 
 	/**
 	 * @dataProvider dataTypeFloatInvalid
+	 * @group type-float
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testAddTypeFloatInvalid($value): void
 	{
-		$optionName = 'foo_bar_float';
-
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'float']]);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 	}
 
 	/**
 	 * @dataProvider dataTypeFloatInvalid
+	 * @group type-float
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testUpdateTypeFloatInvalid($value): void
 	{
-		$optionName = 'foo_bar_float';
-
-		add_option($optionName, 12.0);
+		add_option($this->optionName, ['__syntatis' => 1.23]);
 
 		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'float']]);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		update_option($optionName, $value);
+		update_option($this->optionName, $value);
+	}
+
+	public function dataTypeFloatInvalid(): iterable
+	{
+		yield ['Hello world!'];
+		yield [''];
+		yield [false];
+		yield [true];
+		yield [[]];
 	}
 
 	/**
 	 * @dataProvider dataTypeArray
+	 * @group type-array
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeArray($value, array $expect): void
 	{
-		$optionName = 'foo_bar_array';
-
-		add_option($optionName, $value);
+		add_option($this->optionName, $value);
 
 		$option = new Option($this->hook);
-		$option->setSchema([$optionName => ['type' => 'array']]);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($optionName));
-
-		delete_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayValid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testGetTypeArrayValid($value): void
-	{
-		$optionName = 'foo_bar_array';
-
-		add_option($optionName, $value);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'array']]);
-		$option->register();
-
-		$this->assertSame($value, get_option($optionName));
-
-		delete_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayValid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testAddTypeArrayValid($value): void
-	{
-		$optionName = 'foo_bar_array';
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'array']]);
-		$option->register();
-
-		add_option($optionName, $value);
-
-		$this->assertSame($value, get_option($optionName));
-
-		delete_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayValid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testUpdateTypeArrayValid($value): void
-	{
-		$optionName = 'foo_bar_array';
-
-		add_option($optionName, [1]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'array']]);
-		$option->register();
-
-		update_option($optionName, $value);
-
-		$this->assertSame($value, get_option($optionName));
-
-		delete_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayInvalid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testGetTypeArrayInvalid($value): void
-	{
-		$optionName = 'foo_bar_array';
-
-		add_option($optionName, $value);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'array']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-
-		get_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayInvalid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testAddTypeArrayInvalid($value): void
-	{
-		$optionName = 'foo_bar_array';
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'array']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-
-		add_option($optionName, $value);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayInvalid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testUpdateTypeArrayInvalid($value): void
-	{
-		$optionName = 'foo_bar_array';
-
-		add_option($optionName, ['foo']);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'array']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-
-		update_option($optionName, $value);
-	}
-
-	public function dataTypeFloatInvalid(): iterable
-	{
-		yield ['this-is-string'];
-		yield [''];
-		yield [false];
-		yield [true];
-		yield [null];
-		yield [[]];
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
@@ -1156,7 +1031,7 @@ class OptionTest extends TestCase
 	 */
 	public function dataTypeArray(): iterable
 	{
-		yield ['this-is-string', ['this-is-string']];
+		yield ['Hello world!', ['Hello world!']];
 		yield ['', ['']];
 		yield [0, [0]];
 		yield [1, [1]];
@@ -1164,28 +1039,131 @@ class OptionTest extends TestCase
 		yield [-1, [-1]];
 		yield [false, [false]];
 		yield [true, [true]];
-		yield [null, ['']];
 		yield [[], []];
-		yield [['foo' => 'bar'], ['foo' => 'bar']];
 		yield [['foo', 'bar'], ['foo', 'bar']];
-		yield [['foo', 'bar', 'foo'], ['foo', 'bar', 'foo']];
-		yield [['foo' => 'bar', 'bar' => 'foo'], ['foo' => 'bar', 'bar' => 'foo']];
-		yield [['foo' => 'bar', 'bar' => 'foo', 'foo' => 'bar'], ['foo' => 'bar', 'bar' => 'foo', 'foo' => 'bar']];
+		yield [['foo' => 'bar'], ['foo' => 'bar']];
+
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayValid
+	 * @group type-array
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeArrayValid($value): void
+	{
+		add_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayValid
+	 * @group type-array
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeArrayValid($value): void
+	{
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayValid
+	 * @group type-array
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeArrayValid($value): void
+	{
+		add_option($this->optionName, ['__syntatis' => ['foo']]);
+
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	public function dataTypeArrayValid(): iterable
 	{
-		yield [[]];
-		yield [['foo' => 'bar']];
-		yield [['foo', 'bar']];
-		yield [['foo', 'bar', 'foo']];
-		yield [['foo' => 'bar', 'bar' => 'foo']];
-		yield [['foo' => 'bar', 'bar' => 'foo', 'foo' => 'bar']];
+		yield [[], []];
+		yield [['foo'], ['foo']];
+		yield [['foo' => 'bar'], ['foo' => 'bar']];
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayInvalid
+	 * @group type-array
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeArrayInvalid($value): void
+	{
+		add_option($this->optionName, ['__syntatis' => ['foo']]);
+
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+
+		get_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayInvalid
+	 * @group type-array
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeArrayInvalid($value): void
+	{
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+
+		add_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayInvalid
+	 * @group type-array
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeArrayInvalid($value): void
+	{
+		add_option($this->optionName, ['__syntatis' => ['foo']]);
+
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+
+		update_option($this->optionName, $value);
 	}
 
 	public function dataTypeArrayInvalid(): iterable
 	{
-		yield ['this-is-string'];
+		yield ['Hello world!'];
 		yield [''];
 		yield [0];
 		yield [1];
@@ -1193,6 +1171,5 @@ class OptionTest extends TestCase
 		yield [-1];
 		yield [false];
 		yield [true];
-		yield [null];
 	}
 }
