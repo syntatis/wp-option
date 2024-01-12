@@ -524,10 +524,50 @@ class SiteOptionTest extends TestCase
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeBooleanStrictValid($value): void
+	{
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		add_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeBooleanStrictValid($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => true]);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		update_site_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
 	public function dataTypeBooleanStrictValid(): iterable
 	{
-		yield [true];
-		yield [false];
+		yield [true, true];
+		yield [false, false];
+		yield [null, null];
 	}
 
 	/**

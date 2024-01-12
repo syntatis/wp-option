@@ -520,9 +520,10 @@ class OptionTest extends TestCase
 	 * @group type-boolean
 	 * @group strict-mode
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeBooleanStrictValid($value): void
+	public function testGetTypeBooleanStrictValid($value, $expect): void
 	{
 		add_option($this->optionName, ['__syntatis' => $value]);
 
@@ -530,7 +531,7 @@ class OptionTest extends TestCase
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
@@ -538,9 +539,10 @@ class OptionTest extends TestCase
 	 * @group type-boolean
 	 * @group strict-mode
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testAddTypeBooleanStrictValid($value): void
+	public function testAddTypeBooleanStrictValid($value, $expect): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
@@ -548,7 +550,7 @@ class OptionTest extends TestCase
 
 		add_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($expect, get_option($this->optionName));
 	}
 
 	/**
