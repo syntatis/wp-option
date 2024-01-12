@@ -8,6 +8,8 @@ use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\SiteOption;
 use TypeError;
 
+use function gettype;
+
 /** @group site-option */
 class SiteOptionTest extends TestCase
 {
@@ -408,6 +410,46 @@ class SiteOptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		get_site_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeStringStrictInvalid
+	 * @group type-string
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeStringStrictInvalid($value): void
+	{
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
+
+		add_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeStringStrictInvalid
+	 * @group type-string
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeStringStrictInvalid($value): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => 'Initial value!']);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
+
+		update_option($this->optionName, $value);
 	}
 
 	public function dataTypeStringStrictInvalid(): iterable

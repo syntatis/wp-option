@@ -6,6 +6,7 @@ namespace Syntatis\WP\Option;
 
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Support\InputSanitizer;
+use Syntatis\WP\Option\Support\InputValidator;
 use Syntatis\WP\Option\Support\OutputResolver;
 
 use function array_merge;
@@ -80,15 +81,20 @@ final class SiteOption
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
 			$inputSanitizer = new InputSanitizer($optionType);
+			$inputValidator = new InputValidator($optionType);
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 
-			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName, $inputSanitizer) {
+			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName, $inputSanitizer, $inputValidator) {
 				$this->states[$optionName] = 'adding';
+
+				if ($this->strict === 1) {
+					$inputValidator->validate($value);
+				}
 
 				return $inputSanitizer->sanitize($value);
 			}, $optionPriority);
 
-			$this->hook->addAction('add_site_option_' . $optionName, function () use ($optionName): void {
+			$this->hook->addAction('add_site_option_' . $optionName, function ($value) use ($optionName): void {
 				unset($this->states[$optionName]);
 			}, $optionPriority);
 
