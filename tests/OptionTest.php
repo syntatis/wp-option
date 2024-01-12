@@ -189,14 +189,14 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataHasDefaultPassedStrictValid
+	 * @dataProvider dataDefaultPassedStrictValid
 	 * @group strict-mode
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
 	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testHasDefaultPassedStrictValid(string $type, $default, $defaultPassed): void
+	public function testDefaultPassedStrictValid(string $type, $default, $defaultPassed): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
@@ -210,7 +210,7 @@ class OptionTest extends TestCase
 		$this->assertSame($defaultPassed, get_option($this->optionName, $defaultPassed));
 	}
 
-	public function dataHasDefaultPassedStrictValid(): iterable
+	public function dataDefaultPassedStrictValid(): iterable
 	{
 		yield ['string', 'Hello World', '123'];
 		yield ['boolean', true, null];

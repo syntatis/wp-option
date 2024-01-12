@@ -80,7 +80,6 @@ final class SiteOption
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
 			$outputResolver = new OutputResolver($optionType, $this->strict);
-			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
 			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName) {
 				$this->states[$optionName] = 'adding';
@@ -94,7 +93,7 @@ final class SiteOption
 
 			$this->hook->addFilter(
 				'default_site_option_' . $optionName,
-				function ($default) use ($schema, $defaultResolver, $optionType, $optionName) {
+				function ($default) use ($schema, $outputResolver, $optionType, $optionName) {
 					$state = $this->states[$optionName] ?? null;
 
 					/**
@@ -128,24 +127,24 @@ final class SiteOption
 							 * passed with a default argument e.g. `get_site_option('foo', 1)`.
 							 */
 							if (! is_bool($default)) {
-								return $defaultResolver->resolve($default);
+								return $outputResolver->resolve($default);
 							}
 
 							/**
 							 * Otherwise, check if the schema has a default value set, and pass that instead.
 							 */
 							if (isset($schema['default'])) {
-								return $defaultResolver->resolve($schema['default']);
+								return $outputResolver->resolve($schema['default']);
 							}
 
 							return null;
 						}
 
 						if ($default !== false) {
-							return $defaultResolver->resolve($default);
+							return $outputResolver->resolve($default);
 						}
 
-						return $defaultResolver->resolve($schema['default'] ?? null);
+						return $outputResolver->resolve($schema['default'] ?? null);
 					}
 
 					return $default;
