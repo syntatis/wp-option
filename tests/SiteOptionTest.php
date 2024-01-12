@@ -33,7 +33,6 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataNoDefaultSet
-	 * @group test-here
 	 *
 	 * @param mixed $default The default value to return
 	 */
@@ -57,7 +56,6 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultSet
-	 * @group test-here
 	 *
 	 * @param mixed $default         The default value to return.
 	 * @param mixed $defaultReturned The default value returned or coerced by the function `get_site_option`.
@@ -91,7 +89,6 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultSetStrictValid
-	 * @group test-here
 	 *
 	 * @param mixed $default The default value to return
 	 */
@@ -121,7 +118,6 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultSetStrictInvalid
-	 * @group test-here
 	 *
 	 * @param mixed $default The default value to return
 	 */
@@ -152,7 +148,6 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultPassed
-	 * @group test-here
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
@@ -188,7 +183,6 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultPassedStrictValid
-	 * @group test-here
 	 *
 	 * @param mixed $default       The default value passed in the schema.
 	 * @param mixed $defaultPassed The default value passed in the function `get_site_option`.
@@ -219,13 +213,12 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultPassedStrictInvalid
-	 * @group test-here
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
 	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testHasDefaultPassedStrictInvalid(string $type, $default, $defaultPassed): void
+	public function testDefaultPassedStrictInvalid(string $type, $default, $defaultPassed): void
 	{
 		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([
@@ -254,7 +247,6 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataPrefixSet
-	 * @group test-here
 	 *
 	 * @param string $type  The default value passed in the schema.
 	 * @param mixed  $value The value to add with `add_site_option`.
@@ -287,7 +279,7 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataGetTypeString
-	 * @group test-here
+	 * @group type-string
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
@@ -334,6 +326,7 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeStringStrictValid
+	 * @group type-string
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -358,83 +351,21 @@ class SiteOptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
+	 * @group type-string
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
 	public function testGetTypeStringStrictInvalid($value): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_site_option($optionName, $value);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new SiteOption($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		get_site_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeBoolean
-	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
-	 */
-	public function testGetTypeBoolean($value, $expect): void
-	{
-		$optionName = 'foo_bar_boolean';
-
-		add_site_option($optionName, $value);
-
-		$option = new SiteOption($this->hook);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
-		$option->register();
-
-		$this->assertSame($expect, get_site_option($optionName));
-
-		delete_site_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeBooleanStrictValid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testGetTypeBooleanStrictValid($value): void
-	{
-		$optionName = 'foo_bar_boolean';
-
-		add_site_option($optionName, $value);
-
-		$option = new SiteOption($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
-		$option->register();
-
-		$this->assertSame($value, get_site_option($optionName));
-
-		delete_site_option($optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeBooleanStrictInvalid
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testGetTypeBooleanStrictInvalid($value): void
-	{
-		$optionName = 'foo_bar_boolean';
-
-		add_site_option($optionName, $value);
-
-		$option = new SiteOption($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'boolean']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-
-		get_site_option($optionName);
+		get_site_option($this->optionName);
 	}
 
 	public function dataTypeStringStrictInvalid(): iterable
@@ -443,13 +374,25 @@ class SiteOptionTest extends TestCase
 		yield [1.2];
 		yield [true];
 		yield [[]];
+		yield [false];
+	}
 
-		/**
-		 * WordPress will convert to empty string.
-		 *
-		 * @todo Handle this case.
-		 */
-		// yield [false];
+	/**
+	 * @dataProvider dataTypeBoolean
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeBoolean($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -457,40 +400,81 @@ class SiteOptionTest extends TestCase
 	 */
 	public function dataTypeBoolean(): iterable
 	{
-		yield ['this-is-string', true];
+		yield ['Hello world!', true];
 		yield ['', false];
 		yield [0, false];
 		yield [1, true];
 		yield [1.2, true];
-		yield [-1, true]; // -1 is considered true, like any other non-zero (whether negative or positive) number!
 		yield [false, false];
 		yield [true, true];
-		yield [null, false];
 		yield [[], false];
-		yield ['false', true];
+
+		/**
+		 * -1 is considered true, like any other non-zero (whether negative or positive) number!
+		 *
+		 * @see https://www.php.net/manual/en/language.types.boolean.php
+		 */
+		yield [-1, true];
+
+		/**
+		 * A `null` value would return as a `null`.
+		 */
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group type-boolean
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeBooleanStrictValid($value): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	public function dataTypeBooleanStrictValid(): iterable
 	{
 		yield [true];
+		yield [false];
+	}
 
-		/**
-		 * WordPress will convert to empty string.
-		 *
-		 * @todo Handle this case.
-		 */
-		// yield [false];
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeBooleanStrictInvalid($value): void
+	{
+		add_site_option($this->optionName, $value);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+
+		get_site_option($this->optionName);
 	}
 
 	public function dataTypeBooleanStrictInvalid(): iterable
 	{
-		yield ['this-is-string'];
+		yield ['Hello world!'];
 		yield [''];
+		yield [' '];
 		yield [0];
+		yield [1];
 		yield [1.2];
 		yield [-1];
-		yield [false];
 		yield [[]];
+		yield [['foo']];
 		yield ['false'];
 		yield ['true'];
 	}
