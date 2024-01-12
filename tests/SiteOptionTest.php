@@ -534,6 +534,36 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeIntegerStrictValid($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	public function dataTypeIntegerStrictValid(): iterable
+	{
+		yield [1, 1]; // Positive
+		yield [-1, -1]; // Negative
+		yield [0123, 0123]; // Octal
+		yield [0x1A, 0x1A]; // Hexadecimal
+		yield [0b11111111, 0b11111111]; // Binary
+		yield [1_234_567, 1_234_567];
+		yield [null, null];
+	}
+
+	/**
 	 * @dataProvider dataTypeFloat
 	 * @group type-float
 	 *
@@ -577,6 +607,45 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataTypeFloatStrictValid
+	 * @group type-float
+	 * @group strict-mode
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The value to be returned.
+	 */
+	public function testGetTypeFloatStrictValid($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	public function dataTypeFloatStrictValid(): iterable
+	{
+		yield [1.2, 1.2]; // Positive
+		yield [-1.2, -1.2]; // Negative
+		yield [1.2e3, 1.2e3]; // Scientific notation
+		yield [7E-10, 7E-10]; // Scientific notation
+		yield [1_234_567.89, 1_234_567.89];
+
+		/**
+		 * This exception occurs even in the `strict_mode`, where an integer is coerced into a float.
+		 * This behavior is based on the assumption that integers can be safely converted to floats
+		 * without any loss of precision or functionality.
+		 */
+		yield [1, 1.0];
+		yield [-1, -1.0];
+		yield [0, 0.0];
+
+		yield [null, null];
+	}
+
+	/**
 	 * @dataProvider dataTypeArray
 	 * @group type-array
 	 *
@@ -611,6 +680,32 @@ class SiteOptionTest extends TestCase
 		yield [['foo', 'bar'], ['foo', 'bar']];
 		yield [['foo' => 'bar'], ['foo' => 'bar']];
 
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictValid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeArrayStrictValid($value): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	public function dataTypeArrayStrictValid(): iterable
+	{
+		yield [[], []];
+		yield [['foo'], ['foo']];
+		yield [['foo' => 'bar'], ['foo' => 'bar']];
 		yield [null, null];
 	}
 }
