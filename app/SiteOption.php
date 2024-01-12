@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option;
 
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Support\DefaultResolver;
+use Syntatis\WP\Option\Support\InputSanitizer;
 use Syntatis\WP\Option\Support\OutputResolver;
 
 use function array_merge;
@@ -79,15 +79,16 @@ final class SiteOption
 			$optionDefault = $schema['default'] ?? null;
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
+			$inputSanitizer = new InputSanitizer($optionType);
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 
-			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName) {
+			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName, $inputSanitizer) {
 				$this->states[$optionName] = 'adding';
 
-				return $value;
+				return $inputSanitizer->sanitize($value);
 			}, $optionPriority);
 
-			$this->hook->addAction('add_site_option_' . $optionName, function ($value) use ($optionName): void {
+			$this->hook->addAction('add_site_option_' . $optionName, function () use ($optionName): void {
 				unset($this->states[$optionName]);
 			}, $optionPriority);
 

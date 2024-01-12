@@ -6,6 +6,9 @@ namespace Syntatis\WP\Option\Support;
 
 use Syntatis\WP\Option\Option;
 
+use function array_key_exists;
+use function is_array;
+
 /** @phpstan-import-type OptionType from Option */
 class InputSanitizer
 {
@@ -24,6 +27,6 @@ class InputSanitizer
 	 */
 	public function sanitize($value): array
 	{
-		return ['__syntatis' => $value];
+		return is_array($value) && array_key_exists('__syntatis', $value) ? $value : ['__syntatis' => $value];
 	}
 }

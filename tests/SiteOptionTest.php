@@ -339,17 +339,21 @@ class SiteOptionTest extends TestCase
 	 */
 	public function testGetTypeStringStrictValid($value): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_site_option($optionName, $value);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new SiteOption($this->hook, null, 1);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		$this->assertSame($value, get_site_option($optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-		delete_site_option($optionName);
+	public function dataTypeStringStrictValid(): iterable
+	{
+		yield ['Hello World!', 'Hello World!'];
+		yield ['', ''];
+		yield [' ', ' '];
+		yield [null, null];
 	}
 
 	/**
@@ -431,13 +435,6 @@ class SiteOptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		get_site_option($optionName);
-	}
-
-	public function dataTypeStringStrictValid(): iterable
-	{
-		yield ['this-is-string'];
-		yield [''];
-		yield [' '];
 	}
 
 	public function dataTypeStringStrictInvalid(): iterable
