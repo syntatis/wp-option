@@ -699,7 +699,7 @@ class OptionTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeIntegerValid($value, $expect): void
+	public function testGetTypeIntegerStrictValid($value, $expect): void
 	{
 		add_option($this->optionName, ['__syntatis' => $value]);
 
@@ -717,7 +717,7 @@ class OptionTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testAddTypeIntegerValid($value, $expect): void
+	public function testAddTypeIntegerStrictValid($value, $expect): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
@@ -735,7 +735,7 @@ class OptionTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testUpdateTypeIntegerValid($value, $expect): void
+	public function testUpdateTypeIntegerStrictValid($value, $expect): void
 	{
 		add_option($this->optionName, ['__syntatis' => 1]);
 
@@ -748,7 +748,7 @@ class OptionTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeIntegerValid(): iterable
+	public function dataTypeIntegerStrictValid(): iterable
 	{
 		yield [1, 1]; // Positive
 		yield [-1, -1]; // Negative
@@ -765,7 +765,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeIntegerInvalid($value): void
+	public function testGetTypeIntegerStrictInvalid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => $value]);
 
@@ -784,7 +784,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeIntegerInvalid($value): void
+	public function testAddTypeIntegerStrictInvalid($value): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
@@ -802,7 +802,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeIntegerInvalid($value): void
+	public function testUpdateTypeIntegerStrictInvalid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => 1]);
 
@@ -816,7 +816,7 @@ class OptionTest extends TestCase
 		update_option($this->optionName, $value);
 	}
 
-	public function dataTypeIntegerInvalid(): iterable
+	public function dataTypeIntegerStrictInvalid(): iterable
 	{
 		yield ['Hello world!'];
 		yield [''];
@@ -876,7 +876,7 @@ class OptionTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
-	public function testGetTypeFloatValid($value, $expect): void
+	public function testGetTypeFloatStrictValid($value, $expect): void
 	{
 		add_option($this->optionName, ['__syntatis' => $value]);
 
@@ -894,7 +894,7 @@ class OptionTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
-	public function testAddTypeFloatValid($value, $expect): void
+	public function testAddTypeFloatStrictValid($value, $expect): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'float']]);
@@ -912,7 +912,7 @@ class OptionTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
-	public function testUpdateTypeFloatValid($value, $expect): void
+	public function testUpdateTypeFloatStrictValid($value, $expect): void
 	{
 		add_option($this->optionName, ['__syntatis' => 100.12]);
 
@@ -925,7 +925,7 @@ class OptionTest extends TestCase
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
-	public function dataTypeFloatValid(): iterable
+	public function dataTypeFloatStrictValid(): iterable
 	{
 		yield [1.2, 1.2]; // Positive
 		yield [-1.2, -1.2]; // Negative
@@ -951,7 +951,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeFloatInvalid($value): void
+	public function testGetTypeFloatStrictInvalid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => $value]);
 
@@ -970,7 +970,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeFloatInvalid($value): void
+	public function testAddTypeFloatStrictInvalid($value): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'float']]);
@@ -987,7 +987,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeFloatInvalid($value): void
+	public function testUpdateTypeFloatStrictInvalid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => 1.23]);
 
@@ -1000,7 +1000,7 @@ class OptionTest extends TestCase
 		update_option($this->optionName, $value);
 	}
 
-	public function dataTypeFloatInvalid(): iterable
+	public function dataTypeFloatStrictInvalid(): iterable
 	{
 		yield ['Hello world!'];
 		yield [''];
@@ -1052,7 +1052,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeArrayValid($value): void
+	public function testGetTypeArrayStrictValid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => $value]);
 
@@ -1069,7 +1069,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeArrayValid($value): void
+	public function testAddTypeArrayStrictValid($value): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'array']]);
@@ -1086,7 +1086,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeArrayValid($value): void
+	public function testUpdateTypeArrayStrictValid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => ['foo']]);
 
@@ -1099,7 +1099,7 @@ class OptionTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeArrayValid(): iterable
+	public function dataTypeArrayStrictValid(): iterable
 	{
 		yield [[], []];
 		yield [['foo'], ['foo']];
@@ -1112,7 +1112,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeArrayInvalid($value): void
+	public function testGetTypeArrayStrictInvalid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => ['foo']]);
 
@@ -1131,7 +1131,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeArrayInvalid($value): void
+	public function testAddTypeArrayStrictInvalid($value): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'array']]);
@@ -1148,7 +1148,7 @@ class OptionTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeArrayInvalid($value): void
+	public function testUpdateTypeArrayStrictInvalid($value): void
 	{
 		add_option($this->optionName, ['__syntatis' => ['foo']]);
 
@@ -1161,7 +1161,7 @@ class OptionTest extends TestCase
 		update_option($this->optionName, $value);
 	}
 
-	public function dataTypeArrayInvalid(): iterable
+	public function dataTypeArrayStrictInvalid(): iterable
 	{
 		yield ['Hello world!'];
 		yield [''];
