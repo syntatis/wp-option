@@ -26,7 +26,7 @@ class SiteOptionTest extends TestCase
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function tear_down(): void
 	{
-		delete_option($this->optionName);
+		delete_site_option($this->optionName);
 
 		parent::tear_down();
 	}
@@ -286,24 +286,50 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeString
+	 * @dataProvider dataGetTypeString
+	 * @group test-here
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
 	public function testGetTypeString($value, $expect): void
 	{
-		$optionName = 'foo_bar_string';
-
-		add_site_option($optionName, $value);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
 		$option = new SiteOption($this->hook);
-		$option->setSchema([$optionName => ['type' => 'string']]);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		$this->assertSame($expect, get_site_option($optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-		delete_site_option($optionName);
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataGetTypeString(): iterable
+	{
+		yield ['Hello World!', 'Hello World!'];
+		yield [1, '1'];
+		yield [1.2, '1.2'];
+		yield [true, '1'];
+		yield [false, ''];
+
+		/**
+		 * For consistency with how other type handles `null` values, and how it handles default
+		 * when no value is passed on the `get_option` function, a `null` value would return
+		 * as a `null`.
+		 */
+		yield [null, null];
+
+		/**
+		 * PHP can't convert an array to a string.
+		 *
+		 * When converting an array to a string, it will throw an exception
+		 * and value returned will fallback to a `null`.
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
 	}
 
 	/**
@@ -405,20 +431,6 @@ class SiteOptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		get_site_option($optionName);
-	}
-
-	/**
-	 * Non-strict. Value may be coerced.
-	 */
-	public function dataTypeString(): iterable
-	{
-		yield ['this-is-string', 'this-is-string'];
-		yield [1, '1'];
-		yield [1.2, '1.2'];
-		yield [false, ''];
-		yield [true, '1'];
-		yield [null, ''];
-		yield [[], null];
 	}
 
 	public function dataTypeStringStrictValid(): iterable
