@@ -342,6 +342,46 @@ class SiteOptionTest extends TestCase
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
+	/**
+	 * @dataProvider dataTypeStringStrictValid
+	 * @group type-string
+	 * @group strict-mode
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testAddTypeStringStrictValid($value, $expect): void
+	{
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
+		$option->register();
+
+		add_site_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeStringStrictValid
+	 * @group type-string
+	 * @group strict-mode
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeStringStrictValid($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => 'Initial value!']);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'string']]);
+		$option->register();
+
+		update_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
 	public function dataTypeStringStrictValid(): iterable
 	{
 		yield ['Hello World!', 'Hello World!'];
