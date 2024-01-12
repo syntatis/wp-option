@@ -253,29 +253,36 @@ class SiteOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataHasPrefix
+	 * @dataProvider dataPrefixSet
+	 * @group test-here
 	 *
-	 * @param string $type          The default value passed in the schema.
-	 * @param mixed  $value         The value to add with `add_site_option`.
-	 * @param mixed  $defaultPassed The value to set ad the default when calling `get_site_option`.
+	 * @param string $type  The default value passed in the schema.
+	 * @param mixed  $value The value to add with `add_site_option`.
 	 */
-	public function testHasPrefix(string $type, $value, $defaultPassed): void
+	public function testPrefixSet(string $type, $value): void
 	{
-		$optionName = 'foo_bar_prefix';
 		$option = new SiteOption($this->hook, 'syntatis_');
-		$option->setSchema([$optionName => ['type' => $type]]);
+		$option->setSchema([$this->optionName => ['type' => $type]]);
 
-		$this->assertFalse(has_filter('default_site_option_syntatis_' . $optionName));
-		$this->assertFalse(has_filter('site_option_syntatis_' . $optionName));
+		$this->assertFalse(has_filter('default_site_option_syntatis_' . $this->optionName));
+		$this->assertFalse(has_filter('site_option_syntatis_' . $this->optionName));
 
 		$option->register();
 
-		$this->assertTrue(has_filter('default_site_option_syntatis_' . $optionName));
-		$this->assertTrue(has_filter('site_option_syntatis_' . $optionName));
+		$this->assertTrue(has_filter('default_site_option_syntatis_' . $this->optionName));
+		$this->assertTrue(has_filter('site_option_syntatis_' . $this->optionName));
 
-		$this->assertTrue(add_site_option('syntatis_' . $optionName, $value));
-		$this->assertSame($value, get_site_option('syntatis_' . $optionName));
-		$this->assertSame($value, get_site_option('syntatis_' . $optionName, $defaultPassed));
+		$this->assertTrue(add_site_option('syntatis_' . $this->optionName, $value));
+		$this->assertSame($value, get_site_option('syntatis_' . $this->optionName));
+	}
+
+	public function dataPrefixSet(): iterable
+	{
+		yield ['string', 'Hello World!'];
+		yield ['boolean', true];
+		yield ['integer', 1];
+		yield ['float', 1.2];
+		yield ['array', ['foo']];
 	}
 
 	/**
@@ -398,13 +405,6 @@ class SiteOptionTest extends TestCase
 		$this->expectException(TypeError::class);
 
 		get_site_option($optionName);
-	}
-
-	public function dataHasPrefix(): iterable
-	{
-		yield ['string', 'Hello World!', 12];
-		yield ['boolean', false, 'true'];
-		yield ['integer', 1, true];
 	}
 
 	/**

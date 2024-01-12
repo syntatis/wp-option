@@ -274,8 +274,7 @@ class OptionTest extends TestCase
 		$this->assertTrue(has_filter('default_option_syntatis_' . $this->optionName));
 		$this->assertTrue(has_filter('option_syntatis_' . $this->optionName));
 
-		add_option('syntatis_' . $this->optionName, $value);
-
+		$this->assertTrue(add_option('syntatis_' . $this->optionName, $value));
 		$this->assertSame($value, get_option('syntatis_' . $this->optionName));
 	}
 
