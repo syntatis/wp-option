@@ -327,6 +327,7 @@ class SiteOptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictValid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -352,6 +353,7 @@ class SiteOptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeStringStrictInvalid
 	 * @group type-string
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -425,6 +427,7 @@ class SiteOptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeBooleanStrictValid
 	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
@@ -448,6 +451,7 @@ class SiteOptionTest extends TestCase
 	/**
 	 * @dataProvider dataTypeBooleanStrictInvalid
 	 * @group type-boolean
+	 * @group strict-mode
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
