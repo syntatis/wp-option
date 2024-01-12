@@ -449,7 +449,7 @@ class SiteOptionTest extends TestCase
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
 
-		update_option($this->optionName, $value);
+		update_site_option($this->optionName, $value);
 	}
 
 	public function dataTypeStringStrictInvalid(): iterable

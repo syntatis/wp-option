@@ -94,6 +94,14 @@ final class SiteOption
 				return $inputSanitizer->sanitize($value);
 			}, $optionPriority);
 
+			$this->hook->addFilter('pre_update_site_option_' . $optionName, function ($value) use ($inputSanitizer, $inputValidator) {
+				if ($this->strict === 1) {
+					$inputValidator->validate($value);
+				}
+
+				return $inputSanitizer->sanitize($value);
+			}, $optionPriority);
+
 			$this->hook->addAction('add_site_option_' . $optionName, function ($value) use ($optionName): void {
 				unset($this->states[$optionName]);
 			}, $optionPriority);
