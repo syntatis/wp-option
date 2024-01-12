@@ -478,4 +478,139 @@ class SiteOptionTest extends TestCase
 		yield ['false'];
 		yield ['true'];
 	}
+
+	/**
+	 * @dataProvider dataTypeInteger
+	 * @group type-integer
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeInteger($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeInteger(): iterable
+	{
+		yield ['Hello world!', 0];
+		yield ['', 0];
+		yield [0, 0];
+		yield [1, 1];
+		yield [1.2, 1];
+		yield [1.23, 1];
+		yield [-1, -1];
+		yield [false, 0];
+		yield [true, 1];
+
+		/**
+		 * The behaviour of converting to int is undefined for other types.
+		 * Do not rely on any observed behaviour, as it can change without
+		 * notice. Similar to how it handles the string type, an array
+		 * would return as a `null`.
+		 *
+		 * @see https://www.php.net/manual/en/language.types.integer.php
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
+
+		/**
+		 * PHP internally would cast a `null` to `0`, but for consistency
+		 * with the other types, and how it handles default when no value
+		 * is passed on the `get_option` function, a `null` value would
+		 * return as a `null`.
+		 */
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeFloat
+	 * @group type-float
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The value to be returned.
+	 */
+	public function testGetTypeFloat($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook);
+		$option->setSchema([$this->optionName => ['type' => 'float']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeFloat(): iterable
+	{
+		yield ['Hello world!', 0.0];
+		yield ['', 0.0];
+		yield [0, 0.0];
+		yield [1, 1.0];
+		yield [1.2, 1.2];
+		yield [-1, -1.0];
+		yield [false, 0.0];
+		yield [true, 1.0];
+
+		/**
+		 * As certain types have undefined behavior when converting to `int`,
+		 * this is also the case when converting to float.
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
+
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeArray
+	 * @group type-array
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeArray($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => $value]);
+
+		$option = new SiteOption($this->hook);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeArray(): iterable
+	{
+		yield ['Hello world!', ['Hello world!']];
+		yield ['', ['']];
+		yield [0, [0]];
+		yield [1, [1]];
+		yield [1.2, [1.2]];
+		yield [-1, [-1]];
+		yield [false, [false]];
+		yield [true, [true]];
+		yield [[], []];
+		yield [['foo', 'bar'], ['foo', 'bar']];
+		yield [['foo' => 'bar'], ['foo' => 'bar']];
+
+		yield [null, null];
+	}
 }
