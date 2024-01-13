@@ -7,7 +7,7 @@
 
 ---
 
-A simple wrapper that adds validation around dealing with WordPress options.
+A simple wrapper that adds validation and enforcing consistencies when dealing with WordPress options, such as when adding, updating, and retrieving an option. It supports both `*_option` as well as the corresponding function for network-enable installatiopn, `*_site_option` functions.
 
 ## Why?
 
