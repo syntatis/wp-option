@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option\Support;
 
-use Syntatis\WP\Option\Contracts\Castable;
-use Syntatis\WP\Option\Contracts\Resolvable;
-use Syntatis\WP\Option\Option;
 use Syntatis\WP\Option\Casters\TypeArray;
 use Syntatis\WP\Option\Casters\TypeBoolean;
 use Syntatis\WP\Option\Casters\TypeFloat;
 use Syntatis\WP\Option\Casters\TypeInteger;
 use Syntatis\WP\Option\Casters\TypeString;
+use Syntatis\WP\Option\Contracts\Castable;
+use Syntatis\WP\Option\Contracts\Resolvable;
+use Syntatis\WP\Option\Option;
 
 use function array_key_exists;
 use function is_array;
