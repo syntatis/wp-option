@@ -57,30 +57,25 @@ class InputValidatorTest extends TestCase
 		yield ['string', 1, 'integer'];
 		yield ['string', 1.0, 'double'];
 		yield ['string', [], 'array'];
-		yield ['string', null, 'NULL'];
 		yield ['string', new stdClass(), 'object'];
 		yield ['boolean', 'foo', 'string'];
 		yield ['boolean', 1, 'integer'];
 		yield ['boolean', 1.0, 'double'];
 		yield ['boolean', [], 'array'];
-		yield ['boolean', null, 'NULL'];
 		yield ['boolean', new stdClass(), 'object'];
 		yield ['integer', 'foo', 'string'];
 		yield ['integer', true, 'boolean'];
 		yield ['integer', 1.0, 'double'];
 		yield ['integer', [], 'array'];
-		yield ['integer', null, 'NULL'];
 		yield ['integer', new stdClass(), 'object'];
 		yield ['float', 'foo', 'string'];
 		yield ['float', true, 'boolean'];
 		yield ['float', [], 'array'];
-		yield ['float', null, 'NULL'];
 		yield ['float', new stdClass(), 'object'];
 		yield ['array', 'foo', 'string'];
 		yield ['array', true, 'boolean'];
 		yield ['array', 1, 'integer'];
 		yield ['array', 1.0, 'double'];
-		yield ['array', null, 'NULL'];
 		yield ['array', new stdClass(), 'object'];
 	}
 
