@@ -718,6 +718,46 @@ class SiteOptionTest extends TestCase
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testAddTypeIntegerStrictValid($value, $expect): void
+	{
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
+		$option->register();
+
+		add_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeIntegerStrictValid($value, $expect): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => 1]);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'integer']]);
+		$option->register();
+
+		update_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
 	public function dataTypeIntegerStrictValid(): iterable
 	{
 		yield [1, 1]; // Positive
