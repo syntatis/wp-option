@@ -15,7 +15,7 @@ use function array_merge;
  * @phpstan-type OptionType value-of<Option::TYPES>
  * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int}
  */
-final class Option
+class Option
 {
 	public const TYPES = [
 		'string',

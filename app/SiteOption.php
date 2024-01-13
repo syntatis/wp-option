@@ -17,7 +17,7 @@ use function is_bool;
  * @phpstan-import-type OptionType from Option
  * @phpstan-import-type OptionSchema from Option
  */
-final class SiteOption
+class SiteOption
 {
 	public const TYPES = [
 		'string',
