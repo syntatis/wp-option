@@ -590,6 +590,46 @@ class SiteOptionTest extends TestCase
 		get_site_option($this->optionName);
 	}
 
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeBooleanStrictInvalid($value): void
+	{
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
+
+		add_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeBooleanStrictInvalid($value): void
+	{
+		add_site_option($this->optionName, ['__syntatis' => true]);
+
+		$option = new SiteOption($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
+
+		update_site_option($this->optionName, $value);
+	}
+
 	public function dataTypeBooleanStrictInvalid(): iterable
 	{
 		yield ['Hello world!'];
