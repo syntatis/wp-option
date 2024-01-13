@@ -8,12 +8,12 @@ parameters:
 			messages:
 				- '#^Method (\S+)::cast\(\) should return (\S+\|null) but returns mixed\.$#'
 			paths:
-				- app/TypeCasters/*
+				- app/Casters/*
 
 		-
 			message: '#^Cannot cast mixed to string\.$#'
-			path: app/TypeCasters/TypeString.php
+			path: app/Casters/TypeString.php
 
 		-
 			message: '#^Dead catch \- Throwable is never thrown in the try block\.$#'
-			path: app/TypeCasters/TypeString.php
+			path: app/Casters/TypeString.php

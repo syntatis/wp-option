@@ -12,7 +12,7 @@ use Syntatis\WP\Option\Support\OutputResolver;
 use function array_merge;
 
 /**
- * @phpstan-type OptionType value-of<Option::TYPES>
+ * @phpstan-type OptionType 'array'|'boolean'|'float'|'integer'|'string'
  * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int}
  */
 class Option
@@ -59,7 +59,7 @@ class Option
 			$optionDefault = $schema['default'] ?? null;
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
-			$inputSanitizer = new InputSanitizer($optionType);
+			$inputSanitizer = new InputSanitizer();
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 
 			if ($this->strict === 1) {

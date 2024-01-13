@@ -72,7 +72,7 @@ class SiteOption
 			$optionDefault = $schema['default'] ?? null;
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
-			$inputSanitizer = new InputSanitizer($optionType);
+			$inputSanitizer = new InputSanitizer();
 			$inputValidator = new InputValidator($optionType);
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 

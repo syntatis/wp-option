@@ -11,10 +11,15 @@ class InputSanitizer
 {
 	/**
 	 * @param mixed $value
-	 * @return array{__syntatis: mixed}
+	 * @return array<string, mixed>
+	 *
+	 * @psalm-return array{__syntatis: mixed}
 	 */
 	public function sanitize($value): array
 	{
-		return is_array($value) && array_key_exists('__syntatis', $value) ? $value : ['__syntatis' => $value];
+		/** @psalm-var array{__syntatis: mixed} */
+		$value = is_array($value) && array_key_exists('__syntatis', $value) ? $value : ['__syntatis' => $value];
+
+		return $value;
 	}
 }

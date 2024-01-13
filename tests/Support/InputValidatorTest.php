@@ -2,20 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Tests;
+namespace Syntatis\WP\Option\Tests\Support;
 
 use stdClass;
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Support\InputValidator;
+use Syntatis\WP\Option\Tests\TestCase;
 use TypeError;
 
 class InputValidatorTest extends TestCase
 {
 	private Hook $hook;
 
-	public function setUp(): void
+	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
+	public function set_up(): void
 	{
-		parent::setUp();
+		parent::set_up();
 
 		$this->hook = new Hook();
 	}
