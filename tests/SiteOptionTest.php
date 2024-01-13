@@ -567,6 +567,7 @@ class SiteOptionTest extends TestCase
 	{
 		yield [true, true];
 		yield [false, false];
+
 		yield [null, null];
 	}
 
@@ -766,6 +767,7 @@ class SiteOptionTest extends TestCase
 		yield [0x1A, 0x1A]; // Hexadecimal
 		yield [0b11111111, 0b11111111]; // Binary
 		yield [1_234_567, 1_234_567];
+
 		yield [null, null];
 	}
 
@@ -912,6 +914,7 @@ class SiteOptionTest extends TestCase
 		yield [[], []];
 		yield [['foo'], ['foo']];
 		yield [['foo' => 'bar'], ['foo' => 'bar']];
+
 		yield [null, null];
 	}
 }
