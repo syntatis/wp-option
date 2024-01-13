@@ -19,14 +19,6 @@ use function is_bool;
  */
 class SiteOption
 {
-	public const TYPES = [
-		'string',
-		'boolean',
-		'integer',
-		'float',
-		'array',
-	];
-
 	private int $priority = 99;
 
 	private int $strict = 0;
