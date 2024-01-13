@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Resolvers;
+namespace Syntatis\WP\Option\Support;
 
 use Syntatis\WP\Option\Option;
 use TypeError;
 
+use function array_key_exists;
 use function gettype;
 use function is_array;
 use function is_bool;
@@ -29,6 +30,12 @@ class InputValidator
 	/** @param mixed $value */
 	public function validate($value): void
 	{
+		$value = is_array($value) && array_key_exists('__syntatis', $value) ? $value['__syntatis'] : $value;
+
+		if ($value === null) {
+			return;
+		}
+
 		$givenType = gettype($value);
 		$matchedType = $this->hasMatchedType($value);
 

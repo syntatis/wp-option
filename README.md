@@ -7,7 +7,7 @@
 
 ---
 
-A simple wrapper that adds validation around dealing with WordPress options.
+A simple wrapper that adds validation and enforcing consistencies when dealing with WordPress options, such as when adding, updating, and retrieving an option. It supports both `*_option` as well as the corresponding function for network-enable installatiopn, `*_site_option` functions.
 
 ## Why?
 
@@ -90,3 +90,6 @@ For more advanced usage, please refer to the [Wiki](https://github.com/syntatis/
 - [add_option()](https://developer.wordpress.org/reference/functions/add_option/)
 - [update_option()](https://developer.wordpress.org/reference/functions/update_option/)
 - [get_option()](https://developer.wordpress.org/reference/functions/get_option/)
+- [get_site_option](https://developer.wordpress.org/reference/functions/get_site_option/)
+- [add_site_option](https://developer.wordpress.org/reference/functions/add_site_option/)
+- [update_site_option](https://developer.wordpress.org/reference/functions/update_site_option/)

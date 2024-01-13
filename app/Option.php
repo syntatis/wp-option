@@ -5,26 +5,18 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option;
 
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Resolvers\DefaultResolver;
-use Syntatis\WP\Option\Resolvers\InputValidator;
-use Syntatis\WP\Option\Resolvers\OutputResolver;
+use Syntatis\WP\Option\Support\InputSanitizer;
+use Syntatis\WP\Option\Support\InputValidator;
+use Syntatis\WP\Option\Support\OutputResolver;
 
 use function array_merge;
 
 /**
- * @phpstan-type OptionType value-of<Option::TYPES>
+ * @phpstan-type OptionType 'array'|'boolean'|'float'|'integer'|'string'
  * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int}
  */
-final class Option
+class Option
 {
-	public const TYPES = [
-		'string',
-		'boolean',
-		'integer',
-		'float',
-		'array',
-	];
-
 	private int $priority = 99;
 
 	private int $strict = 0;
@@ -67,8 +59,8 @@ final class Option
 			$optionDefault = $schema['default'] ?? null;
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
+			$inputSanitizer = new InputSanitizer();
 			$outputResolver = new OutputResolver($optionType, $this->strict);
-			$defaultResolver = new DefaultResolver($optionType, $this->strict);
 
 			if ($this->strict === 1) {
 				$inputValidator = new InputValidator($optionType);
@@ -79,6 +71,7 @@ final class Option
 					$optionPriority,
 					2,
 				);
+
 				$this->hook->addAction(
 					'update_option',
 					static fn ($name, $oldValue, $newValue) => $inputValidator->validate($newValue),
@@ -88,11 +81,18 @@ final class Option
 			}
 
 			$this->hook->addFilter(
-				'default_option_' . $optionName,
-				static function ($default, $option, $passedDefault) use ($optionDefault, $defaultResolver) {
-					$value = $passedDefault ? $default : $optionDefault;
+				'sanitize_option_' . $optionName,
+				static function ($value, $option, $originalValue) use ($inputSanitizer) {
+					return $inputSanitizer->sanitize($originalValue);
+				},
+				$optionPriority,
+				3,
+			);
 
-					return $defaultResolver->resolve($value);
+			$this->hook->addFilter(
+				'default_option_' . $optionName,
+				static function ($default, $option, $passedDefault) use ($optionDefault, $outputResolver) {
+					return $outputResolver->resolve($passedDefault ? $default : $optionDefault);
 				},
 				$optionPriority,
 				3,

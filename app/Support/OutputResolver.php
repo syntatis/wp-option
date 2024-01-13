@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Resolvers;
+namespace Syntatis\WP\Option\Support;
 
+use Syntatis\WP\Option\Casters\TypeArray;
+use Syntatis\WP\Option\Casters\TypeBoolean;
+use Syntatis\WP\Option\Casters\TypeFloat;
+use Syntatis\WP\Option\Casters\TypeInteger;
+use Syntatis\WP\Option\Casters\TypeString;
 use Syntatis\WP\Option\Contracts\Castable;
 use Syntatis\WP\Option\Contracts\Resolvable;
 use Syntatis\WP\Option\Option;
-use Syntatis\WP\Option\TypeCasters\TypeArray;
-use Syntatis\WP\Option\TypeCasters\TypeBoolean;
-use Syntatis\WP\Option\TypeCasters\TypeFloat;
-use Syntatis\WP\Option\TypeCasters\TypeInteger;
-use Syntatis\WP\Option\TypeCasters\TypeString;
+
+use function array_key_exists;
+use function is_array;
 
 /**
  * @phpstan-import-type OptionType from Option
@@ -20,15 +23,15 @@ use Syntatis\WP\Option\TypeCasters\TypeString;
  */
 class OutputResolver implements Resolvable
 {
-	private string $type;
+	protected string $type;
 
-	private int $strict;
+	protected int $strict;
 
 	/**
 	 * @var array<string, string>
 	 * @phpstan-var array<OptionType, class-string<T>>
 	 */
-	private array $casters = [
+	protected array $casters = [
 		'array' => TypeArray::class,
 		'boolean' => TypeBoolean::class,
 		'float' => TypeFloat::class,
@@ -51,6 +54,12 @@ class OutputResolver implements Resolvable
 	 */
 	public function resolve($value)
 	{
+		$value = is_array($value) && array_key_exists('__syntatis', $value) ? $value['__syntatis'] : $value;
+
+		if ($value === null) {
+			return $value;
+		}
+
 		return isset($this->casters[$this->type]) ?
 			(new $this->casters[$this->type]($value))->cast($this->strict) :
 			$value;

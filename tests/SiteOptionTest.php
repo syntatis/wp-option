@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Tests;
 
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Option;
+use Syntatis\WP\Option\SiteOption;
 use TypeError;
 
 use function gettype;
 
-/** @group option */
-class OptionTest extends TestCase
+/** @group site-option */
+class SiteOptionTest extends TestCase
 {
 	private Hook $hook;
 
@@ -28,24 +28,23 @@ class OptionTest extends TestCase
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function tear_down(): void
 	{
-		delete_option($this->optionName);
+		delete_site_option($this->optionName);
 
 		parent::tear_down();
 	}
 
 	/**
 	 * @dataProvider dataNoDefaultSet
-	 * @testdox it should return `null` when no default is set
 	 *
 	 * @param mixed $default The default value to return
 	 */
 	public function testNoDefaultSet(string $type): void
 	{
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([$this->optionName => ['type' => $type]]);
 		$option->register();
 
-		$this->assertNull(get_option($this->optionName));
+		$this->assertNull(get_site_option($this->optionName));
 	}
 
 	public function dataNoDefaultSet(): iterable
@@ -59,14 +58,13 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultSet
-	 * @testdox it should return the default value when set, and coerce the value if necessary on a non-strict mode
 	 *
-	 * @param mixed $default The default value to return
-	 * @param mixed $return  The default value returned or coerced by the function `get_site_option`.
+	 * @param mixed $default         The default value to return.
+	 * @param mixed $defaultReturned The default value returned or coerced by the function `get_site_option`.
 	 */
-	public function testDefaultSet(string $type, $default, $return): void
+	public function testDefaultSet(string $type, $default, $defaultReturned): void
 	{
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([
 			$this->optionName => [
 				'type' => $type,
@@ -75,7 +73,7 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($return, get_option($this->optionName));
+		$this->assertSame($defaultReturned, get_site_option($this->optionName));
 	}
 
 	/**
@@ -93,14 +91,12 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultSetStrictValid
-	 * @group strict-mode
-	 * @testdox it should return the default value when set, on a strict mode
 	 *
 	 * @param mixed $default The default value to return
 	 */
 	public function testDefaultSetStrictValid(string $type, $default): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([
 			$this->optionName => [
 				'type' => $type,
@@ -109,12 +105,12 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_option($this->optionName));
+		$this->assertSame($default, get_site_option($this->optionName));
 	}
 
 	public function dataDefaultSetStrictValid(): iterable
 	{
-		yield ['string', 'Hello World!'];
+		yield ['string', 'Hello world!'];
 		yield ['boolean', true];
 		yield ['boolean', false];
 		yield ['integer', 123];
@@ -124,14 +120,12 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultSetStrictInvalid
-	 * @group strict-mode
-	 * @testdox it should throw an exception when the default value is invalid, on a strict mode
 	 *
 	 * @param mixed $default The default value to return
 	 */
 	public function testDefaultSetStrictInvalid(string $type, $default): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([
 			$this->optionName => [
 				'type' => $type,
@@ -142,7 +136,7 @@ class OptionTest extends TestCase
 
 		$this->expectException(TypeError::class);
 
-		get_option($this->optionName);
+		get_site_option($this->optionName);
 	}
 
 	public function dataDefaultSetStrictInvalid(): iterable
@@ -163,7 +157,7 @@ class OptionTest extends TestCase
 	 */
 	public function testDefaultPassed(string $type, $default, $defaultPassed, $defaultPassedReturned): void
 	{
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([
 			$this->optionName => [
 				'type' => $type,
@@ -172,7 +166,8 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($defaultPassedReturned, get_option($this->optionName, $defaultPassed));
+		$this->assertSame($default, get_site_option($this->optionName));
+		$this->assertSame($defaultPassedReturned, get_site_option($this->optionName, $defaultPassed));
 	}
 
 	/**
@@ -190,15 +185,13 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultPassedStrictValid
-	 * @group strict-mode
 	 *
-	 * @param mixed $default               The default value passed in the schema.
-	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
-	 * @param mixed $defaultPassedReturned The default value returned or coerced by the function `get_site_option`.
+	 * @param mixed $default       The default value passed in the schema.
+	 * @param mixed $defaultPassed The default value passed in the function `get_site_option`.
 	 */
 	public function testDefaultPassedStrictValid(string $type, $default, $defaultPassed): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([
 			$this->optionName => [
 				'type' => $type,
@@ -207,7 +200,8 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($defaultPassed, get_option($this->optionName, $defaultPassed));
+		$this->assertSame($default, get_site_option($this->optionName));
+		$this->assertSame($defaultPassed, get_site_option($this->optionName, $defaultPassed));
 	}
 
 	public function dataDefaultPassedStrictValid(): iterable
@@ -221,8 +215,6 @@ class OptionTest extends TestCase
 
 	/**
 	 * @dataProvider dataDefaultPassedStrictInvalid
-	 * @group strict-mode
-	 * @testdox it should throw an exception when the default value is invalid, on a strict mode
 	 *
 	 * @param mixed $default               The default value passed in the schema.
 	 * @param mixed $defaultPassed         The default value passed in the function `get_site_option`.
@@ -230,7 +222,7 @@ class OptionTest extends TestCase
 	 */
 	public function testDefaultPassedStrictInvalid(string $type, $default, $defaultPassed): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([
 			$this->optionName => [
 				'type' => $type,
@@ -239,11 +231,11 @@ class OptionTest extends TestCase
 		]);
 		$option->register();
 
-		$this->assertSame($default, get_option($this->optionName));
+		$this->assertSame($default, get_site_option($this->optionName));
 
 		$this->expectException(TypeError::class);
 
-		get_option($this->optionName, $defaultPassed);
+		get_site_option($this->optionName, $defaultPassed);
 	}
 
 	public function dataDefaultPassedStrictInvalid(): iterable
@@ -263,19 +255,19 @@ class OptionTest extends TestCase
 	 */
 	public function testPrefixSet(string $type, $value): void
 	{
-		$option = new Option($this->hook, 'syntatis_');
+		$option = new SiteOption($this->hook, 'syntatis_');
 		$option->setSchema([$this->optionName => ['type' => $type]]);
 
-		$this->assertFalse(has_filter('default_option_syntatis_' . $this->optionName));
-		$this->assertFalse(has_filter('option_syntatis_' . $this->optionName));
+		$this->assertFalse(has_filter('default_site_option_syntatis_' . $this->optionName));
+		$this->assertFalse(has_filter('site_option_syntatis_' . $this->optionName));
 
 		$option->register();
 
-		$this->assertTrue(has_filter('default_option_syntatis_' . $this->optionName));
-		$this->assertTrue(has_filter('option_syntatis_' . $this->optionName));
+		$this->assertTrue(has_filter('default_site_option_syntatis_' . $this->optionName));
+		$this->assertTrue(has_filter('site_option_syntatis_' . $this->optionName));
 
-		$this->assertTrue(add_option('syntatis_' . $this->optionName, $value));
-		$this->assertSame($value, get_option('syntatis_' . $this->optionName));
+		$this->assertTrue(add_site_option('syntatis_' . $this->optionName, $value));
+		$this->assertSame($value, get_site_option('syntatis_' . $this->optionName));
 	}
 
 	public function dataPrefixSet(): iterable
@@ -296,13 +288,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeString($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -339,18 +331,17 @@ class OptionTest extends TestCase
 	 * @group type-string
 	 * @group strict-mode
 	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
+	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeStringStrictValid($value, $expect): void
+	public function testGetTypeStringStrictValid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	/**
@@ -363,13 +354,13 @@ class OptionTest extends TestCase
 	 */
 	public function testAddTypeStringStrictValid($value, $expect): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		add_option($this->optionName, $value);
+		add_site_option($this->optionName, $value);
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -382,15 +373,15 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeStringStrictValid($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => 'Initial value!']);
+		add_site_option($this->optionName, ['__syntatis' => 'Initial value!']);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
-		update_option($this->optionName, $value);
+		update_site_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	public function dataTypeStringStrictValid(): iterable
@@ -410,15 +401,15 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeStringStrictInvalid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		get_option($this->optionName);
+		get_site_option($this->optionName);
 	}
 
 	/**
@@ -430,14 +421,14 @@ class OptionTest extends TestCase
 	 */
 	public function testAddTypeStringStrictInvalid($value): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
 
-		add_option($this->optionName, $value);
+		add_site_option($this->optionName, $value);
 	}
 
 	/**
@@ -449,25 +440,25 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeStringStrictInvalid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => 'Initial value!']);
+		add_site_option($this->optionName, ['__syntatis' => 'Initial value!']);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'string']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
 
-		update_option($this->optionName, $value);
+		update_site_option($this->optionName, $value);
 	}
 
 	public function dataTypeStringStrictInvalid(): iterable
 	{
 		yield [1];
 		yield [1.2];
-		yield [false];
 		yield [true];
 		yield [[]];
+		yield [false];
 	}
 
 	/**
@@ -479,13 +470,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeBoolean($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -520,18 +511,17 @@ class OptionTest extends TestCase
 	 * @group type-boolean
 	 * @group strict-mode
 	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
+	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeBooleanStrictValid($value, $expect): void
+	public function testGetTypeBooleanStrictValid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	/**
@@ -539,18 +529,17 @@ class OptionTest extends TestCase
 	 * @group type-boolean
 	 * @group strict-mode
 	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
+	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeBooleanStrictValid($value, $expect): void
+	public function testAddTypeBooleanStrictValid($value): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		add_option($this->optionName, $value);
+		add_site_option($this->optionName, $value);
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	/**
@@ -563,21 +552,22 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeBooleanStrictValid($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => true]);
+		add_site_option($this->optionName, ['__syntatis' => true]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
-		update_option($this->optionName, $value);
+		update_site_option($this->optionName, $value);
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	public function dataTypeBooleanStrictValid(): iterable
 	{
 		yield [true, true];
 		yield [false, false];
+
 		yield [null, null];
 	}
 
@@ -590,15 +580,15 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeBooleanStrictInvalid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, $value);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 
-		get_option($this->optionName);
+		get_site_option($this->optionName);
 	}
 
 	/**
@@ -610,14 +600,14 @@ class OptionTest extends TestCase
 	 */
 	public function testAddTypeBooleanStrictInvalid($value): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
 
-		add_option($this->optionName, $value);
+		add_site_option($this->optionName, $value);
 	}
 
 	/**
@@ -629,16 +619,16 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeBooleanStrictInvalid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => true]);
+		add_site_option($this->optionName, ['__syntatis' => true]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'boolean']]);
 		$option->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
 
-		update_option($this->optionName, $value);
+		update_site_option($this->optionName, $value);
 	}
 
 	public function dataTypeBooleanStrictInvalid(): iterable
@@ -665,13 +655,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeInteger($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -720,13 +710,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeIntegerStrictValid($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -739,13 +729,13 @@ class OptionTest extends TestCase
 	 */
 	public function testAddTypeIntegerStrictValid($value, $expect): void
 	{
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		add_option($this->optionName, $value);
+		add_site_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	/**
@@ -758,15 +748,15 @@ class OptionTest extends TestCase
 	 */
 	public function testUpdateTypeIntegerStrictValid($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => 1]);
+		add_site_option($this->optionName, ['__syntatis' => 1]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'integer']]);
 		$option->register();
 
-		update_option($this->optionName, $value);
+		update_site_option($this->optionName, $value);
 
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	public function dataTypeIntegerStrictValid(): iterable
@@ -777,77 +767,8 @@ class OptionTest extends TestCase
 		yield [0x1A, 0x1A]; // Hexadecimal
 		yield [0b11111111, 0b11111111]; // Binary
 		yield [1_234_567, 1_234_567];
+
 		yield [null, null];
-	}
-
-	/**
-	 * @dataProvider dataTypeIntegerStrictInvalid
-	 * @group type-integer
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testGetTypeIntegerStrictInvalid($value): void
-	{
-		add_option($this->optionName, ['__syntatis' => $value]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'integer']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-
-		get_option($this->optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeIntegerStrictInvalid
-	 * @group type-integer
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testAddTypeIntegerStrictInvalid($value): void
-	{
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'integer']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type integer, ' . gettype($value) . ' type given.');
-
-		add_option($this->optionName, $value);
-	}
-
-	/**
-	 * @dataProvider dataTypeIntegerStrictInvalid
-	 * @group type-integer
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testUpdateTypeIntegerStrictInvalid($value): void
-	{
-		add_option($this->optionName, ['__syntatis' => 1]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'integer']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type integer, ' . gettype($value) . ' type given.');
-
-		update_option($this->optionName, $value);
-	}
-
-	public function dataTypeIntegerStrictInvalid(): iterable
-	{
-		yield ['Hello world!'];
-		yield [''];
-		yield [1.2];
-		yield [false];
-		yield [true];
-		yield [[]];
 	}
 
 	/**
@@ -859,13 +780,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeFloat($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -903,53 +824,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeFloatStrictValid($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'float']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
-	}
-
-	/**
-	 * @dataProvider dataTypeFloatStrictValid
-	 * @group type-float
-	 * @group strict-mode
-	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The value to be returned.
-	 */
-	public function testAddTypeFloatStrictValid($value, $expect): void
-	{
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'float']]);
-		$option->register();
-
-		add_option($this->optionName, $value);
-
-		$this->assertSame($expect, get_option($this->optionName));
-	}
-
-	/**
-	 * @dataProvider dataTypeFloatStrictValid
-	 * @group type-float
-	 * @group strict-mode
-	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The value to be returned.
-	 */
-	public function testUpdateTypeFloatStrictValid($value, $expect): void
-	{
-		add_option($this->optionName, ['__syntatis' => 100.12]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'float']]);
-		$option->register();
-
-		update_option($this->optionName, $value);
-
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	public function dataTypeFloatStrictValid(): iterable
@@ -973,75 +854,6 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataTypeFloatStrictInvalid
-	 * @group type-float
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testGetTypeFloatStrictInvalid($value): void
-	{
-		add_option($this->optionName, ['__syntatis' => $value]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'float']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-
-		get_option($this->optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeFloatStrictInvalid
-	 * @group type-float
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testAddTypeFloatStrictInvalid($value): void
-	{
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'float']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type float, ' . gettype($value) . ' type given.');
-
-		add_option($this->optionName, $value);
-	}
-
-	/**
-	 * @dataProvider dataTypeFloatStrictInvalid
-	 * @group type-float
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testUpdateTypeFloatStrictInvalid($value): void
-	{
-		add_option($this->optionName, ['__syntatis' => 1.23]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'float']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type float, ' . gettype($value) . ' type given.');
-
-		update_option($this->optionName, $value);
-	}
-
-	public function dataTypeFloatStrictInvalid(): iterable
-	{
-		yield ['Hello world!'];
-		yield [''];
-		yield [false];
-		yield [true];
-		yield [[]];
-	}
-
-	/**
 	 * @dataProvider dataTypeArray
 	 * @group type-array
 	 *
@@ -1050,13 +862,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeArray($value, $expect): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook);
+		$option = new SiteOption($this->hook);
 		$option->setSchema([$this->optionName => ['type' => 'array']]);
 		$option->register();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
 	/**
@@ -1088,51 +900,13 @@ class OptionTest extends TestCase
 	 */
 	public function testGetTypeArrayStrictValid($value): void
 	{
-		add_option($this->optionName, ['__syntatis' => $value]);
+		add_site_option($this->optionName, ['__syntatis' => $value]);
 
-		$option = new Option($this->hook, null, 1);
+		$option = new SiteOption($this->hook, null, 1);
 		$option->setSchema([$this->optionName => ['type' => 'array']]);
 		$option->register();
 
-		$this->assertSame($value, get_option($this->optionName));
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayStrictValid
-	 * @group type-array
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testAddTypeArrayStrictValid($value): void
-	{
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'array']]);
-		$option->register();
-
-		add_option($this->optionName, $value);
-
-		$this->assertSame($value, get_option($this->optionName));
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayStrictValid
-	 * @group type-array
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testUpdateTypeArrayStrictValid($value): void
-	{
-		add_option($this->optionName, ['__syntatis' => ['foo']]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'array']]);
-		$option->register();
-
-		update_option($this->optionName, $value);
-
-		$this->assertSame($value, get_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
 	public function dataTypeArrayStrictValid(): iterable
@@ -1140,78 +914,7 @@ class OptionTest extends TestCase
 		yield [[], []];
 		yield [['foo'], ['foo']];
 		yield [['foo' => 'bar'], ['foo' => 'bar']];
+
 		yield [null, null];
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayStrictInvalid
-	 * @group type-array
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testGetTypeArrayStrictInvalid($value): void
-	{
-		add_option($this->optionName, ['__syntatis' => $value]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'array']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-
-		get_option($this->optionName);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayStrictInvalid
-	 * @group type-array
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testAddTypeArrayStrictInvalid($value): void
-	{
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'array']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
-
-		add_option($this->optionName, $value);
-	}
-
-	/**
-	 * @dataProvider dataTypeArrayStrictInvalid
-	 * @group type-array
-	 * @group strict-mode
-	 *
-	 * @param mixed $value The value to add in the option.
-	 */
-	public function testUpdateTypeArrayStrictInvalid($value): void
-	{
-		add_option($this->optionName, ['__syntatis' => ['foo']]);
-
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'array']]);
-		$option->register();
-
-		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
-
-		update_option($this->optionName, $value);
-	}
-
-	public function dataTypeArrayStrictInvalid(): iterable
-	{
-		yield ['Hello world!'];
-		yield [''];
-		yield [0];
-		yield [1];
-		yield [1.2];
-		yield [-1];
-		yield [false];
-		yield [true];
 	}
 }
