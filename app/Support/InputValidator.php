@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Support;
 
 use InvalidArgumentException;
+use Symfony\Component\Validator\Constraint;
+use Syntatis\Utils\Validator\Validator;
 use Syntatis\WP\Option\Option;
 use TypeError;
 
 use function array_key_exists;
+use function count;
 use function gettype;
 use function is_array;
 use function is_bool;
@@ -17,7 +20,10 @@ use function is_float;
 use function is_int;
 use function is_string;
 
-/** @phpstan-import-type OptionType from Option */
+/**
+ * @phpstan-import-type OptionConstraints from Option
+ * @phpstan-import-type OptionType from Option
+ */
 class InputValidator
 {
 	/** @phpstan-var OptionType */
@@ -28,12 +34,12 @@ class InputValidator
 
 	/**
 	 * @phpstan-param OptionType $type
-	 * @phpstan-param array<callable>|callable $constraints
+	 * @phpstan-param OptionConstraints $constraints
 	 */
 	public function __construct(string $type, $constraints = [])
 	{
 		$this->type = $type;
-		$this->constraints = ! is_array($constraints) ? (array) $constraints : $constraints;
+		$this->constraints = ! is_array($constraints) ? [$constraints] : $constraints;
 	}
 
 	/** @param mixed $value */
@@ -87,14 +93,26 @@ class InputValidator
 	private function validateWithConstraints($value): void
 	{
 		foreach ($this->constraints as $constraint) {
-			if (! is_callable($constraint)) {
+			if (is_callable($constraint)) {
+				$result = $constraint($value);
+
+				if ($result === false) {
+					throw new InvalidArgumentException('Value does not match the given constraints.');
+				}
+			}
+
+			if (! $constraint instanceof Constraint) {
 				continue;
 			}
 
-			$result = $constraint($value);
+			$validator = Validator::instance()->validate($value, $constraint);
 
-			if ($result === false) {
-				throw new InvalidArgumentException('Value does not match the given constraints.');
+			if (count($validator) <= 0) {
+				continue;
+			}
+
+			foreach ($validator as $v) {
+				throw new InvalidArgumentException((string) $v);
 			}
 		}
 	}

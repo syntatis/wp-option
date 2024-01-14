@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option;
 
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Support\InputSanitizer;
 use Syntatis\WP\Option\Support\InputValidator;
@@ -13,7 +15,8 @@ use function array_merge;
 
 /**
  * @phpstan-type OptionType 'array'|'boolean'|'float'|'integer'|'string'
- * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int, constraints?: array<callable>|callable}
+ * @phpstan-type OptionConstraints callable|array<callable>|Constraint|ValidatorInterface|null
+ * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int, constraints?: OptionConstraints}
  */
 class Option
 {

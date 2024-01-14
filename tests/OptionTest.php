@@ -1218,15 +1218,14 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataConstraintsCallback
+	 * @dataProvider dataConstraints
 	 * @group strict-mode
-	 * @group test-here-1
 	 *
 	 * @param mixed $constraints  The constraints to be passed in the schema.
 	 * @param mixed $value        The value to add in the option.
 	 * @param mixed $errorMessage The expected error message.
 	 */
-	public function testConstraintsCallback($constraints, $value, $errorMessage): void
+	public function testAddConstraints($constraints, $value, $errorMessage): void
 	{
 		$option = new Option($this->hook, null, 1);
 		$option->setSchema([
@@ -1243,9 +1242,62 @@ class OptionTest extends TestCase
 		add_option($this->optionName, $value);
 	}
 
-	public function dataConstraintsCallback(): iterable
+	/**
+	 * @dataProvider dataConstraints
+	 *
+	 * @param mixed $constraints The constraints to be passed in the schema.
+	 * @param mixed $value       The value to add in the option.
+	 */
+	public function testAddConstraintsNonStrict($constraints, $value): void
 	{
-		yield ['\Syntatis\Utils\is_email', 'Hello', 'Value does not match the given constraints.'];
-		yield [new Assert\Email(null, 'The email "Hello" is not a valid email.'), 'Hello', 'The email "Hello" is not a valid email.'];
+		$option = new Option($this->hook);
+		$option->setSchema([
+			$this->optionName => [
+				'type' => 'string',
+				'constraints' => $constraints,
+			],
+		]);
+		$option->register();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataConstraints
+	 * @group strict-mode
+	 *
+	 * @param mixed $constraints  The constraints to be passed in the schema.
+	 * @param mixed $value        The value to add in the option.
+	 * @param mixed $errorMessage The expected error message.
+	 */
+	public function testUpdateConstraints($constraints, $value, $errorMessage): void
+	{
+		add_option($this->optionName, ['__syntatis' => 'email@example.org']);
+
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([
+			$this->optionName => [
+				'type' => 'string',
+				'constraints' => $constraints,
+			],
+		]);
+		$option->register();
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_option($this->optionName, $value);
+	}
+
+	public function dataConstraints(): iterable
+	{
+		yield ['\Syntatis\Utils\is_email', 'Maybe Email', 'Value does not match the given constraints.'];
+		yield [new Assert\Email(null, 'The email {{ value }} is not a valid email.'), 'Hello Email', 'The email "Hello Email" is not a valid email.'];
+
+		// With arrays.
+		yield [['\Syntatis\Utils\is_email'], 'Maybe Email', 'Value does not match the given constraints.'];
+		yield [[new Assert\Email(null, 'The email {{ value }} is not a valid email.')], 'Hello Email', 'The email "Hello Email" is not a valid email.'];
 	}
 }
