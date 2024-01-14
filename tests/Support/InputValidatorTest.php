@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option\Tests\Support;
 
+use InvalidArgumentException;
 use stdClass;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints as Assert;
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Support\InputValidator;
 use Syntatis\WP\Option\Tests\TestCase;
@@ -53,6 +56,23 @@ class InputValidatorTest extends TestCase
 		$validator->validate($type, 'foo');
 	}
 
+	/**
+	 * @dataProvider dataConstraints
+	 *
+	 * @param string                                                $type         The type of the value to validate.
+	 * @param callable|array<callable>|Constraint|array<Constraint> $constraints  List of constraints to validate against.
+	 * @param mixed                                                 $value        The value to validate.
+	 * @param string                                                $errorMessage The error message to expect.
+	 */
+	public function testConstraints(string $type, $constraints, $value, string $errorMessage): void
+	{
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		$validator = new InputValidator($type, $constraints);
+		$validator->validate($value);
+	}
+
 	public function dataValidateInvalidValueType(): iterable
 	{
 		yield ['string', true, 'boolean'];
@@ -84,5 +104,15 @@ class InputValidatorTest extends TestCase
 	public function dataValidateInvalidType(): iterable
 	{
 		yield ['foo'];
+	}
+
+	public function dataConstraints(): iterable
+	{
+		yield ['string', '\Syntatis\Utils\is_email', 'Maybe Email', 'Value does not match the given constraints.'];
+		yield ['string', new Assert\Email(null, 'The email {{ value }} is not a valid email.'), 'Hello Email', 'The email "Hello Email" is not a valid email.'];
+
+		// With arrays.
+		yield ['string', ['\Syntatis\Utils\is_email'], 'Maybe Email', 'Value does not match the given constraints.'];
+		yield ['string', [new Assert\Email(null, 'The email {{ value }} is not a valid email.')], 'Hello Email', 'The email "Hello Email" is not a valid email.'];
 	}
 }
