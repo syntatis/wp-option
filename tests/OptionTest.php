@@ -1291,6 +1291,32 @@ class OptionTest extends TestCase
 		update_option($this->optionName, $value);
 	}
 
+	/**
+	 * @dataProvider dataConstraints
+	 *
+	 * @param mixed $constraints The constraints to be passed in the schema.
+	 * @param mixed $value       The value to add in the option.
+	 */
+	public function testUpdateConstraintsNonStrict($constraints, $value): void
+	{
+		add_option($this->optionName, ['__syntatis' => 'email@example.org']);
+
+		$option = new Option($this->hook);
+		$option->setSchema([
+			$this->optionName => [
+				'type' => 'string',
+				'constraints' => $constraints,
+			],
+		]);
+		$option->register();
+
+		$this->assertSame('email@example.org', get_option($this->optionName));
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
 	public function dataConstraints(): iterable
 	{
 		yield ['\Syntatis\Utils\is_email', 'Maybe Email', 'Value does not match the given constraints.'];
