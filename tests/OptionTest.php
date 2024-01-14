@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option\Tests;
 
+use InvalidArgumentException;
+use Symfony\Component\Validator\Constraints as Assert;
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Option;
 use TypeError;
@@ -1213,5 +1215,37 @@ class OptionTest extends TestCase
 		yield [-1];
 		yield [false];
 		yield [true];
+	}
+
+	/**
+	 * @dataProvider dataConstraintsCallback
+	 * @group strict-mode
+	 * @group test-here-1
+	 *
+	 * @param mixed $constraints  The constraints to be passed in the schema.
+	 * @param mixed $value        The value to add in the option.
+	 * @param mixed $errorMessage The expected error message.
+	 */
+	public function testConstraintsCallback($constraints, $value, $errorMessage): void
+	{
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([
+			$this->optionName => [
+				'type' => 'string',
+				'constraints' => $constraints,
+			],
+		]);
+		$option->register();
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_option($this->optionName, $value);
+	}
+
+	public function dataConstraintsCallback(): iterable
+	{
+		yield ['\Syntatis\Utils\is_email', 'Hello', 'Value does not match the given constraints.'];
+		yield [new Assert\Email(null, 'The email "Hello" is not a valid email.'), 'Hello', 'The email "Hello" is not a valid email.'];
 	}
 }

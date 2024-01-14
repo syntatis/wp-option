@@ -13,7 +13,7 @@ use function array_merge;
 
 /**
  * @phpstan-type OptionType 'array'|'boolean'|'float'|'integer'|'string'
- * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int}
+ * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int, constraints?: array<callable>|callable}
  */
 class Option
 {
@@ -63,7 +63,7 @@ class Option
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 
 			if ($this->strict === 1) {
-				$inputValidator = new InputValidator($optionType);
+				$inputValidator = new InputValidator($optionType, $schema['constraints'] ?? []);
 
 				$this->hook->addAction(
 					'add_option',
@@ -82,27 +82,21 @@ class Option
 
 			$this->hook->addFilter(
 				'sanitize_option_' . $optionName,
-				static function ($value, $option, $originalValue) use ($inputSanitizer) {
-					return $inputSanitizer->sanitize($originalValue);
-				},
+				static fn ($value, $option, $originalValue) => $inputSanitizer->sanitize($originalValue),
 				$optionPriority,
 				3,
 			);
 
 			$this->hook->addFilter(
 				'default_option_' . $optionName,
-				static function ($default, $option, $passedDefault) use ($optionDefault, $outputResolver) {
-					return $outputResolver->resolve($passedDefault ? $default : $optionDefault);
-				},
+				static fn ($default, $option, $passedDefault) => $outputResolver->resolve($passedDefault ? $default : $optionDefault),
 				$optionPriority,
 				3,
 			);
 
 			$this->hook->addFilter(
 				'option_' . $optionName,
-				static function ($value) use ($outputResolver) {
-					return $outputResolver->resolve($value);
-				},
+				static fn ($value) => $outputResolver->resolve($value),
 				$optionPriority,
 			);
 		}
