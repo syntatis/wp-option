@@ -112,7 +112,7 @@ class InputValidator
 			}
 
 			foreach ($validator as $v) {
-				throw new InvalidArgumentException((string) $v);
+				throw new InvalidArgumentException((string) $v->getMessage());
 			}
 		}
 	}
