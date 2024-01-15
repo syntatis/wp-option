@@ -11,7 +11,6 @@ use Syntatis\WP\Option\Option;
 use TypeError;
 
 use function array_key_exists;
-use function count;
 use function gettype;
 use function is_array;
 use function is_bool;
