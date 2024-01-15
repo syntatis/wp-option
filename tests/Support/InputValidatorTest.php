@@ -73,6 +73,21 @@ class InputValidatorTest extends TestCase
 		$validator->validate($value);
 	}
 
+	/**
+	 * @dataProvider dataInvalidConstraints
+	 *
+	 * @param string                                                $type        The type of the value to validate.
+	 * @param callable|array<callable>|Constraint|array<Constraint> $constraints List of constraints to validate against.
+	 * @param mixed                                                 $value       The value to validate.
+	 */
+	public function testInvalidConstraints(string $type, $constraints, $value): void
+	{
+		$this->expectNotToPerformAssertions();
+
+		$validator = new InputValidator($type, $constraints);
+		$validator->validate($value);
+	}
+
 	public function dataValidateInvalidValueType(): iterable
 	{
 		yield ['string', true, 'boolean'];
@@ -114,5 +129,15 @@ class InputValidatorTest extends TestCase
 		// With arrays.
 		yield ['string', ['\Syntatis\Utils\is_email'], 'Maybe Email', 'Value does not match the given constraints.'];
 		yield ['string', [new Assert\Email(null, 'The email {{ value }} is not a valid email.')], 'Hello Email', 'The email "Hello Email" is not a valid email.'];
+	}
+
+	public function dataInvalidConstraints(): iterable
+	{
+		yield ['string', '\Syntatis\Utils\is_emails', 'Hello world!'];
+		yield ['string', false, 'Hello world!'];
+		yield ['string', '', 'Hello world!'];
+		yield ['string', ['\Syntatis\Utils\is_emails'], 'Hello world!'];
+		yield ['string', [''], 'Hello world!'];
+		yield ['string', [false], 'Hello world!'];
 	}
 }

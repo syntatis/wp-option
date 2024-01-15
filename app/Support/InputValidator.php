@@ -105,14 +105,10 @@ class InputValidator
 				continue;
 			}
 
-			$validator = Validator::instance()->validate($value, $constraint);
+			$validators = Validator::instance()->validate($value, $constraint);
 
-			if (count($validator) <= 0) {
-				continue;
-			}
-
-			foreach ($validator as $v) {
-				throw new InvalidArgumentException((string) $v->getMessage());
+			foreach ($validators as $validator) {
+				throw new InvalidArgumentException((string) $validator->getMessage());
 			}
 		}
 	}
