@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option\Support;
 
+use InvalidArgumentException;
+use Symfony\Component\Validator\Constraint;
+use Syntatis\Utils\Validator\Validator;
 use Syntatis\WP\Option\Option;
 use TypeError;
 
@@ -11,20 +14,31 @@ use function array_key_exists;
 use function gettype;
 use function is_array;
 use function is_bool;
+use function is_callable;
 use function is_float;
 use function is_int;
 use function is_string;
 
-/** @phpstan-import-type OptionType from Option */
+/**
+ * @phpstan-import-type OptionConstraints from Option
+ * @phpstan-import-type OptionType from Option
+ */
 class InputValidator
 {
 	/** @phpstan-var OptionType */
 	private string $type;
 
-	/** @phpstan-param OptionType $type */
-	public function __construct(string $type)
+	/** @phpstan-var array<callable> */
+	private array $constraints = [];
+
+	/**
+	 * @phpstan-param OptionType $type
+	 * @phpstan-param OptionConstraints $constraints
+	 */
+	public function __construct(string $type, $constraints = [])
 	{
 		$this->type = $type;
+		$this->constraints = ! is_array($constraints) ? [$constraints] : $constraints;
 	}
 
 	/** @param mixed $value */
@@ -46,6 +60,8 @@ class InputValidator
 		if ($matchedType === null) {
 			throw new TypeError('Unable to validate of type ' . $this->type . '.');
 		}
+
+		$this->validateWithConstraints($value);
 	}
 
 	/** @param mixed $value */
@@ -69,6 +85,30 @@ class InputValidator
 
 			default:
 				return null;
+		}
+	}
+
+	/** @param mixed $value */
+	private function validateWithConstraints($value): void
+	{
+		foreach ($this->constraints as $constraint) {
+			if (is_callable($constraint)) {
+				$result = $constraint($value);
+
+				if ($result === false) {
+					throw new InvalidArgumentException('Value does not match the given constraints.');
+				}
+			}
+
+			if (! $constraint instanceof Constraint) {
+				continue;
+			}
+
+			$validators = Validator::instance()->validate($value, $constraint);
+
+			foreach ($validators as $validator) {
+				throw new InvalidArgumentException((string) $validator->getMessage());
+			}
 		}
 	}
 }

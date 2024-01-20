@@ -73,7 +73,7 @@ class SiteOption
 			$optionPriority = $schema['priority'] ?? $this->priority;
 
 			$inputSanitizer = new InputSanitizer();
-			$inputValidator = new InputValidator($optionType);
+			$inputValidator = new InputValidator($optionType, $schema['constraints'] ?? []);
 			$outputResolver = new OutputResolver($optionType, $this->strict);
 
 			$this->hook->addFilter('pre_add_site_option_' . $optionName, function ($value) use ($optionName, $inputSanitizer, $inputValidator) {
