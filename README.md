@@ -2,7 +2,7 @@
   <strong>☔ wp-option</strong>
   <p>WordPress option with some safeguards</p>
 
-  [![wp](https://github.com/syntatis/wp-option/actions/workflows/wp.yml/badge.svg)](https://github.com/syntatis/wp-option/actions/workflows/wp.yml) [![codecov](https://codecov.io/gh/syntatis/wp-option/graph/badge.svg?token=QH387BY1PK)](https://codecov.io/gh/syntatis/wp-option)
+  ![Packagist Dependency Version](https://img.shields.io/packagist/dependency-v/syntatis/wp-option/php?color=%237A86B8) [![wp](https://github.com/syntatis/wp-option/actions/workflows/wp.yml/badge.svg)](https://github.com/syntatis/wp-option/actions/workflows/wp.yml) [![codecov](https://codecov.io/gh/syntatis/wp-option/graph/badge.svg?token=QH387BY1PK)](https://codecov.io/gh/syntatis/wp-option)
 </div>
 
 ---
