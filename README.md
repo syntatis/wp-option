@@ -26,7 +26,7 @@ It is the responsibility of developers to ensure that the value of the option al
 ## Installation
 
 ```sh
-composer require wp-option
+composer require syntatis/wp-option
 ```
 
 ## Usage
