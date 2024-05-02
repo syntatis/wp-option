@@ -17,7 +17,7 @@ use function is_bool;
  * @phpstan-import-type OptionType from Option
  * @phpstan-import-type OptionSchema from Option
  */
-class SiteOption
+class SiteOptions
 {
 	private int $priority = 99;
 

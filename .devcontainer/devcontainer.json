@@ -38,7 +38,8 @@
 				"neilbrayfield.php-docblocker",
 				"wongjn.php-sniffer",
 				"wordpresstoolbox.wordpress-toolbox",
-				"SanderRonde.phpstan-vscode"
+				"SanderRonde.phpstan-vscode",
+				"xdebug.php-debug"
 			]
 		}
 	}
