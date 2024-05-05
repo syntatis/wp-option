@@ -11,27 +11,21 @@ class OptionTest extends TestCase
 	/** @testdox should return the name */
 	public function testName(): void
 	{
-		$option = new Option('foo');
+		$option = new Option('foo', 'string');
 
-		$this->assertEquals(
-			'foo',
-			$option->getName(),
-		);
+		$this->assertEquals('foo', $option->getName());
 	}
 
-	/** @testdox should return the constraints */
+	/** @testdox should set and return the constraints */
 	public function testConstraints(): void
 	{
-		$option = new Option('foo');
-		$option = $option->constrained('is_string');
+		$option = new Option('foo', 'string');
+		$option = $option->setConstraints('is_string');
 
-		$this->assertEquals(
-			'is_string',
-			$option->getConstraints(),
-		);
+		$this->assertEquals('is_string', $option->getConstraints());
 
-		$option = new Option('foo');
-		$option = $option->constrained(['is_string', 'is_numeric']);
+		$option = new Option('foo', 'string');
+		$option = $option->setConstraints(['is_string', 'is_numeric']);
 
 		$this->assertEquals(
 			['is_string', 'is_numeric'],
@@ -39,11 +33,23 @@ class OptionTest extends TestCase
 		);
 	}
 
-	/** @testdox should return the default value set */
+	/** @testdox should set and return the priority */
+	public function testPriority(): void
+	{
+		$option = new Option('foo', 'string');
+
+		$this->assertSame(99, $option->getPriority());
+
+		$option = $option->setPriority(100);
+
+		$this->assertSame(100, $option->getPriority());
+	}
+
+	/** @testdox should set and return the default value set */
 	public function testSettingArgsDefault(): void
 	{
-		$option = new Option('foo');
-		$option->defaultTo('bar');
+		$option = new Option('foo', 'string');
+		$option->setDefault('bar');
 
 		$this->assertEquals(
 			[
@@ -54,143 +60,39 @@ class OptionTest extends TestCase
 		);
 	}
 
-	/** @testdox should infer as 'integer' when the default is a string. */
-	public function testSettingArgsTypeInferredFromString(): void
+	/** @testdox should set and return the description */
+	public function testSettingArgsDescription(): void
 	{
-		$option = new Option('foo');
-		$option->defaultTo('Hello World!');
+		$option = new Option('foo', 'string');
+		$option->setDescription('This is the description');
 
 		$this->assertEquals(
 			[
 				'type' => 'string',
-				'default' => 'Hello World!',
+				'description' => 'This is the description',
 			],
-			$option->getSettingArgs(),
-		);
-	}
-
-	/** @testdox should infer as 'integer' when the default is an integer. */
-	public function testSettingArgsTypeInferredFromInteger(): void
-	{
-		$option = new Option('foo');
-		$option->defaultTo(1);
-
-		$this->assertEquals(
-			[
-				'type' => 'integer',
-				'default' => 1,
-			],
-			$option->getSettingArgs(),
-		);
-	}
-
-	/** @testdox should infer as 'integer' when the default is an integer. */
-	public function testSettingArgsTypeInferredFromBoolean(): void
-	{
-		$option = new Option('foo');
-		$option->defaultTo(false);
-
-		$this->assertEquals(
-			[
-				'type' => 'boolean',
-				'default' => false,
-			],
-			$option->getSettingArgs(),
-		);
-	}
-
-	/** @testdox should infer as 'number' when the default is a float. */
-	public function testSettingArgsTypeInferredFromFloat(): void
-	{
-		$option = new Option('foo');
-		$option->defaultTo(1.1);
-
-		$this->assertEquals(
-			[
-				'type' => 'number',
-				'default' => 1.1,
-			],
-			$option->getSettingArgs(),
-		);
-	}
-
-	/** @testdox should infer as 'array' when the default is an array. */
-	public function testSettingArgsTypeArray(): void
-	{
-		$option = new Option('foo');
-		$option->defaultTo([]);
-
-		$this->assertEquals(
-			[
-				'type' => 'array',
-				'default' => [],
-			],
-			$option->getSettingArgs(),
-		);
-	}
-
-	/** @testdox should infer as 'object' when the default is an associative array. */
-	public function testSettingArgsTypeAssociativeArray(): void
-	{
-		$option = new Option('foo');
-		$option->defaultTo(['foo' => 'bar']);
-
-		$this->assertEquals(
-			[
-				'type' => 'object',
-				'default' => ['foo' => 'bar'],
-			],
-			$option->getSettingArgs(),
-		);
-	}
-
-	/** @testdox should override the inferred type when the type is set explicitly. */
-	public function testSettingArgsTypeOverrideInference(): void
-	{
-		$option = new Option('foo');
-		$option->defaultTo([]); // An empty array will by default be inferred as an array.
-		$option->typedAs('object'); // But the expected value is an object.
-
-		$this->assertEquals(
-			[
-				'type' => 'object',
-				'default' => [],
-			],
-			$option->getSettingArgs(),
-		);
-	}
-
-	/** @testdox should not infer type when the default is `null`. */
-	public function testSettingArgsTypeNullDefault(): void
-	{
-		$option = new Option('foo');
-		$option->defaultTo(null);
-
-		$this->assertEquals(
-			['default' => null],
 			$option->getSettingArgs(),
 		);
 	}
 
 	/**
-	 * @dataProvider dataSettingArgsTypeRESTConfig
+	 * @dataProvider dataSettingArgsTypeAPIConfig
 	 * @testdox should override the inferred type when the type is set explicitly.
 	 *
-	 * @param mixed $shouldrest
+	 * @param mixed $config
 	 */
-	public function testSettingArgsTypeRESTConfig($shouldrest): void
+	public function testSettingArgsTypeAPIConfig($config): void
 	{
-		$option = new Option('foo');
-		$option->shouldREST($shouldrest);
-		$expected = $shouldrest;
+		$option = new Option('foo', 'string');
+		$option->apiConfig($config);
 
 		$this->assertEquals(
-			$expected,
+			$config,
 			$option->getSettingArgs()['show_in_rest'],
 		);
 	}
 
-	public function dataSettingArgsTypeRESTConfig(): iterable
+	public function dataSettingArgsTypeAPIConfig(): iterable
 	{
 		yield [true];
 		yield [false];

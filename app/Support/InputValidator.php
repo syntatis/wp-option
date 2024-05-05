@@ -20,6 +20,8 @@ use function is_float;
 use function is_int;
 use function is_string;
 
+use const Syntatis\WP\Option\TYPE_MAP;
+
 /**
  * @phpstan-import-type Constraints from Option
  * @phpstan-import-type ValueType from Option

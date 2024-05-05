@@ -24,11 +24,11 @@ class InputSanitizerTest extends TestCase
 
 	public function dataSanitize(): iterable
 	{
-		yield 'string' => ['Hello world!', ['__syntatis' => 'Hello world!']];
-		yield 'integer' => [1, ['__syntatis' => 1]];
-		yield 'float' => [1.23, ['__syntatis' => 1.23]];
-		yield 'boolean' => [true, ['__syntatis' => true]];
-		yield 'array' => [['foo'], ['__syntatis' => ['foo']]];
-		yield 'array+sanitized' => [['__syntatis' => 'bar'], ['__syntatis' => 'bar']];
+		yield 'string' => ['Hello world!', 'Hello world!'];
+		yield 'integer' => [1, 1];
+		yield 'number (float)' => [1.23, 1.23];
+		yield 'boolean' => [true, true];
+		yield 'array' => [['foo'], ['foo']];
+		yield 'null' => [null, ['__syntatis' => null]];
 	}
 }

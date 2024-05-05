@@ -8,7 +8,6 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 
-use function array_is_list;
 use function array_key_exists;
 use function gettype;
 use function in_array;
@@ -78,7 +77,7 @@ final class Option
 	 *
 	 * @param array|bool $value
 	 *
-	 * @phpstan-param RESTConfig|bool $value
+	 * @phpstan-param APIConfig|bool $value
 	 */
 	public function apiConfig($value): self
 	{

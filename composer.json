@@ -16,11 +16,17 @@
 		}
 	],
 	"autoload": {
+		"files": [
+			"inc/consts.php"
+		],
 		"psr-4": {
 			"Syntatis\\WP\\Option\\": "app/"
 		}
 	},
 	"autoload-dev": {
+		"files": [
+			"inc/consts.php"
+		],
 		"psr-4": {
 			"Syntatis\\WP\\Option\\Tests\\": "tests/"
 		}
