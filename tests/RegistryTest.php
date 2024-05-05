@@ -370,10 +370,9 @@ class RegistryTest extends TestCase
 	 * @group type-string
 	 * @group strict-mode
 	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
+	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeStringStrictValid($value, $expect): void
+	public function testGetTypeStringStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -389,7 +388,7 @@ class RegistryTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	/**
@@ -397,10 +396,9 @@ class RegistryTest extends TestCase
 	 * @group type-string
 	 * @group strict-mode
 	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
+	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeStringStrictValid($value, $expect): void
+	public function testAddTypeStringStrictValid($value): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
@@ -409,7 +407,7 @@ class RegistryTest extends TestCase
 
 		add_option($this->optionName, $value);
 
-		$this->assertSame($expect, get_option($this->optionName));
+		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	/**
@@ -417,10 +415,9 @@ class RegistryTest extends TestCase
 	 * @group type-string
 	 * @group strict-mode
 	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
+	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeStringStrictValid($value, $expect): void
+	public function testUpdateTypeStringStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -444,10 +441,10 @@ class RegistryTest extends TestCase
 
 	public function dataTypeStringStrictValid(): iterable
 	{
-		yield ['Hello World!', 'Hello World!'];
-		yield ['', ''];
-		yield [' ', ' '];
-		yield [null, null];
+		yield ['Hello World!'];
+		yield [''];
+		yield [' '];
+		yield [null];
 	}
 
 	/**
@@ -541,750 +538,922 @@ class RegistryTest extends TestCase
 		yield [['foo' => 'bar'], 'Value must be of type string, array (associative) given.'];
 	}
 
-	// /**
-	//  * @dataProvider dataTypeBoolean
-	//  * @group type-boolean
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeBoolean($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeBoolean(): iterable
-	// {
-	// 	yield ['Hello world!', true];
-	// 	yield ['', false];
-	// 	yield [0, false];
-	// 	yield [1, true];
-	// 	yield [1.2, true];
-	// 	yield [false, false];
-	// 	yield [true, true];
-	// 	yield [[], false];
-
-	// 	/**
-	// 	 * -1 is considered true, like any other non-zero (whether negative or positive) number!
-	// 	 *
-	// 	 * @see https://www.php.net/manual/en/language.types.boolean.php
-	// 	 */
-	// 	yield [-1, true];
-
-	// 	/**
-	// 	 * A `null` value would return as a `null`.
-	// 	 */
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictValid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeBooleanStrictValid($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictValid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testAddTypeBooleanStrictValid($value, $expect): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
-
-	// 	add_option($this->optionName, $value);
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictValid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testUpdateTypeBooleanStrictValid($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => true]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
-
-	// 	update_option($this->optionName, $value);
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// public function dataTypeBooleanStrictValid(): iterable
-	// {
-	// 	yield [true, true];
-	// 	yield [false, false];
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictInvalid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeBooleanStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-
-	// 	get_option($this->optionName);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictInvalid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testAddTypeBooleanStrictInvalid($value): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
-
-	// 	add_option($this->optionName, $value);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictInvalid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testUpdateTypeBooleanStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => true]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
-
-	// 	update_option($this->optionName, $value);
-	// }
-
-	// public function dataTypeBooleanStrictInvalid(): iterable
-	// {
-	// 	yield ['Hello world!'];
-	// 	yield [''];
-	// 	yield [' '];
-	// 	yield [0];
-	// 	yield [1];
-	// 	yield [1.2];
-	// 	yield [-1];
-	// 	yield [[]];
-	// 	yield [['foo']];
-	// 	yield ['false'];
-	// 	yield ['true'];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeInteger
-	//  * @group type-integer
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeInteger($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeInteger(): iterable
-	// {
-	// 	yield ['Hello world!', 0];
-	// 	yield ['', 0];
-	// 	yield [0, 0];
-	// 	yield [1, 1];
-	// 	yield [1.2, 1];
-	// 	yield [1.23, 1];
-	// 	yield [-1, -1];
-	// 	yield [false, 0];
-	// 	yield [true, 1];
-
-	// 	/**
-	// 	 * The behaviour of converting to int is undefined for other types.
-	// 	 * Do not rely on any observed behaviour, as it can change without
-	// 	 * notice. Similar to how it handles the string type, an array
-	// 	 * would return as a `null`.
-	// 	 *
-	// 	 * @see https://www.php.net/manual/en/language.types.integer.php
-	// 	 */
-	// 	yield [[], null];
-	// 	yield [['foo'], null];
-	// 	yield [['foo' => 'bar'], null];
-
-	// 	/**
-	// 	 * PHP internally would cast a `null` to `0`, but for consistency
-	// 	 * with the other types, and how it handles default when no value
-	// 	 * is passed on the `get_option` function, a `null` value would
-	// 	 * return as a `null`.
-	// 	 */
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictValid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeIntegerStrictValid($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictValid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testAddTypeIntegerStrictValid($value, $expect): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
-
-	// 	add_option($this->optionName, $value);
-
-	// 	$this->assertSame($value, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictValid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testUpdateTypeIntegerStrictValid($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => 1]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
-
-	// 	update_option($this->optionName, $value);
-
-	// 	$this->assertSame($value, get_option($this->optionName));
-	// }
-
-	// public function dataTypeIntegerStrictValid(): iterable
-	// {
-	// 	yield [1, 1]; // Positive
-	// 	yield [-1, -1]; // Negative
-	// 	yield [0123, 0123]; // Octal
-	// 	yield [0x1A, 0x1A]; // Hexadecimal
-	// 	yield [0b11111111, 0b11111111]; // Binary
-	// 	yield [1_234_567, 1_234_567];
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictInvalid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeIntegerStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-
-	// 	get_option($this->optionName);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictInvalid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testAddTypeIntegerStrictInvalid($value): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type integer, ' . gettype($value) . ' type given.');
-
-	// 	add_option($this->optionName, $value);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictInvalid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testUpdateTypeIntegerStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => 1]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type integer, ' . gettype($value) . ' type given.');
-
-	// 	update_option($this->optionName, $value);
-	// }
-
-	// public function dataTypeIntegerStrictInvalid(): iterable
-	// {
-	// 	yield ['Hello world!'];
-	// 	yield [''];
-	// 	yield [1.2];
-	// 	yield [false];
-	// 	yield [true];
-	// 	yield [[]];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeFloat
-	//  * @group type-float
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The value to be returned.
-	//  */
-	// public function testGetTypeFloat($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeFloat(): iterable
-	// {
-	// 	yield ['Hello world!', 0.0];
-	// 	yield ['', 0.0];
-	// 	yield [0, 0.0];
-	// 	yield [1, 1.0];
-	// 	yield [1.2, 1.2];
-	// 	yield [-1, -1.0];
-	// 	yield [false, 0.0];
-	// 	yield [true, 1.0];
-
-	// 	/**
-	// 	 * As certain types have undefined behavior when converting to `int`,
-	// 	 * this is also the case when converting to float.
-	// 	 */
-	// 	yield [[], null];
-	// 	yield [['foo'], null];
-	// 	yield [['foo' => 'bar'], null];
-
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeFloatStrictValid
-	//  * @group type-float
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The value to be returned.
-	//  */
-	// public function testGetTypeFloatStrictValid($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeFloatStrictValid
-	//  * @group type-float
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The value to be returned.
-	//  */
-	// public function testAddTypeFloatStrictValid($value, $expect): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
-
-	// 	add_option($this->optionName, $value);
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeFloatStrictValid
-	//  * @group type-float
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The value to be returned.
-	//  */
-	// public function testUpdateTypeFloatStrictValid($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => 100.12]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
-
-	// 	update_option($this->optionName, $value);
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// public function dataTypeFloatStrictValid(): iterable
-	// {
-	// 	yield [1.2, 1.2]; // Positive
-	// 	yield [-1.2, -1.2]; // Negative
-	// 	yield [1.2e3, 1.2e3]; // Scientific notation
-	// 	yield [7E-10, 7E-10]; // Scientific notation
-	// 	yield [1_234_567.89, 1_234_567.89];
-
-	// 	/**
-	// 	 * This exception occurs even in the `strict_mode`, where an integer is coerced into a float.
-	// 	 * This behavior is based on the assumption that integers can be safely converted to floats
-	// 	 * without any loss of precision or functionality.
-	// 	 */
-	// 	yield [1, 1.0];
-	// 	yield [-1, -1.0];
-	// 	yield [0, 0.0];
-
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeFloatStrictInvalid
-	//  * @group type-float
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeFloatStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-
-	// 	get_option($this->optionName);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeFloatStrictInvalid
-	//  * @group type-float
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testAddTypeFloatStrictInvalid($value): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type float, ' . gettype($value) . ' type given.');
-
-	// 	add_option($this->optionName, $value);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeFloatStrictInvalid
-	//  * @group type-float
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testUpdateTypeFloatStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => 1.23]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type float, ' . gettype($value) . ' type given.');
-
-	// 	update_option($this->optionName, $value);
-	// }
-
-	// public function dataTypeFloatStrictInvalid(): iterable
-	// {
-	// 	yield ['Hello world!'];
-	// 	yield [''];
-	// 	yield [false];
-	// 	yield [true];
-	// 	yield [[]];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeArray
-	//  * @group type-array
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeArray($value, $expect): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($expect, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeArray(): iterable
-	// {
-	// 	yield ['Hello world!', ['Hello world!']];
-	// 	yield ['', ['']];
-	// 	yield [0, [0]];
-	// 	yield [1, [1]];
-	// 	yield [1.2, [1.2]];
-	// 	yield [-1, [-1]];
-	// 	yield [false, [false]];
-	// 	yield [true, [true]];
-	// 	yield [[], []];
-	// 	yield [['foo', 'bar'], ['foo', 'bar']];
-	// 	yield [['foo' => 'bar'], ['foo' => 'bar']];
-
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeArrayStrictValid
-	//  * @group type-array
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeArrayStrictValid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
-
-	// 	$this->assertSame($value, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeArrayStrictValid
-	//  * @group type-array
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testAddTypeArrayStrictValid($value): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
-
-	// 	add_option($this->optionName, $value);
-
-	// 	$this->assertSame($value, get_option($this->optionName));
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeArrayStrictValid
-	//  * @group type-array
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testUpdateTypeArrayStrictValid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => ['foo']]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
-
-	// 	update_option($this->optionName, $value);
-
-	// 	$this->assertSame($value, get_option($this->optionName));
-	// }
-
-	// public function dataTypeArrayStrictValid(): iterable
-	// {
-	// 	yield [[], []];
-	// 	yield [['foo'], ['foo']];
-	// 	yield [['foo' => 'bar'], ['foo' => 'bar']];
-	// 	yield [null, null];
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeArrayStrictInvalid
-	//  * @group type-array
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeArrayStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => $value]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-
-	// 	get_option($this->optionName);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeArrayStrictInvalid
-	//  * @group type-array
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testAddTypeArrayStrictInvalid($value): void
-	// {
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
-
-	// 	add_option($this->optionName, $value);
-	// }
-
-	// /**
-	//  * @dataProvider dataTypeArrayStrictInvalid
-	//  * @group type-array
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testUpdateTypeArrayStrictInvalid($value): void
-	// {
-	// 	add_option($this->optionName, ['__syntatis' => ['foo']]);
-
-	// 	$option = new Option($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
-
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
-
-	// 	update_option($this->optionName, $value);
-	// }
-
-	// public function dataTypeArrayStrictInvalid(): iterable
-	// {
-	// 	yield ['Hello world!'];
-	// 	yield [''];
-	// 	yield [0];
-	// 	yield [1];
-	// 	yield [1.2];
-	// 	yield [-1];
-	// 	yield [false];
-	// 	yield [true];
-	// }
+	/**
+	 * @dataProvider dataTypeBoolean
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeBoolean($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'boolean')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeBoolean(): iterable
+	{
+		yield ['Hello world!', true];
+		yield ['', false];
+		yield [0, false];
+		yield [1, true];
+		yield [1.2, true];
+		yield [false, false];
+		yield [true, true];
+		yield [[], false];
+
+		/**
+		 * -1 is considered true, like any other non-zero (whether negative or positive) number!
+		 *
+		 * @see https://www.php.net/manual/en/language.types.boolean.php
+		 */
+		yield [-1, true];
+
+		/**
+		 * A `null` value would return as a `null`.
+		 */
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeBooleanStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeBooleanStrictValid($value): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeBooleanStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeBooleanStrictValid(): iterable
+	{
+		yield [true];
+		yield [false];
+		yield [null];
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testGetTypeBooleanStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		get_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testAddTypeBooleanStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testUpdateTypeBooleanStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function, and
+		 * retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeBooleanStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type boolean, string given.'];
+		yield ['', 'Value must be of type boolean, string given.'];
+		yield [' ', 'Value must be of type boolean, string given.'];
+		yield [0, 'Value must be of type boolean, integer given.'];
+		yield [1, 'Value must be of type boolean, integer given.'];
+		yield [1.2, 'Value must be of type boolean, number (float) given.'];
+		yield [-1, 'Value must be of type boolean, integer given.'];
+		yield [[], 'Value must be of type boolean, array (sequential) given.'];
+		yield [['foo' => 'bar'], 'Value must be of type boolean, array (associative) given.'];
+		yield ['false', 'Value must be of type boolean, string given.'];
+		yield ['true', 'Value must be of type boolean, string given.'];
+	}
+
+	/**
+	 * @dataProvider dataTypeInteger
+	 * @group type-integer
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeInteger($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'integer')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeInteger(): iterable
+	{
+		yield ['Hello world!', 0];
+		yield ['', 0];
+		yield [0, 0];
+		yield [1, 1];
+		yield [1.2, 1];
+		yield [1.23, 1];
+		yield [-1, -1];
+		yield [false, 0];
+		yield [true, 1];
+
+		/**
+		 * The behaviour of converting to int is undefined for other types.
+		 * Do not rely on any observed behaviour, as it can change without
+		 * notice. Similar to how it handles the string type, an array
+		 * would return as a `null`.
+		 *
+		 * @see https://www.php.net/manual/en/language.types.integer.php
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
+
+		/**
+		 * PHP internally would cast a `null` to `0`, but for consistency
+		 * with the other types, and how it handles default when no value
+		 * is passed on the `get_option` function, a `null` value would
+		 * return as a `null`.
+		 */
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeIntegerStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeIntegerStrictValid($value): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeIntegerStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function, and
+		 * retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeIntegerStrictValid(): iterable
+	{
+		yield [1]; // Positive
+		yield [-1]; // Negative
+		yield [0123]; // Octal
+		yield [0x1A]; // Hexadecimal
+		yield [0b11111111]; // Binary
+		yield [1_234_567];
+		yield [null];
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictInvalid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testGetTypeIntegerStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		get_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictInvalid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testAddTypeIntegerStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictInvalid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testUpdateTypeIntegerStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeIntegerStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type integer, string given.'];
+		yield ['', 'Value must be of type integer, string given.'];
+		yield [1.2, 'Value must be of type integer, number (float) given.'];
+		yield [false, 'Value must be of type integer, boolean given.'];
+		yield [true, 'Value must be of type integer, boolean given.'];
+		yield [['foo'], 'Value must be of type integer, array (sequential) given.'];
+		yield [['foo' => 'bar'], 'Value must be of type integer, array (associative) given.'];
+	}
+
+	/**
+	 * @dataProvider dataTypeNumber
+	 * @group type-number
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The value to be returned.
+	 */
+	public function testGetTypeNumber($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'number')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeNumber(): iterable
+	{
+		yield [0, 0];
+		yield [1, 1];
+		yield [1.2, 1.2];
+		yield ['1', 1];
+		yield ['1.2', 1.2];
+		yield [-1, -1];
+		yield [false, 0];
+		yield [true, 1];
+
+		/**
+		 * As certain types have undefined behavior when converting to number.
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
+		yield ['Hello world!', null];
+		yield ['', null];
+
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictValid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeNumberStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictValid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeNumberStrictValid($value): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictValid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeNumberStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeNumberStrictValid(): iterable
+	{
+		yield [1.2]; // Positive
+		yield [-1.2]; // Negative
+		yield [1.2e3]; // Scientific notation
+		yield [7E-10]; // Scientific notation
+		yield [1_234_567.89];
+
+		// Integers
+		yield [1];
+		yield [-1];
+		yield [0];
+
+		yield [null];
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictInvalid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testGetTypeNumberStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+
+		get_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictInvalid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testAddTypeNumberStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictInvalid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testUpdateTypeNumberStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_option($this->optionName, $value);
+	}
+
+	public function dataTypeNumberStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type number, string given.'];
+		yield ['', 'Value must be of type number, string given.'];
+		yield [false, 'Value must be of type number, boolean given.'];
+		yield [true, 'Value must be of type number, boolean given.'];
+		yield [[], 'Value must be of type number, array (sequential) given.'];
+	}
+
+	/**
+	 * @dataProvider dataTypeArray
+	 * @group type-array
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeArray($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'array')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeArray(): iterable
+	{
+		yield ['Hello world!', ['Hello world!']];
+		yield ['', ['']];
+		yield [0, [0]];
+		yield [1, [1]];
+		yield [1.2, [1.2]];
+		yield [-1, [-1]];
+		yield [false, [false]];
+		yield [true, [true]];
+		yield [[], []];
+		yield [['foo', 'bar'], ['foo', 'bar']];
+		yield [['foo' => 'bar'], [['foo' => 'bar']]];
+
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictValid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeArrayStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictValid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeArrayStrictValid($value): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictValid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeArrayStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		update_option($this->optionName, $value);
+
+		$this->assertSame($value, get_option($this->optionName));
+	}
+
+	public function dataTypeArrayStrictValid(): iterable
+	{
+		yield [[]];
+		yield [['foo']];
+		yield [null];
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictInvalid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testGetTypeArrayStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		get_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictInvalid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeArrayStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictInvalid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeArrayStrictInvalid($value): void
+	{
+		add_option($this->optionName, ['__syntatis' => ['foo']]);
+
+		$option = new Option($this->hook, null, 1);
+		$option->setSchema([$this->optionName => ['type' => 'array']]);
+		$option->register();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
+
+		update_option($this->optionName, $value);
+	}
+
+	public function dataTypeArrayStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type array (sequential), string given.'];
+		yield ['', 'Value must be of type array (sequential), string given.'];
+		yield [0, 'Value must be of type array (sequential), integer given.'];
+		yield [1.2, 'Value must be of type array (sequential), number (float) given.'];
+		yield [-1, 'Value must be of type array (sequential), integer given.'];
+		yield [false, 'Value must be of type array (sequential), boolean given.'];
+		yield [true, 'Value must be of type array (sequential), boolean given.'];
+	}
 
 	// /**
 	//  * @dataProvider dataConstraints

@@ -14,12 +14,20 @@ use function strtolower;
 
 class TypeError extends Error
 {
+	private const TYPE_MAP = [
+		'double' => 'number (float)',
+		'array' => 'array (sequential)',
+		'object' => 'array (associative)',
+	];
+
 	/**
 	 * @param string $expected The expected type of the value e.g. 'string', 'integer', 'array', etc.
 	 * @param mixed  $value    The value given.
 	 */
 	public function __construct(string $expected, $value)
 	{
+		$expected = self::TYPE_MAP[$expected] ?? $expected;
+
 		parent::__construct('Value must be of type ' . $expected . ', ' . $this->inferType($value) . ' given.');
 	}
 

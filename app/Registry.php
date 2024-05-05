@@ -45,6 +45,14 @@ class Registry implements WithHook
 		$this->prefix = $prefix;
 	}
 
+	/**
+	 * Register the options.
+	 *
+	 * @param string|null $optionGroup The option group to register the options with.
+	 *                                 When it is provided, the options will be registered with the WordPress settings API,
+	 *                                 `register_setting`, and would make the option available in the WordPress API
+	 *                                 `/wp/v2/settings` endpoint.
+	 */
 	public function register(?string $optionGroup = null): void
 	{
 		foreach ($this->options as $option) {

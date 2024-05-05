@@ -109,13 +109,6 @@ final class Option
 		return $this->constraints;
 	}
 
-	public function setSanitizer(callable $value): self
-	{
-		$this->settingArgs['sanitize_callback'] = $value;
-
-		return clone $this;
-	}
-
 	/**
 	 * The priority determines the order in which the `option_` related hooks are executed.
 	 * It is usually not necessary to change this value. However, if there is a conflict

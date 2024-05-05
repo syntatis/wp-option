@@ -7,11 +7,14 @@ namespace Syntatis\WP\Option\Casters;
 use Syntatis\WP\Option\Contracts\Castable;
 use Syntatis\WP\Option\Exceptions\TypeError;
 
+use function filter_var;
 use function is_bool;
 use function is_float;
 use function is_int;
 use function is_numeric;
 use function is_string;
+
+use const FILTER_VALIDATE_FLOAT;
 
 /**
  * Cast a value to an number either integer or float.
@@ -46,17 +49,17 @@ class TypeNumber implements Castable
 			return (int) $this->value;
 		}
 
+		if (is_int($this->value) || is_float($this->value)) {
+			return $this->value;
+		}
+
 		/**
 		 * As certain types have undefined behavior when converting to int,
 		 * this is also the case when converting to float.
 		 *
 		 * @see https://www.php.net/manual/en/language.types.float.php
 		 */
-		if (
-			is_numeric($this->value) ||
-			is_string($this->value)
-		) {
-			// @phpstan-ignore-next-line
+		if (is_numeric($this->value)) {
 			return $this->value * 1;
 		}
 
