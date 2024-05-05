@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option\Support;
 
-use function array_key_exists;
-use function is_array;
-
 class InputSanitizer
 {
 	/**
 	 * @param mixed $value
-	 * @return array<string, mixed>
-	 *
-	 * @psalm-return array{__syntatis: mixed}
+	 * @return mixed
 	 */
-	public function sanitize($value): array
+	public function sanitize($value)
 	{
-		/** @psalm-var array{__syntatis: mixed} */
-		$value = is_array($value) && array_key_exists('__syntatis', $value) ? $value : ['__syntatis' => $value];
+		/**
+		 * The `null` value needs to be stored as an array with a key `__syntatis`. This workaround
+		 * is to prevent WordPress from storing the value as an empty string.
+		 */
+		if ($value === null) {
+			$value = ['__syntatis' => null];
+		}
 
 		return $value;
 	}

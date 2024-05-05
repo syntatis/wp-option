@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Casters;
 
 use Syntatis\WP\Option\Contracts\Castable;
+use Syntatis\WP\Option\Exceptions\TypeError;
 use Throwable;
-use TypeError;
+
+use function is_string;
 
 /**
  * Cast a value to a string.
@@ -33,8 +35,14 @@ class TypeString implements Castable
 	/** @throws TypeError If the value is not a string. */
 	public function cast(int $strict = 0): ?string
 	{
-		if ($strict === 1) {
+		if ($this->value === null) {
 			return $this->value;
+		}
+
+		if ($strict === 1) {
+			if (! is_string($this->value)) {
+				throw new TypeError('string', $this->value);
+			}
 		}
 
 		try {

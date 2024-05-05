@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Casters;
 
 use Syntatis\WP\Option\Contracts\Castable;
+use Syntatis\WP\Option\Exceptions\TypeError;
+
+use function is_bool;
 
 /**
  * Cast a value to a boolean.
@@ -32,6 +35,10 @@ class TypeBoolean implements Castable
 	public function cast(int $strict = 0): ?bool
 	{
 		if ($strict === 1) {
+			if (! is_bool($this->value)) {
+				throw new TypeError('boolean', $this->value);
+			}
+
 			return $this->value;
 		}
 

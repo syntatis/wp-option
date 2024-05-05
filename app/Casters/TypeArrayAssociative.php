@@ -11,14 +11,14 @@ use function array_is_list;
 use function is_array;
 
 /**
- * Cast a value to an array.
+ * Cast a value to an "object" or associative array.
  *
  * It carries different levels of strictness:
  *
  * - 0: Casts the value to an array, if possible. Otherwise, it returns a `null`.
  * - 1: Return the value as is, which may throw an exception if the value is not an array.
  */
-class TypeArray implements Castable
+class TypeArrayAssociative implements Castable
 {
 	/**
 	 * The value to cast to an integer.
@@ -37,8 +37,8 @@ class TypeArray implements Castable
 	public function cast(int $strict = 0): ?array
 	{
 		if ($strict === 1) {
-			if (! is_array($this->value) || ! array_is_list($this->value)) {
-				throw new TypeError('array (sequential)', $this->value);
+			if (! is_array($this->value) || array_is_list($this->value)) {
+				throw new TypeError('array (associative)', $this->value);
 			}
 
 			return $this->value;
