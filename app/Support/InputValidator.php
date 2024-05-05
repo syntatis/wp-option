@@ -87,7 +87,6 @@ class InputValidator
 				return is_float($value) || is_int($value);
 
 			case 'array':
-			case 'object':
 				return is_array($value);
 
 			default:

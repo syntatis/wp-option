@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Support;
 
 use Syntatis\WP\Option\Casters\TypeArray;
-use Syntatis\WP\Option\Casters\TypeArrayAssociative;
 use Syntatis\WP\Option\Casters\TypeBoolean;
 use Syntatis\WP\Option\Casters\TypeInteger;
 use Syntatis\WP\Option\Casters\TypeNumber;
@@ -34,7 +33,6 @@ class OutputResolver implements Resolvable
 	 */
 	protected array $casters = [
 		'array' => TypeArray::class,
-		'object' => TypeArrayAssociative::class,
 		'boolean' => TypeBoolean::class,
 		'number' => TypeNumber::class,
 		'integer' => TypeInteger::class,

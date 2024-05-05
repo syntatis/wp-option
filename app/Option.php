@@ -18,11 +18,11 @@ use function strtolower;
  * @phpstan-type Constraints callable|array<callable>|Constraint|ValidatorInterface|null
  * @phpstan-type ValueDefault bool|float|int|string|array<array-key, bool|float|int|string|array<array-key, mixed>>
  * @phpstan-type ValueFormat 'date-time'|'uri'|'email'|'ip'|'uuid'|'hex-color'
- * @phpstan-type ValueType 'string'|'boolean'|'integer'|'number'|'array'|'object'
- * @phpstan-type RESTSchemaProperties array<string, array{type: ValueType, default?: array<mixed>|bool|float|int|string}>
- * @phpstan-type RESTSchema array{properties?: RESTSchemaProperties, items?: array{type?: ValueType, format?: ValueFormat}}
- * @phpstan-type RESTConfig array{name?: string, schema: RESTSchema}
- * @phpstan-type SettingArgs array{type?: ValueType, default?: ValueDefault|null, description?: string, show_in_rest?: RESTConfig|bool}
+ * @phpstan-type ValueType 'string'|'boolean'|'integer'|'number'|'array'
+ * @phpstan-type APISchemaProperties array<string, array{type: ValueType, default?: array<mixed>|bool|float|int|string}>
+ * @phpstan-type APISchema array{properties?: APISchemaProperties, items?: array{type?: ValueType, format?: ValueFormat}}
+ * @phpstan-type APIConfig array{name?: string, schema: APISchema}
+ * @phpstan-type SettingArgs array{type?: ValueType, default?: ValueDefault|null, description?: string, show_in_rest?: APIConfig|bool}
  */
 final class Option
 {
@@ -173,20 +173,14 @@ final class Option
 			return $inferredType;
 		}
 
-		switch ($type) {
-			case 'array':
-				// @phpstan-ignore-next-line -- The type is already inferred from the default.
-				$inferredType = array_is_list($value) ? $type : 'object';
-				break;
-			case 'double':
-				$inferredType = 'number';
-				break;
-			default:
-				if (in_array($type, ['integer', 'boolean', 'string'], true)) {
-					$inferredType = $type;
-				}
-		}
+		$typeMap = [
+			'boolean' => 'boolean',
+			'integer' => 'integer',
+			'double' => 'number',
+			'string' => 'string',
+			'array' => 'array',
+		];
 
-		return $inferredType;
+		return $typeMap[$type] ?? null;
 	}
 }

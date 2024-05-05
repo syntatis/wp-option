@@ -37,18 +37,11 @@ class TypeArray implements Castable
 	public function cast(int $strict = 0): ?array
 	{
 		if ($strict === 1) {
-			if (
-				! is_array($this->value)
-				|| ! array_is_list($this->value)
-			) {
-				throw new TypeError('array (sequential)', $this->value);
+			if (! is_array($this->value)) {
+				throw new TypeError('array', $this->value);
 			}
 
 			return $this->value;
-		}
-
-		if (is_array($this->value) && ! array_is_list($this->value)) {
-			return [$this->value];
 		}
 
 		return (array) $this->value;

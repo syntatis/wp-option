@@ -56,7 +56,6 @@ class RegistryTest extends TestCase
 		yield [[new Option($this->optionName, 'integer')]];
 		yield [[new Option($this->optionName, 'number')]];
 		yield [[new Option($this->optionName, 'array')]];
-		yield [[new Option($this->optionName, 'object')]];
 	}
 
 	/**
@@ -86,16 +85,15 @@ class RegistryTest extends TestCase
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(1)], true];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault('123')], 123];
 		yield [[(new Option($this->optionName, 'array'))->setDefault('foo')], ['foo']];
+		yield [[(new Option($this->optionName, 'array'))->setDefault(['foo' => 'bar'])], ['foo' => 'bar']];
 		yield [[(new Option($this->optionName, 'number'))->setDefault('12.3')], 12.3];
 		yield [[(new Option($this->optionName, 'number'))->setDefault('123')], 123];
-		yield [[(new Option($this->optionName, 'object'))->setDefault(['foo' => 'bar'])], ['foo' => 'bar']];
 
 		// The `null` value should be defaulted to `null`.
 		yield [[(new Option($this->optionName, 'string'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'number'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault(null)], null];
-		yield [[(new Option($this->optionName, 'object'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'array'))->setDefault(null)], null];
 	}
 
@@ -127,14 +125,13 @@ class RegistryTest extends TestCase
 		yield [[(new Option($this->optionName, 'number'))->setDefault(1)], 1];
 		yield [[(new Option($this->optionName, 'number'))->setDefault(1.1)], 1.1];
 		yield [[(new Option($this->optionName, 'array'))->setDefault([1])], [1]];
-		yield [[(new Option($this->optionName, 'object'))->setDefault(['number' => 1])], ['number' => 1]];
+		yield [[(new Option($this->optionName, 'array'))->setDefault(['foo' => 'bar'])], ['foo' => 'bar']];
 
 		// The `null` value should be defaulted to `null`.
 		yield [[(new Option($this->optionName, 'string'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'number'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault(null)], null];
-		yield [[(new Option($this->optionName, 'object'))->setDefault(null)], null];
 		yield [[(new Option($this->optionName, 'array'))->setDefault(null)], null];
 	}
 
@@ -166,10 +163,9 @@ class RegistryTest extends TestCase
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(0)], 'Value must be of type boolean, integer given.'];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault(1.1)], 'Value must be of type integer, number (float) given.'];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault('-1')], 'Value must be of type integer, string given.'];
-		yield [[(new Option($this->optionName, 'number'))->setDefault([1])], 'Value must be of type number, array (sequential) given.'];
+		yield [[(new Option($this->optionName, 'number'))->setDefault([1])], 'Value must be of type number, array given.'];
 		yield [[(new Option($this->optionName, 'number'))->setDefault(false)], 'Value must be of type number, boolean given.'];
-		yield [[(new Option($this->optionName, 'array'))->setDefault(['number' => 1])], 'Value must be of type array (sequential), array (associative) given.']; // Associative array should be defined as an 'object'.
-		yield [[(new Option($this->optionName, 'object'))->setDefault([1])], 'Value must be of type array (associative), array (sequential) given.']; // Array list should be defined as an 'array'.
+		yield [[(new Option($this->optionName, 'array'))->setDefault('foo')], 'Value must be of type array, string given.'];
 	}
 
 	/**
@@ -234,8 +230,8 @@ class RegistryTest extends TestCase
 		yield [[(new Option($this->optionName, 'number'))->setDefault(1.2)], 2.3];
 		yield [[(new Option($this->optionName, 'array'))->setDefault(['foo'])], null];
 		yield [[(new Option($this->optionName, 'array'))->setDefault(['foo'])], ['foo']];
-		yield [[(new Option($this->optionName, 'object'))->setDefault(['foo' => 'bar'])], null];
-		yield [[(new Option($this->optionName, 'object'))->setDefault(['foo' => 'bar'])], ['foo' => 'bar']];
+		yield [[(new Option($this->optionName, 'array'))->setDefault(['foo' => 'bar'])], null];
+		yield [[(new Option($this->optionName, 'array'))->setDefault(['foo' => 'bar'])], ['foo' => 'bar']];
 	}
 
 	/**
@@ -266,10 +262,9 @@ class RegistryTest extends TestCase
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(true)], '0', 'Value must be of type boolean, string given.'];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault(1)], '2', 'Value must be of type integer, string given.'];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault(1)], 1.2, 'Value must be of type integer, number (float) given.'];
-		yield [[(new Option($this->optionName, 'number'))->setDefault(1)], [], 'Value must be of type number, array (sequential) given.'];
-		yield [[(new Option($this->optionName, 'number'))->setDefault(1.1)], true, 'Value must be of type number, boolean given.'];
-		yield [[(new Option($this->optionName, 'array'))->setDefault([1])], ['foo' => 'bar'], 'Value must be of type array (sequential), array (associative) given.'];
-		yield [[(new Option($this->optionName, 'object'))->setDefault(['foo' => 'bar'])], [1], 'Value must be of type array (associative), array (sequential) given.'];
+		yield [[(new Option($this->optionName, 'number'))->setDefault(1)], [], 'Value must be of type number, array given.'];
+		yield [[(new Option($this->optionName, 'array'))->setDefault([1])], 1, 'Value must be of type array, integer given.'];
+		yield [[(new Option($this->optionName, 'array'))->setDefault(['foo' => 'bar'])], 'foo->bar', 'Value must be of type array, string given.'];
 	}
 
 	/**
@@ -307,7 +302,7 @@ class RegistryTest extends TestCase
 		yield [[new Option($this->optionName, 'number')], 2];
 		yield [[new Option($this->optionName, 'number')], 1.2];
 		yield [[new Option($this->optionName, 'array')], ['foo']];
-		yield [[new Option($this->optionName, 'object')], ['foo' => 'bar']];
+		yield [[new Option($this->optionName, 'array')], ['foo' => 'bar']];
 	}
 
 	/**
@@ -534,8 +529,8 @@ class RegistryTest extends TestCase
 		yield [1.2, 'Value must be of type string, number (float) given.'];
 		yield [false, 'Value must be of type string, boolean given.'];
 		yield [true, 'Value must be of type string, boolean given.'];
-		yield [[1], 'Value must be of type string, array (sequential) given.'];
-		yield [['foo' => 'bar'], 'Value must be of type string, array (associative) given.'];
+		yield [[1], 'Value must be of type string, array given.'];
+		yield [['foo' => 'bar'], 'Value must be of type string, array given.'];
 	}
 
 	/**
@@ -764,8 +759,8 @@ class RegistryTest extends TestCase
 		yield [1, 'Value must be of type boolean, integer given.'];
 		yield [1.2, 'Value must be of type boolean, number (float) given.'];
 		yield [-1, 'Value must be of type boolean, integer given.'];
-		yield [[], 'Value must be of type boolean, array (sequential) given.'];
-		yield [['foo' => 'bar'], 'Value must be of type boolean, array (associative) given.'];
+		yield [[], 'Value must be of type boolean, array given.'];
+		yield [['foo' => 'bar'], 'Value must be of type boolean, array given.'];
 		yield ['false', 'Value must be of type boolean, string given.'];
 		yield ['true', 'Value must be of type boolean, string given.'];
 	}
@@ -1008,8 +1003,8 @@ class RegistryTest extends TestCase
 		yield [1.2, 'Value must be of type integer, number (float) given.'];
 		yield [false, 'Value must be of type integer, boolean given.'];
 		yield [true, 'Value must be of type integer, boolean given.'];
-		yield [['foo'], 'Value must be of type integer, array (sequential) given.'];
-		yield [['foo' => 'bar'], 'Value must be of type integer, array (associative) given.'];
+		yield [['foo'], 'Value must be of type integer, array given.'];
+		yield [['foo' => 'bar'], 'Value must be of type integer, array given.'];
 	}
 
 	/**
@@ -1242,7 +1237,7 @@ class RegistryTest extends TestCase
 		yield ['', 'Value must be of type number, string given.'];
 		yield [false, 'Value must be of type number, boolean given.'];
 		yield [true, 'Value must be of type number, boolean given.'];
-		yield [[], 'Value must be of type number, array (sequential) given.'];
+		yield [[], 'Value must be of type number, array given.'];
 	}
 
 	/**
@@ -1287,8 +1282,7 @@ class RegistryTest extends TestCase
 		yield [true, [true]];
 		yield [[], []];
 		yield [['foo', 'bar'], ['foo', 'bar']];
-		yield [['foo' => 'bar'], [['foo' => 'bar']]];
-
+		yield [['foo' => 'bar'], ['foo' => 'bar']];
 		yield [null, null];
 	}
 
@@ -1370,6 +1364,7 @@ class RegistryTest extends TestCase
 	{
 		yield [[]];
 		yield [['foo']];
+		yield [['foo' => 'bar']];
 		yield [null];
 	}
 
@@ -1428,31 +1423,41 @@ class RegistryTest extends TestCase
 	 * @group type-array
 	 * @group strict-mode
 	 *
-	 * @param mixed $value The value to add in the option.
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testUpdateTypeArrayStrictInvalid($value): void
+	public function testUpdateTypeArrayStrictInvalid($value, string $errorMessage): void
 	{
-		add_option($this->optionName, ['__syntatis' => ['foo']]);
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize($value),
+		);
 
-		$option = new Option($this->hook, null, 1);
-		$option->setSchema([$this->optionName => ['type' => 'array']]);
-		$option->register();
+		$registry = new Registry([new Option($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
 		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type array, ' . gettype($value) . ' type given.');
+		$this->expectExceptionMessage($errorMessage);
 
 		update_option($this->optionName, $value);
 	}
 
 	public function dataTypeArrayStrictInvalid(): iterable
 	{
-		yield ['Hello world!', 'Value must be of type array (sequential), string given.'];
-		yield ['', 'Value must be of type array (sequential), string given.'];
-		yield [0, 'Value must be of type array (sequential), integer given.'];
-		yield [1.2, 'Value must be of type array (sequential), number (float) given.'];
-		yield [-1, 'Value must be of type array (sequential), integer given.'];
-		yield [false, 'Value must be of type array (sequential), boolean given.'];
-		yield [true, 'Value must be of type array (sequential), boolean given.'];
+		yield ['Hello world!', 'Value must be of type array, string given.'];
+		yield ['', 'Value must be of type array, string given.'];
+		yield [0, 'Value must be of type array, integer given.'];
+		yield [1.2, 'Value must be of type array, number (float) given.'];
+		yield [-1, 'Value must be of type array, integer given.'];
+		yield [false, 'Value must be of type array, boolean given.'];
+		yield [true, 'Value must be of type array, boolean given.'];
 	}
 
 	// /**

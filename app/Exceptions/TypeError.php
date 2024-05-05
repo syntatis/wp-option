@@ -6,7 +6,6 @@ namespace Syntatis\WP\Option\Exceptions;
 
 use Error;
 
-use function array_is_list;
 use function get_class;
 use function gettype;
 use function is_object;
@@ -14,11 +13,7 @@ use function strtolower;
 
 class TypeError extends Error
 {
-	private const TYPE_MAP = [
-		'double' => 'number (float)',
-		'array' => 'array (sequential)',
-		'object' => 'array (associative)',
-	];
+	private const TYPE_MAP = ['double' => 'number (float)'];
 
 	/**
 	 * @param string $expected The expected type of the value e.g. 'string', 'integer', 'array', etc.
@@ -44,16 +39,6 @@ class TypeError extends Error
 
 		$inferredType = strtolower(gettype($value));
 
-		switch ($inferredType) {
-			case 'double':
-				$inferredType = 'number (float)';
-				break;
-			case 'array':
-				// @phpstan-ignore-next-line -- `$value` type is inferred with `gettype`.
-				$inferredType = array_is_list($value) ? 'array (sequential)' : 'array (associative)';
-				break;
-		}
-
-		return $inferredType;
+		return self::TYPE_MAP[$inferredType] ?? $inferredType;
 	}
 }
