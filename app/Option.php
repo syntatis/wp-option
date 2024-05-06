@@ -23,7 +23,7 @@ use function strtolower;
  * @phpstan-type APIConfig array{name?: string, schema: APISchema}
  * @phpstan-type SettingArgs array{type?: ValueType, default?: ValueDefault|null, description?: string, show_in_rest?: APIConfig|bool}
  */
-final class Option
+class Option
 {
 	private string $name;
 
@@ -79,7 +79,7 @@ final class Option
 	 *
 	 * @phpstan-param APIConfig|bool $value
 	 */
-	public function apiConfig($value): self
+	public function apiEnabled($value): self
 	{
 		$this->settingArgs['show_in_rest'] = $value;
 
@@ -163,7 +163,7 @@ final class Option
 	 *
 	 * @phpstan-return ValueType|null
 	 */
-	private function inferType($value): ?string
+	protected function inferType($value): ?string
 	{
 		$type = strtolower(gettype($value));
 		$inferredType = null;

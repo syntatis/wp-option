@@ -84,7 +84,7 @@ class OptionTest extends TestCase
 	public function testSettingArgsTypeAPIConfig($config): void
 	{
 		$option = new Option('foo', 'string');
-		$option->apiConfig($config);
+		$option->apiEnabled($config);
 
 		$this->assertEquals(
 			$config,

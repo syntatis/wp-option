@@ -11,10 +11,14 @@ use Syntatis\WP\Option\Exceptions\TypeError;
 use Syntatis\WP\Option\Option;
 use Syntatis\WP\Option\Registry;
 use Syntatis\WP\Option\Support\InputSanitizer;
+use WP_REST_Request;
+use WP_UnitTest_Factory;
 
 /** @group option */
 class RegistryTest extends TestCase
 {
+	private static int $administrator;
+
 	private Hook $hook;
 
 	private string $optionName = 'foo_bar';
@@ -33,6 +37,16 @@ class RegistryTest extends TestCase
 		delete_option($this->optionName);
 
 		parent::tear_down();
+	}
+
+	public static function wpSetUpBeforeClass(WP_UnitTest_Factory $factory): void
+	{
+		self::$administrator = $factory->user->create(['role' => 'administrator']);
+	}
+
+	public static function wpTearDownAfterClass(): void
+	{
+		self::delete_user(self::$administrator);
 	}
 
 	/**
@@ -1568,5 +1582,121 @@ class RegistryTest extends TestCase
 		// With arrays.
 		yield [['\Syntatis\Utils\is_email'], 'Maybe Email', 'Value does not match the given constraints.'];
 		yield [[new Assert\Email(null, 'The email {{ value }} is not a valid email.')], 'Hello Email', 'The email "Hello Email" is not a valid email.'];
+	}
+
+	/** @testdox it should not register the option as setting if it's not registered with a group. */
+	public function testNotRegisteredSettings(): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'string')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertArrayNotHasKey($this->optionName, get_registered_settings());
+	}
+
+	/** @testdox it should register the option as setting with the args if it's registered with a group. */
+	public function testRegisteredSettings(): void
+	{
+		$registry = new Registry([
+			(new Option($this->optionName, 'string'))
+				->setDefault('Hello world!')
+				->setDescription('This is the description.'),
+		]);
+		$registry->hook($this->hook);
+		$registry->register('options');
+		$this->hook->run();
+
+		$registeredSettings = get_registered_settings();
+
+		$this->assertArrayHasKey($this->optionName, $registeredSettings);
+		$this->assertSame('string', $registeredSettings[$this->optionName]['type']);
+		$this->assertSame('options', $registeredSettings[$this->optionName]['group']);
+		$this->assertSame('Hello world!', $registeredSettings[$this->optionName]['default']);
+	}
+
+	/** @group wp-api */
+	public function testEnablingAPI(): void
+	{
+		$registry = new Registry([
+			(new Option($this->optionName, 'string'))
+				->setDefault('Hello world!')
+				->setDescription('This is the description.')
+				->apiEnabled(true),
+		]);
+		$registry->hook($this->hook);
+		$registry->register('options');
+		$this->hook->run();
+
+		$request = new WP_REST_Request('OPTIONS', '/wp/v2/settings');
+		$response = rest_get_server()->dispatch($request);
+		$data = $response->get_data();
+		$properties = $data['schema']['properties'];
+
+		$this->assertArrayHasKey($this->optionName, $properties);
+		$this->assertSame('string', $properties[$this->optionName]['type']);
+		$this->assertSame('This is the description.', $properties[$this->optionName]['description']);
+		$this->assertSame('Hello world!', $properties[$this->optionName]['default']);
+
+		unregister_setting('options', $this->optionName);
+	}
+
+	/** @group wp-api */
+	public function testUpdatingAPI(): void
+	{
+		wp_set_current_user(self::$administrator);
+
+		$registry = new Registry([
+			(new Option($this->optionName, 'string'))
+				->setDefault('Hello world!')
+				->setDescription('This is the description.')
+				->apiEnabled(true),
+		]);
+		$registry->hook($this->hook);
+		$registry->setPrefix('wp_starter_plugin_');
+		$registry->register('options');
+		$this->hook->run();
+
+		$optionName = 'wp_starter_plugin_' . $this->optionName;
+
+		$request = new WP_REST_Request('PUT', '/wp/v2/settings');
+		$request->set_body(wp_json_encode([$optionName => 'Hello Earth!']));
+		$request->add_header('Content-Type', 'application/json');
+		$response = rest_do_request($request);
+		$data = $response->get_data();
+
+		$this->assertSame(200, $response->get_status());
+		$this->assertArrayHasKey($optionName, $data);
+		$this->assertSame('Hello Earth!', $data[$optionName]);
+	}
+
+	/**
+	 * @group wp-api
+	 * @group strict-mode
+	 */
+	public function testUpdatingAPIStrict(): void
+	{
+		wp_set_current_user(self::$administrator);
+
+		$registry = new Registry([
+			(new Option($this->optionName, 'integer'))
+				->setDefault(1)
+				->apiEnabled(true),
+		], 1);
+		$registry->hook($this->hook);
+		$registry->setPrefix('wp_starter_plugin_');
+		$registry->register('options');
+		$this->hook->run();
+
+		$optionName = 'wp_starter_plugin_' . $this->optionName;
+
+		$request = new WP_REST_Request('PUT', '/wp/v2/settings');
+		$request->set_body(wp_json_encode([$optionName => 'Hello Earth!']));
+		$request->add_header('Content-Type', 'application/json');
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage('Value must be of type integer, string given.');
+
+		rest_do_request($request);
 	}
 }
