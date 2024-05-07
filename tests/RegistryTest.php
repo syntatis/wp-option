@@ -23,6 +23,8 @@ class RegistryTest extends TestCase
 
 	private string $optionName = 'foo_bar';
 
+	private string $optionGroup = 'tests';
+
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function set_up(): void
 	{
@@ -35,6 +37,7 @@ class RegistryTest extends TestCase
 	public function tear_down(): void
 	{
 		delete_option($this->optionName);
+		unregister_setting($this->optionGroup, $this->optionName);
 
 		parent::tear_down();
 	}
@@ -55,7 +58,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param array<Option> $option
 	 */
-	public function testNoDefaultSet(array $option): void
+	public function testRegistryNoDefaultSet(array $option): void
 	{
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
@@ -65,7 +68,7 @@ class RegistryTest extends TestCase
 		$this->assertNull(get_option($this->optionName));
 	}
 
-	public function dataNoDefaultSet(): iterable
+	public function dataRegistryNoDefaultSet(): iterable
 	{
 		yield [[new Option($this->optionName, 'string')]];
 		yield [[new Option($this->optionName, 'boolean')]];
@@ -81,7 +84,7 @@ class RegistryTest extends TestCase
 	 * @param array<Option> $option
 	 * @param mixed         $return The expected returned value from `get_option`.
 	 */
-	public function testDefaultSet(array $option, $return): void
+	public function testRegistryDefaultSet(array $option, $return): void
 	{
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
@@ -94,7 +97,7 @@ class RegistryTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataDefaultSet(): iterable
+	public function dataRegistryDefaultSet(): iterable
 	{
 		yield [[(new Option($this->optionName, 'string'))->setDefault(123)], '123'];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault('')], false];
@@ -121,7 +124,7 @@ class RegistryTest extends TestCase
 	 * @param array<Option> $option
 	 * @param mixed         $return The expected returned value from `get_option`.
 	 */
-	public function testDefaultSetStrictValid(array $option, $return): void
+	public function testRegistryDefaultSetStrictValid(array $option, $return): void
 	{
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
@@ -131,7 +134,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($return, get_option($this->optionName));
 	}
 
-	public function dataDefaultSetStrictValid(): iterable
+	public function dataRegistryDefaultSetStrictValid(): iterable
 	{
 		yield [[(new Option($this->optionName, 'string'))->setDefault('Hello World!')], 'Hello World!'];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(true)], true];
@@ -159,7 +162,7 @@ class RegistryTest extends TestCase
 	 * @param array<Option> $option
 	 * @param string        $message The error message to expect.
 	 */
-	public function testDefaultSetStrictInvalid(array $option, string $message): void
+	public function testRegistryDefaultSetStrictInvalid(array $option, string $message): void
 	{
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
@@ -172,7 +175,7 @@ class RegistryTest extends TestCase
 		get_option($this->optionName);
 	}
 
-	public function dataDefaultSetStrictInvalid(): iterable
+	public function dataRegistryDefaultSetStrictInvalid(): iterable
 	{
 		yield [[(new Option($this->optionName, 'string'))->setDefault(true)], 'Value must be of type string, boolean given.'];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault('true')], 'Value must be of type boolean, string given.'];
@@ -191,7 +194,7 @@ class RegistryTest extends TestCase
 	 * @param mixed         $defaultPassed The default value passed in the function `get_option`.
 	 * @param mixed         $coerced       The default value returned or coerced by the function `get_option`.
 	 */
-	public function testDefaultPassed(array $option, $defaultPassed, $coerced): void
+	public function testRegistryDefaultPassed(array $option, $defaultPassed, $coerced): void
 	{
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
@@ -204,7 +207,7 @@ class RegistryTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataDefaultPassed(): iterable
+	public function dataRegistryDefaultPassed(): iterable
 	{
 		yield [[(new Option($this->optionName, 'string'))->setDefault('Hello World')], 123, '123'];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(false)], 'true', true];
@@ -222,7 +225,7 @@ class RegistryTest extends TestCase
 	 * @param array<Option> $option
 	 * @param mixed         $defaultPassed The default value passed in the function `get_option`.
 	 */
-	public function testDefaultPassedStrictValid(array $option, $defaultPassed): void
+	public function testRegistryDefaultPassedStrictValid(array $option, $defaultPassed): void
 	{
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
@@ -232,7 +235,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($defaultPassed, get_option($this->optionName, $defaultPassed));
 	}
 
-	public function dataDefaultPassedStrictValid(): iterable
+	public function dataRegistryDefaultPassedStrictValid(): iterable
 	{
 		yield [[(new Option($this->optionName, 'string'))->setDefault('Foo Bar')], null];
 		yield [[(new Option($this->optionName, 'string'))->setDefault('Hello World')], '123'];
@@ -259,7 +262,7 @@ class RegistryTest extends TestCase
 	 * @param mixed         $defaultPassed The default value passed in the function `get_option`.
 	 * @param string        $errorMessage  The expected error message thrown with the `TypeError`.
 	 */
-	public function testDefaultPassedStrictInvalid(array $option, $defaultPassed, string $errorMessage): void
+	public function testRegistryDefaultPassedStrictInvalid(array $option, $defaultPassed, string $errorMessage): void
 	{
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
@@ -272,7 +275,7 @@ class RegistryTest extends TestCase
 		get_option($this->optionName, $defaultPassed);
 	}
 
-	public function dataDefaultPassedStrictInvalid(): iterable
+	public function dataRegistryDefaultPassedStrictInvalid(): iterable
 	{
 		yield [[(new Option($this->optionName, 'string'))->setDefault('Hello World')], 123, 'Value must be of type string, integer given.'];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(true)], '0', 'Value must be of type boolean, string given.'];
@@ -289,7 +292,7 @@ class RegistryTest extends TestCase
 	 * @param array<Option> $option
 	 * @param mixed         $value  The value to add with `add_option` and one retrieved with `get_option`.
 	 */
-	public function testPrefixSet(array $option, $value): void
+	public function testRegistryPrefixSet(array $option, $value): void
 	{
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
@@ -310,7 +313,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($optionName));
 	}
 
-	public function dataPrefixSet(): iterable
+	public function dataRegistryPrefixSet(): iterable
 	{
 		yield [[new Option($this->optionName, 'string')], 'Hello World!'];
 		yield [[new Option($this->optionName, 'boolean')], true];
@@ -328,7 +331,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeString($value, $expect): void
+	public function testRegistryGetTypeString($value, $expect): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -350,7 +353,7 @@ class RegistryTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataGetTypeString(): iterable
+	public function dataRegistryGetTypeString(): iterable
 	{
 		yield ['Hello World!', 'Hello World!'];
 		yield [1, '1'];
@@ -383,7 +386,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeStringStrictValid($value): void
+	public function testRegistryGetTypeStringStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -409,7 +412,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeStringStrictValid($value): void
+	public function testRegistryAddTypeStringStrictValid($value): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
@@ -428,7 +431,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeStringStrictValid($value): void
+	public function testRegistryUpdateTypeStringStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -450,7 +453,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeStringStrictValid(): iterable
+	public function dataRegistryTypeStringStrictValid(): iterable
 	{
 		yield ['Hello World!'];
 		yield [''];
@@ -466,7 +469,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expectd error message thrown with the `TypeError`.
 	 */
-	public function testGetTypeStringStrictInvalid($value, string $errorMessage): void
+	public function testRegistryGetTypeStringStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -496,7 +499,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expectd error message thrown with the `TypeError`.
 	 */
-	public function testAddTypeStringStrictInvalid($value, string $errorMessage): void
+	public function testRegistryAddTypeStringStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
@@ -517,7 +520,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expectd error message thrown with the `TypeError`.
 	 */
-	public function testUpdateTypeStringStrictInvalid($value, string $errorMessage): void
+	public function testRegistryUpdateTypeStringStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -539,7 +542,7 @@ class RegistryTest extends TestCase
 		update_option($this->optionName, $value);
 	}
 
-	public function dataTypeStringStrictInvalid(): iterable
+	public function dataRegistryTypeStringStrictInvalid(): iterable
 	{
 		yield [1, 'Value must be of type string, integer given.'];
 		yield [1.2, 'Value must be of type string, number (float) given.'];
@@ -556,7 +559,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeBoolean($value, $expect): void
+	public function testRegistryGetTypeBoolean($value, $expect): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -578,7 +581,7 @@ class RegistryTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataTypeBoolean(): iterable
+	public function dataRegistryTypeBoolean(): iterable
 	{
 		yield ['Hello world!', true];
 		yield ['', false];
@@ -609,7 +612,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeBooleanStrictValid($value): void
+	public function testRegistryGetTypeBooleanStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -635,7 +638,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeBooleanStrictValid($value): void
+	public function testRegistryAddTypeBooleanStrictValid($value): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
@@ -654,7 +657,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeBooleanStrictValid($value): void
+	public function testRegistryUpdateTypeBooleanStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -675,7 +678,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeBooleanStrictValid(): iterable
+	public function dataRegistryTypeBooleanStrictValid(): iterable
 	{
 		yield [true];
 		yield [false];
@@ -690,7 +693,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testGetTypeBooleanStrictInvalid($value, string $errorMessage): void
+	public function testRegistryGetTypeBooleanStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -720,7 +723,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testAddTypeBooleanStrictInvalid($value, string $errorMessage): void
+	public function testRegistryAddTypeBooleanStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
@@ -741,7 +744,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testUpdateTypeBooleanStrictInvalid($value, string $errorMessage): void
+	public function testRegistryUpdateTypeBooleanStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -766,7 +769,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeBooleanStrictInvalid(): iterable
+	public function dataRegistryTypeBooleanStrictInvalid(): iterable
 	{
 		yield ['Hello world!', 'Value must be of type boolean, string given.'];
 		yield ['', 'Value must be of type boolean, string given.'];
@@ -788,7 +791,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeInteger($value, $expect): void
+	public function testRegistryGetTypeInteger($value, $expect): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -810,7 +813,7 @@ class RegistryTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataTypeInteger(): iterable
+	public function dataRegistryTypeInteger(): iterable
 	{
 		yield ['Hello world!', 0];
 		yield ['', 0];
@@ -850,7 +853,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeIntegerStrictValid($value): void
+	public function testRegistryGetTypeIntegerStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -876,7 +879,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeIntegerStrictValid($value): void
+	public function testRegistryAddTypeIntegerStrictValid($value): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
@@ -895,7 +898,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeIntegerStrictValid($value): void
+	public function testRegistryUpdateTypeIntegerStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -917,7 +920,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeIntegerStrictValid(): iterable
+	public function dataRegistryTypeIntegerStrictValid(): iterable
 	{
 		yield [1]; // Positive
 		yield [-1]; // Negative
@@ -936,7 +939,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testGetTypeIntegerStrictInvalid($value, string $errorMessage): void
+	public function testRegistryGetTypeIntegerStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -966,7 +969,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testAddTypeIntegerStrictInvalid($value, string $errorMessage): void
+	public function testRegistryAddTypeIntegerStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
@@ -987,7 +990,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testUpdateTypeIntegerStrictInvalid($value, string $errorMessage): void
+	public function testRegistryUpdateTypeIntegerStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1012,7 +1015,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeIntegerStrictInvalid(): iterable
+	public function dataRegistryTypeIntegerStrictInvalid(): iterable
 	{
 		yield ['Hello world!', 'Value must be of type integer, string given.'];
 		yield ['', 'Value must be of type integer, string given.'];
@@ -1030,7 +1033,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The value to be returned.
 	 */
-	public function testGetTypeNumber($value, $expect): void
+	public function testRegistryGetTypeNumber($value, $expect): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1052,7 +1055,7 @@ class RegistryTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataTypeNumber(): iterable
+	public function dataRegistryTypeNumber(): iterable
 	{
 		yield [0, 0];
 		yield [1, 1];
@@ -1082,7 +1085,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeNumberStrictValid($value): void
+	public function testRegistryGetTypeNumberStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1109,7 +1112,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeNumberStrictValid($value): void
+	public function testRegistryAddTypeNumberStrictValid($value): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
@@ -1128,7 +1131,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeNumberStrictValid($value): void
+	public function testRegistryUpdateTypeNumberStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1150,7 +1153,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeNumberStrictValid(): iterable
+	public function dataRegistryTypeNumberStrictValid(): iterable
 	{
 		yield [1.2]; // Positive
 		yield [-1.2]; // Negative
@@ -1174,7 +1177,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testGetTypeNumberStrictInvalid($value, string $errorMessage): void
+	public function testRegistryGetTypeNumberStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1203,7 +1206,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testAddTypeNumberStrictInvalid($value, string $errorMessage): void
+	public function testRegistryAddTypeNumberStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
@@ -1224,7 +1227,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testUpdateTypeNumberStrictInvalid($value, string $errorMessage): void
+	public function testRegistryUpdateTypeNumberStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1247,7 +1250,7 @@ class RegistryTest extends TestCase
 		update_option($this->optionName, $value);
 	}
 
-	public function dataTypeNumberStrictInvalid(): iterable
+	public function dataRegistryTypeNumberStrictInvalid(): iterable
 	{
 		yield ['Hello world!', 'Value must be of type number, string given.'];
 		yield ['', 'Value must be of type number, string given.'];
@@ -1263,7 +1266,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.
 	 */
-	public function testGetTypeArray($value, $expect): void
+	public function testRegistryGetTypeArray($value, $expect): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1286,7 +1289,7 @@ class RegistryTest extends TestCase
 	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataTypeArray(): iterable
+	public function dataRegistryTypeArray(): iterable
 	{
 		yield ['Hello world!', ['Hello world!']];
 		yield ['', ['']];
@@ -1309,7 +1312,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testGetTypeArrayStrictValid($value): void
+	public function testRegistryGetTypeArrayStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1335,7 +1338,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeArrayStrictValid($value): void
+	public function testRegistryAddTypeArrayStrictValid($value): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
@@ -1354,7 +1357,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testUpdateTypeArrayStrictValid($value): void
+	public function testRegistryUpdateTypeArrayStrictValid($value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1376,7 +1379,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataTypeArrayStrictValid(): iterable
+	public function dataRegistryTypeArrayStrictValid(): iterable
 	{
 		yield [[]];
 		yield [['foo']];
@@ -1392,7 +1395,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testGetTypeArrayStrictInvalid($value, string $errorMessage): void
+	public function testRegistryGetTypeArrayStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1421,7 +1424,7 @@ class RegistryTest extends TestCase
 	 *
 	 * @param mixed $value The value to add in the option.
 	 */
-	public function testAddTypeArrayStrictInvalid($value, string $errorMessage): void
+	public function testRegistryAddTypeArrayStrictInvalid($value, string $errorMessage): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
@@ -1442,7 +1445,7 @@ class RegistryTest extends TestCase
 	 * @param mixed  $value        The value to add in the option.
 	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
 	 */
-	public function testUpdateTypeArrayStrictInvalid($value, string $errorMessage): void
+	public function testRegistryUpdateTypeArrayStrictInvalid($value, string $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1465,7 +1468,7 @@ class RegistryTest extends TestCase
 		update_option($this->optionName, $value);
 	}
 
-	public function dataTypeArrayStrictInvalid(): iterable
+	public function dataRegistryTypeArrayStrictInvalid(): iterable
 	{
 		yield ['Hello world!', 'Value must be of type array, string given.'];
 		yield ['', 'Value must be of type array, string given.'];
@@ -1484,7 +1487,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $value        The value to add in the option.
 	 * @param mixed $errorMessage The expected error message.
 	 */
-	public function testAddConstraints($constraints, $value, $errorMessage): void
+	public function testRegistryAddConstraints($constraints, $value, $errorMessage): void
 	{
 		$registry = new Registry([(new Option($this->optionName, 'string'))->setConstraints($constraints)], 1);
 		$registry->hook($this->hook);
@@ -1503,7 +1506,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $constraints The constraints to be passed in the schema.
 	 * @param mixed $value       The value to add in the option.
 	 */
-	public function testAddConstraintsNonStrict($constraints, $value): void
+	public function testRegistryAddConstraintsNonStrict($constraints, $value): void
 	{
 		$registry = new Registry([(new Option($this->optionName, 'string'))->setConstraints($constraints)]);
 		$registry->hook($this->hook);
@@ -1523,7 +1526,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $value        The value to add in the option.
 	 * @param mixed $errorMessage The expected error message.
 	 */
-	public function testUpdateConstraints($constraints, $value, $errorMessage): void
+	public function testRegistryUpdateConstraints($constraints, $value, $errorMessage): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1551,7 +1554,7 @@ class RegistryTest extends TestCase
 	 * @param mixed $constraints The constraints to be passed in the schema.
 	 * @param mixed $value       The value to add in the option.
 	 */
-	public function testUpdateConstraintsNonStrict($constraints, $value): void
+	public function testRegistryUpdateConstraintsNonStrict($constraints, $value): void
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
@@ -1574,7 +1577,7 @@ class RegistryTest extends TestCase
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
-	public function dataConstraints(): iterable
+	public function dataRegistryConstraints(): iterable
 	{
 		yield ['\Syntatis\Utils\is_email', 'Maybe Email', 'Value does not match the given constraints.'];
 		yield [new Assert\Email(null, 'The email {{ value }} is not a valid email.'), 'Hello Email', 'The email "Hello Email" is not a valid email.'];
@@ -1585,7 +1588,7 @@ class RegistryTest extends TestCase
 	}
 
 	/** @testdox it should not register the option as setting if it's not registered with a group. */
-	public function testNotRegisteredSettings(): void
+	public function testRegistryNotRegisteredSettings(): void
 	{
 		$registry = new Registry([new Option($this->optionName, 'string')]);
 		$registry->hook($this->hook);
@@ -1596,7 +1599,7 @@ class RegistryTest extends TestCase
 	}
 
 	/** @testdox it should register the option as setting with the args if it's registered with a group. */
-	public function testRegisteredSettings(): void
+	public function testRegistryRegisteredSettings(): void
 	{
 		$registry = new Registry([
 			(new Option($this->optionName, 'string'))
@@ -1604,7 +1607,7 @@ class RegistryTest extends TestCase
 				->setDescription('This is the description.'),
 		]);
 		$registry->hook($this->hook);
-		$registry->register('options');
+		$registry->register($this->optionGroup);
 		$this->hook->run();
 
 		$registeredSettings = get_registered_settings();
@@ -1615,34 +1618,78 @@ class RegistryTest extends TestCase
 		$this->assertSame('Hello world!', $registeredSettings[$this->optionName]['default']);
 	}
 
-	/** @group wp-api */
-	public function testEnablingAPI(): void
+	/**
+	 * @dataProvider dataRegistryAPIEnabled
+	 * @group wp-api
+	 */
+	public function testRegistryAPIEnabled(Registry $registry, array $schema): void
 	{
-		$registry = new Registry([
-			(new Option($this->optionName, 'string'))
-				->setDefault('Hello world!')
-				->setDescription('This is the description.')
-				->apiEnabled(true),
-		]);
 		$registry->hook($this->hook);
-		$registry->register('options');
+		$registry->register($this->optionGroup);
 		$this->hook->run();
 
+		do_action('rest_api_init');
+
 		$request = new WP_REST_Request('OPTIONS', '/wp/v2/settings');
-		$response = rest_get_server()->dispatch($request);
+		$response = rest_do_request($request);
 		$data = $response->get_data();
 		$properties = $data['schema']['properties'];
 
 		$this->assertArrayHasKey($this->optionName, $properties);
-		$this->assertSame('string', $properties[$this->optionName]['type']);
-		$this->assertSame('This is the description.', $properties[$this->optionName]['description']);
-		$this->assertSame('Hello world!', $properties[$this->optionName]['default']);
+		$this->assertEquals($schema, $properties[$this->optionName]);
+	}
 
-		unregister_setting('options', $this->optionName);
+	public function dataRegistryAPIEnabled(): iterable
+	{
+		yield [
+			new Registry([
+				(new Option($this->optionName, 'string'))
+					->setDefault('Hello world!')
+					->setDescription('This is the description.')
+					->apiEnabled(true),
+			]),
+			[
+				'type' => 'string',
+				'description' => 'This is the description.',
+				'default' => 'Hello world!',
+			],
+		];
+
+		yield [
+			new Registry([
+				(new Option($this->optionName, 'array'))
+					->setDefault(['#fff'])
+					->setDescription('This is the description.')
+					->apiEnabled([
+						'schema' => [
+							'type'  => 'array',
+							'items' => [
+								'type'  => 'array',
+								'items' => [
+									'type'   => 'string',
+									'format' => 'hex-color',
+								],
+							],
+						],
+					]),
+			]),
+			[
+				'type'  => 'array',
+				'description' => 'This is the description.',
+				'default' => ['#fff'],
+				'items' => [
+					'type'  => 'array',
+					'items' => [
+						'type'   => 'string',
+						'format' => 'hex-color',
+					],
+				],
+			],
+		];
 	}
 
 	/** @group wp-api */
-	public function testUpdatingAPI(): void
+	public function testRegistryUpdateAPI(): void
 	{
 		wp_set_current_user(self::$administrator);
 
@@ -1654,8 +1701,10 @@ class RegistryTest extends TestCase
 		]);
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
-		$registry->register('options');
+		$registry->register($this->optionGroup);
 		$this->hook->run();
+
+		do_action('rest_api_init');
 
 		$optionName = 'wp_starter_plugin_' . $this->optionName;
 
@@ -1674,7 +1723,7 @@ class RegistryTest extends TestCase
 	 * @group wp-api
 	 * @group strict-mode
 	 */
-	public function testUpdatingAPIStrict(): void
+	public function testRegistryUpdateAPIStrict(): void
 	{
 		wp_set_current_user(self::$administrator);
 
@@ -1685,8 +1734,10 @@ class RegistryTest extends TestCase
 		], 1);
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
-		$registry->register('options');
+		$registry->register($this->optionGroup);
 		$this->hook->run();
+
+		do_action('rest_api_init');
 
 		$optionName = 'wp_starter_plugin_' . $this->optionName;
 
