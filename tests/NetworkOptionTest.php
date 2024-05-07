@@ -408,7 +408,7 @@ class NetworkOptionTest extends TestCase
 	 */
 	public function testUpdateTypeStringStrictValid($value, $expect): void
 	{
-		add_site_option($this->optionName, 'Initial value!');
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
@@ -437,7 +437,7 @@ class NetworkOptionTest extends TestCase
 	 */
 	public function testGetTypeStringStrictInvalid($value, string $errorMessage): void
 	{
-		add_site_option($this->optionName, $value);
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
@@ -470,26 +470,27 @@ class NetworkOptionTest extends TestCase
 		add_site_option($this->optionName, $value);
 	}
 
-	// /**
-	//  * @dataProvider dataTypeStringStrictInvalid
-	//  * @group type-string
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testUpdateTypeStringStrictInvalid($value): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => 'Initial value!']);
+	/**
+	 * @dataProvider dataTypeStringStrictInvalid
+	 * @group type-string
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeStringStrictInvalid($value, string $errorMessage): void
+	{
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'string']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type string, ' . gettype($value) . ' type given.');
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
 
-	// 	update_site_option($this->optionName, $value);
-	// }
+		update_site_option($this->optionName, $value);
+	}
 
 	public function dataTypeStringStrictInvalid(): iterable
 	{
