@@ -316,6 +316,7 @@ class OptionTest extends TestCase
 		yield [[(new Option($this->optionName, 'string'))->setDefault('Hello World')], 123, '123'];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(false)], 'true', true];
 		yield [[(new Option($this->optionName, 'boolean'))->setDefault(true)], '', false];
+		yield [[(new Option($this->optionName, 'boolean'))->setDefault(true)], false, false];
 		yield [[(new Option($this->optionName, 'integer'))->setDefault(1)], '2', 2];
 		yield [[(new Option($this->optionName, 'number'))->setDefault(1.2)], '2.5', 2.5];
 		yield [[(new Option($this->optionName, 'number'))->setDefault(1)], '2', 2];
