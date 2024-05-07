@@ -7,14 +7,10 @@ namespace Syntatis\WP\Option\Casters;
 use Syntatis\WP\Option\Contracts\Castable;
 use Syntatis\WP\Option\Exceptions\TypeError;
 
-use function filter_var;
 use function is_bool;
 use function is_float;
 use function is_int;
 use function is_numeric;
-use function is_string;
-
-use const FILTER_VALIDATE_FLOAT;
 
 /**
  * Cast a value to an number either integer or float.

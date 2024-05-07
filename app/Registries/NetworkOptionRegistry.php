@@ -64,7 +64,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 		$optionDefault = $settingArgs['default'] ?? null;
 		$optionPriority = $this->option->getPriority();
 
-		$inputSanitizer = new InputSanitizer($this->option);
+		$inputSanitizer = new InputSanitizer();
 		$inputValidator = new InputValidator($optionType, $this->option->getConstraints());
 		$outputResolver = new OutputResolver($optionType, $this->strict);
 

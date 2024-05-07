@@ -7,7 +7,6 @@ namespace Syntatis\WP\Option\Casters;
 use Syntatis\WP\Option\Contracts\Castable;
 use Syntatis\WP\Option\Exceptions\TypeError;
 
-use function array_is_list;
 use function is_array;
 
 /**
