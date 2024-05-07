@@ -178,8 +178,6 @@ class NetworkOptionTest extends TestCase
 	/**
 	 * @dataProvider dataDefaultPassedStrictValid
 	 *
-	 * @group test-here-1
-	 *
 	 * @param mixed $default       The default value passed in the schema.
 	 * @param mixed $defaultPassed The default value passed in the function `get_site_option`.
 	 */
@@ -271,7 +269,7 @@ class NetworkOptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataGetTypeString
+	 * @dataProvider dataTypeString
 	 * @group type-string
 	 *
 	 * @param mixed $value  The value to add in the option.
@@ -290,9 +288,49 @@ class NetworkOptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataTypeString
+	 * @group type-string
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testAddTypeString($value, $expect): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'string')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_site_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeString
+	 * @group type-string
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeString($value, $expect): void
+	{
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'string')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		update_site_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataGetTypeString(): iterable
+	public function dataTypeString(): iterable
 	{
 		yield ['Hello World!', 'Hello World!'];
 		yield [1, '1'];
