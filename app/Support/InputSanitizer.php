@@ -21,7 +21,7 @@ class InputSanitizer
 		 * empty string.
 		 */
 		if ($value === null) {
-			$value = ['__syntatis' => $value];
+			$value = ['__syntatis' => null];
 		}
 
 		return $value;

@@ -64,7 +64,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 		$optionDefault = $settingArgs['default'] ?? null;
 		$optionPriority = $this->option->getPriority();
 
-		$inputSanitizer = new InputSanitizer();
+		$inputSanitizer = new InputSanitizer($this->option);
 		$inputValidator = new InputValidator($optionType, $this->option->getConstraints());
 		$outputResolver = new OutputResolver($optionType, $this->strict);
 
@@ -175,7 +175,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 				 * @see https://github.com/WordPress/wordpress-develop/blob/87dfd5514b52aef456b7232b1959873e69e651da/src/wp-includes/option.php#L1918-L1922
 				 */
 				if (isset($this->states[$this->optionName]) && $this->states[$this->optionName] === 'adding') {
-					return $outputResolver->resolve($value);
+					return $value;
 				}
 
 				$notOptionCache = $this->notOptionCache();
