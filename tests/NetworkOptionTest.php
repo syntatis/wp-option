@@ -664,8 +664,7 @@ class NetworkOptionTest extends TestCase
 	 * @group strict-mode
 	 * @group type-boolean
 	 *
-	 * @param mixed $value  The value to add in the option.
-	 * @param mixed $expect The expected value to be returned.
+	 * @param mixed $value The value to add in the option.
 	 */
 	public function testUpdateTypeBooleanStrictValid($value): void
 	{
@@ -782,130 +781,223 @@ class NetworkOptionTest extends TestCase
 		yield ['true', 'Value must be of type boolean, string given.'];
 	}
 
-	// /**
-	//  * @dataProvider dataTypeInteger
-	//  * @group type-integer
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeInteger($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+	/**
+	 * @dataProvider dataTypeInteger
+	 * @group type-integer
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeInteger($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// 	$option = new SiteOption($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($expect, get_site_option($this->optionName));
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeInteger(): iterable
-	// {
-	// 	yield ['Hello world!', 0];
-	// 	yield ['', 0];
-	// 	yield [0, 0];
-	// 	yield [1, 1];
-	// 	yield [1.2, 1];
-	// 	yield [1.23, 1];
-	// 	yield [-1, -1];
-	// 	yield [false, 0];
-	// 	yield [true, 1];
+	/**
+	 * @dataProvider dataTypeInteger
+	 * @group type-integer
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testAddTypeInteger($value, $expect): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	/**
-	// 	 * The behaviour of converting to int is undefined for other types.
-	// 	 * Do not rely on any observed behaviour, as it can change without
-	// 	 * notice. Similar to how it handles the string type, an array
-	// 	 * would return as a `null`.
-	// 	 *
-	// 	 * @see https://www.php.net/manual/en/language.types.integer.php
-	// 	 */
-	// 	yield [[], null];
-	// 	yield [['foo'], null];
-	// 	yield [['foo' => 'bar'], null];
+		add_site_option($this->optionName, $value);
 
-	// 	/**
-	// 	 * PHP internally would cast a `null` to `0`, but for consistency
-	// 	 * with the other types, and how it handles default when no value
-	// 	 * is passed on the `get_option` function, a `null` value would
-	// 	 * return as a `null`.
-	// 	 */
-	// 	yield [null, null];
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictValid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeIntegerStrictValid($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+	/**
+	 * @dataProvider dataTypeInteger
+	 * @group type-integer
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeInteger($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(0));
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($expect, get_site_option($this->optionName));
-	// }
+		update_site_option($this->optionName, $value);
 
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictValid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testAddTypeIntegerStrictValid($value, $expect): void
-	// {
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// 	add_site_option($this->optionName, $value);
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeInteger(): iterable
+	{
+		yield ['Hello world!', 0];
+		yield ['', 0];
+		yield [0, 0];
+		yield [1, 1];
+		yield [1.2, 1];
+		yield [1.23, 1];
+		yield [-1, -1];
+		yield [false, 0];
+		yield [true, 1];
 
-	// 	$this->assertSame($value, get_site_option($this->optionName));
-	// }
+		/**
+		 * The behaviour of converting to int is undefined for other types.
+		 * Do not rely on any observed behaviour, as it can change without
+		 * notice. Similar to how it handles the string type, an array
+		 * would return as a `null`.
+		 *
+		 * @see https://www.php.net/manual/en/language.types.integer.php
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
 
-	// /**
-	//  * @dataProvider dataTypeIntegerStrictValid
-	//  * @group type-integer
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testUpdateTypeIntegerStrictValid($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => 1]);
+		/**
+		 * PHP internally would cast a `null` to `0`, but for consistency
+		 * with the other types, and how it handles default when no value
+		 * is passed on the `get_site_option` function, a `null` value
+		 * would return as a `null`.
+		 */
+		yield [null, null];
+	}
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'integer']]);
-	// 	$option->register();
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeIntegerStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// 	update_site_option($this->optionName, $value);
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($value, get_site_option($this->optionName));
-	// }
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-	// public function dataTypeIntegerStrictValid(): iterable
-	// {
-	// 	yield [1, 1]; // Positive
-	// 	yield [-1, -1]; // Negative
-	// 	yield [0123, 0123]; // Octal
-	// 	yield [0x1A, 0x1A]; // Hexadecimal
-	// 	yield [0b11111111, 0b11111111]; // Binary
-	// 	yield [1_234_567, 1_234_567];
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeIntegerStrictValid($value): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	yield [null, null];
-	// }
+		add_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictValid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeIntegerStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and the `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(1));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		update_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	public function dataTypeIntegerStrictValid(): iterable
+	{
+		yield [1]; // Positive
+		yield [-1]; // Negative
+		yield [0123]; // Octal
+		yield [0x1A]; // Hexadecimal
+		yield [0b11111111]; // Binary
+		yield [1_234_567];
+		yield [null];
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictInvalid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeIntegerStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		get_site_option($this->optionName);
+	}
+
+	public function dataTypeIntegerStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type integer, string given.'];
+		yield [true, 'Value must be of type integer, boolean given.'];
+		yield [false, 'Value must be of type integer, boolean given.'];
+		yield [1.0, 'Value must be of type integer, number (float) given.'];
+		yield [[], 'Value must be of type integer, array given.'];
+	}
 
 	// /**
 	//  * @dataProvider dataTypeFloat
