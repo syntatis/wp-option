@@ -201,9 +201,11 @@ class NetworkOptionTest extends TestCase
 		/**
 		 * Passing `false` as the default value currently would not work as expected.
 		 *
-		 * The `false` value is the default default set in `get_site_option` function.
-		 * WordPress would consider the option is not available and would return the
-		 * default value that's already set in the `setDefault` method.
+		 * It is probably because the `false` value is the default default set in `get_site_option` function,
+		 * and WordPress considers the option is not available and would return the default value that's
+		 * already set through the filter hook or the `setDefault` method. Unlike the `get_option`,
+		 * there's currently no way to identify if the default is passed from `get_site_option`
+		 * function.
 		 *
 		 * @see https://github.com/WordPress/wordpress-develop/blob/7444885eb3a0df1b3c30bc59891819c2cf885009/src/wp-includes/option.php#L1821-L1841
 		 */
