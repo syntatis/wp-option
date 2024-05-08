@@ -20,8 +20,8 @@ class InputSanitizer
 		 * This workaround is to prevent WordPress from storing the value as an
 		 * empty string.
 		 */
-		if ($value === null) {
-			$value = ['__syntatis' => null];
+		if ($value === null || $value === false) {
+			$value = ['__syntatis' => $value];
 		}
 
 		return $value;

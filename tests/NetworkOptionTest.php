@@ -498,7 +498,7 @@ class NetworkOptionTest extends TestCase
 		yield [1.2, 'Value must be of type string, number (float) given.'];
 		yield [true, 'Value must be of type string, boolean given.'];
 		yield [[], 'Value must be of type string, array given.'];
-		// yield [false, 'Value must be of type string, boolean given.'];
+		yield [false, 'Value must be of type string, boolean given.'];
 	}
 
 	// /**
