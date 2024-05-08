@@ -166,18 +166,6 @@ class NetworkOptionRegistry implements Registrable, WithHook
 		$this->hook->addFilter(
 			'site_option_' . $this->optionName,
 			function ($value) use ($outputResolver) {
-				/**
-				 * WordPress will check the cache before making a database call. If the option is not found in the cache,
-				 * it will return the default value passed on the `get_site_option` function. At this point, when
-				 * adding an option the default should return `false` instead of a `null`, otherwise WordPress
-				 * will skip adding the value.
-				 *
-				 * @see https://github.com/WordPress/wordpress-develop/blob/87dfd5514b52aef456b7232b1959873e69e651da/src/wp-includes/option.php#L1918-L1922
-				 */
-				if (isset($this->states[$this->optionName]) && $this->states[$this->optionName] === 'adding') {
-					return $value;
-				}
-
 				$notOptionCache = $this->notOptionCache();
 				$isNotOption = isset($notOptionCache[$this->optionName]) && $notOptionCache[$this->optionName] === true;
 

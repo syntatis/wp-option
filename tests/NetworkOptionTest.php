@@ -282,6 +282,10 @@ class NetworkOptionTest extends TestCase
 	 */
 	public function testGetTypeString($value, $expect): void
 	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')]);
@@ -320,6 +324,11 @@ class NetworkOptionTest extends TestCase
 	 */
 	public function testUpdateTypeString($value, $expect): void
 	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and the `update_site_option` function.
+		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')]);
@@ -410,6 +419,11 @@ class NetworkOptionTest extends TestCase
 	 */
 	public function testUpdateTypeStringStrictValid($value, $expect): void
 	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and `update_site_option` function.
+		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
@@ -439,6 +453,10 @@ class NetworkOptionTest extends TestCase
 	 */
 	public function testGetTypeStringStrictInvalid($value, string $errorMessage): void
 	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
@@ -481,6 +499,11 @@ class NetworkOptionTest extends TestCase
 	 */
 	public function testUpdateTypeStringStrictInvalid($value, string $errorMessage): void
 	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and the `update_site_option` function.
+		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
 
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
@@ -503,190 +526,261 @@ class NetworkOptionTest extends TestCase
 		yield [false, 'Value must be of type string, boolean given.'];
 	}
 
-	// /**
-	//  * @dataProvider dataTypeBoolean
-	//  * @group type-boolean
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeBoolean($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+	/**
+	 * @dataProvider dataTypeBoolean
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeBoolean($value, $expect): void
+	{
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// 	$option = new SiteOption($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($expect, get_site_option($this->optionName));
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeBoolean(): iterable
-	// {
-	// 	yield ['Hello world!', true];
-	// 	yield ['', false];
-	// 	yield [0, false];
-	// 	yield [1, true];
-	// 	yield [1.2, true];
-	// 	yield [false, false];
-	// 	yield [true, true];
-	// 	yield [[], false];
+	/**
+	 * @dataProvider dataTypeBoolean
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testAddTypeBoolean($value, $expect): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	/**
-	// 	 * -1 is considered true, like any other non-zero (whether negative or positive) number!
-	// 	 *
-	// 	 * @see https://www.php.net/manual/en/language.types.boolean.php
-	// 	 */
-	// 	yield [-1, true];
+		add_site_option($this->optionName, $value);
 
-	// 	/**
-	// 	 * A `null` value would return as a `null`.
-	// 	 */
-	// 	yield [null, null];
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictValid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeBooleanStrictValid($value): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+	/**
+	 * @dataProvider dataTypeBoolean
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeBoolean($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and the `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(false));
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($value, get_site_option($this->optionName));
-	// }
+		update_site_option($this->optionName, $value);
 
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictValid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testAddTypeBooleanStrictValid($value): void
-	// {
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// 	add_site_option($this->optionName, $value);
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeBoolean(): iterable
+	{
+		yield ['Hello world!', true];
+		yield ['', false];
+		yield [0, false];
+		yield [1, true];
+		yield [1.2, true];
+		yield [false, false];
+		yield [true, true];
+		yield [[], false];
 
-	// 	$this->assertSame($value, get_site_option($this->optionName));
-	// }
+		/**
+		 * -1 is considered true, like any other non-zero (whether negative or positive) number!
+		 *
+		 * @see https://www.php.net/manual/en/language.types.boolean.php
+		 */
+		yield [-1, true];
 
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictValid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testUpdateTypeBooleanStrictValid($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => true]);
+		/**
+		 * A `null` value would return as a `null`.
+		 */
+		yield [null, null];
+	}
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group strict-mode
+	 * @group type-boolean
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeBooleanStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// 	update_site_option($this->optionName, $value);
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($expect, get_site_option($this->optionName));
-	// }
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-	// public function dataTypeBooleanStrictValid(): iterable
-	// {
-	// 	yield [true, true];
-	// 	yield [false, false];
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group strict-mode
+	 * @group type-boolean
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeBooleanStrictValid($value): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	yield [null, null];
-	// }
+		add_site_option($this->optionName, $value);
 
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictInvalid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeBooleanStrictInvalid($value): void
-	// {
-	// 	add_site_option($this->optionName, $value);
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
+	/**
+	 * @dataProvider dataTypeBooleanStrictValid
+	 * @group strict-mode
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeBooleanStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(false));
 
-	// 	$this->expectException(TypeError::class);
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	get_site_option($this->optionName);
-	// }
+		update_site_option($this->optionName, $value);
 
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictInvalid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testAddTypeBooleanStrictInvalid($value): void
-	// {
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
+	public function dataTypeBooleanStrictValid(): iterable
+	{
+		yield [true];
+		yield [false];
+		yield [null];
+	}
 
-	// 	add_site_option($this->optionName, $value);
-	// }
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeBooleanStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// /**
-	//  * @dataProvider dataTypeBooleanStrictInvalid
-	//  * @group type-boolean
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testUpdateTypeBooleanStrictInvalid($value): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => true]);
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'boolean']]);
-	// 	$option->register();
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
 
-	// 	$this->expectException(TypeError::class);
-	// 	$this->expectExceptionMessage('Value must be of type boolean, ' . gettype($value) . ' type given.');
+		get_site_option($this->optionName);
+	}
 
-	// 	update_site_option($this->optionName, $value);
-	// }
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeBooleanStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// public function dataTypeBooleanStrictInvalid(): iterable
-	// {
-	// 	yield ['Hello world!'];
-	// 	yield [''];
-	// 	yield [' '];
-	// 	yield [0];
-	// 	yield [1];
-	// 	yield [1.2];
-	// 	yield [-1];
-	// 	yield [[]];
-	// 	yield [['foo']];
-	// 	yield ['false'];
-	// 	yield ['true'];
-	// }
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeBooleanStrictInvalid
+	 * @group type-boolean
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeBooleanStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(false));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_site_option($this->optionName, $value);
+	}
+
+	public function dataTypeBooleanStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type boolean, string given.'];
+		yield ['', 'Value must be of type boolean, string given.'];
+		yield [' ', 'Value must be of type boolean, string given.'];
+		yield [0, 'Value must be of type boolean, integer given.'];
+		yield [1, 'Value must be of type boolean, integer given.'];
+		yield [1.2, 'Value must be of type boolean, number (float) given.'];
+		yield [-1, 'Value must be of type boolean, integer given.'];
+		yield [[], 'Value must be of type boolean, array given.'];
+		yield [['foo'], 'Value must be of type boolean, array given.'];
+		yield ['false', 'Value must be of type boolean, string given.'];
+		yield ['true', 'Value must be of type boolean, string given.'];
+	}
 
 	// /**
 	//  * @dataProvider dataTypeInteger
