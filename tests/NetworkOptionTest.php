@@ -990,6 +990,53 @@ class NetworkOptionTest extends TestCase
 		get_site_option($this->optionName);
 	}
 
+	/**
+	 * @dataProvider dataTypeIntegerStrictInvalid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeIntegerStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeIntegerStrictInvalid
+	 * @group type-integer
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeIntegerStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and the `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(1));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_site_option($this->optionName, $value);
+	}
+
 	public function dataTypeIntegerStrictInvalid(): iterable
 	{
 		yield ['Hello world!', 'Value must be of type integer, string given.'];
