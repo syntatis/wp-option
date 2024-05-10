@@ -1046,87 +1046,266 @@ class NetworkOptionTest extends TestCase
 		yield [[], 'Value must be of type integer, array given.'];
 	}
 
-	// /**
-	//  * @dataProvider dataTypeFloat
-	//  * @group type-float
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The value to be returned.
-	//  */
-	// public function testGetTypeFloat($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+	/**
+	 * @dataProvider dataTypeNumber
+	 * @group type-number
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The value to be returned.
+	 */
+	public function testGetTypeNumber($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// 	$option = new SiteOption($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($expect, get_site_option($this->optionName));
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeFloat(): iterable
-	// {
-	// 	yield ['Hello world!', 0.0];
-	// 	yield ['', 0.0];
-	// 	yield [0, 0.0];
-	// 	yield [1, 1.0];
-	// 	yield [1.2, 1.2];
-	// 	yield [-1, -1.0];
-	// 	yield [false, 0.0];
-	// 	yield [true, 1.0];
+	/**
+	 * @dataProvider dataTypeNumber
+	 * @group type-number
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testAddTypeNumber($value, $expect): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	/**
-	// 	 * As certain types have undefined behavior when converting to `int`,
-	// 	 * this is also the case when converting to float.
-	// 	 */
-	// 	yield [[], null];
-	// 	yield [['foo'], null];
-	// 	yield [['foo' => 'bar'], null];
+		add_site_option($this->optionName, $value);
 
-	// 	yield [null, null];
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * @dataProvider dataTypeFloatStrictValid
-	//  * @group type-float
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The value to be returned.
-	//  */
-	// public function testGetTypeFloatStrictValid($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+	/**
+	 * @dataProvider dataTypeNumber
+	 * @group type-number
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateTypeNumber($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(0));
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'float']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($expect, get_site_option($this->optionName));
-	// }
+		update_site_option($this->optionName, $value);
 
-	// public function dataTypeFloatStrictValid(): iterable
-	// {
-	// 	yield [1.2, 1.2]; // Positive
-	// 	yield [-1.2, -1.2]; // Negative
-	// 	yield [1.2e3, 1.2e3]; // Scientific notation
-	// 	yield [7E-10, 7E-10]; // Scientific notation
-	// 	yield [1_234_567.89, 1_234_567.89];
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// 	/**
-	// 	 * This exception occurs even in the `strict_mode`, where an integer is coerced into a float.
-	// 	 * This behavior is based on the assumption that integers can be safely converted to floats
-	// 	 * without any loss of precision or functionality.
-	// 	 */
-	// 	yield [1, 1.0];
-	// 	yield [-1, -1.0];
-	// 	yield [0, 0.0];
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeNumber(): iterable
+	{
+		yield [0, 0];
+		yield [1, 1];
+		yield [1.2, 1.2];
+		yield ['1', 1];
+		yield ['1.2', 1.2];
+		yield [-1, -1];
+		yield [false, 0];
+		yield [true, 1];
 
-	// 	yield [null, null];
-	// }
+		/**
+		 * As certain types have undefined behavior when converting to number.
+		 */
+		yield [[], null];
+		yield [['foo'], null];
+		yield [['foo' => 'bar'], null];
+		yield ['Hello world!', null];
+		yield ['', null];
+
+		yield [null, null];
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictValid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeNumberStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictValid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testRegistryGetTypeNumberStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictValid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeNumberStrictValid($value): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	public function dataTypeNumberStrictValid(): iterable
+	{
+		yield [1.2]; // Positive
+		yield [-1.2]; // Negative
+		yield [1.2e3]; // Scientific notation
+		yield [7E-10]; // Scientific notation
+		yield [1_234_567.89];
+
+		// Integers
+		yield [1];
+		yield [-1];
+		yield [0];
+
+		yield [null];
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictInvalid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testGetTypeNumberStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		get_site_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictInvalid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testAddTypeNumberStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeNumberStrictInvalid
+	 * @group type-number
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testUpdateTypeNumberStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_site_option($this->optionName, $value);
+	}
+
+	public function dataTypeNumberStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type number, string given.'];
+		yield ['', 'Value must be of type number, string given.'];
+		yield [false, 'Value must be of type number, boolean given.'];
+		yield [true, 'Value must be of type number, boolean given.'];
+		yield [[], 'Value must be of type number, array given.'];
+	}
 
 	// /**
 	//  * @dataProvider dataTypeArray
