@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option\Tests;
 
+use InvalidArgumentException;
+use Symfony\Component\Validator\Constraints as Assert;
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Exceptions\TypeError;
 use Syntatis\WP\Option\NetworkOption;
@@ -203,7 +205,7 @@ class NetworkOptionTest extends TestCase
 		 *
 		 * It is probably because the `false` value is the default default set in `get_site_option` function,
 		 * and WordPress considers the option is not available and would return the default value that's
-		 * already set through the filter hook or the `setDefault` method. Unlike the `get_option`,
+		 * already set through the filter hook or the `setDefault` method. Unlike the `get_site_option`,
 		 * there's currently no way to identify if the default is passed from `get_site_option`
 		 * function.
 		 *
@@ -354,7 +356,7 @@ class NetworkOptionTest extends TestCase
 
 		/**
 		 * For consistency with how other type handles `null` values, and how it handles default
-		 * when no value is passed on the `get_option` function, a `null` value would return
+		 * when no value is passed on the `get_site_option` function, a `null` value would return
 		 * as a `null`.
 		 */
 		yield [null, null];
@@ -1175,7 +1177,7 @@ class NetworkOptionTest extends TestCase
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
-		 * concerns about the value retrieved with the `get_option` function.
+		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
@@ -1234,7 +1236,7 @@ class NetworkOptionTest extends TestCase
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
-		 * concerns about the value retrieved with the `get_option` function.
+		 * concerns about the value retrieved with the `get_site_option` function.
 		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
@@ -1282,7 +1284,7 @@ class NetworkOptionTest extends TestCase
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
-		 * concerns about the value retrieved with the `get_option` function, and
+		 * concerns about the value retrieved with the `get_site_option` function, and
 		 * updated with the `update_option` function.
 		 */
 		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
@@ -1307,177 +1309,353 @@ class NetworkOptionTest extends TestCase
 		yield [[], 'Value must be of type number, array given.'];
 	}
 
-	// /**
-	//  * @dataProvider dataTypeArray
-	//  * @group type-array
-	//  *
-	//  * @param mixed $value  The value to add in the option.
-	//  * @param mixed $expect The expected value to be returned.
-	//  */
-	// public function testGetTypeArray($value, $expect): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+	/**
+	 * @dataProvider dataTypeArray
+	 * @group type-array
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testGetTypeArray($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// 	$option = new SiteOption($this->hook);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertSame($expect, get_site_option($this->optionName));
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * Non-strict. Value may be coerced.
-	//  */
-	// public function dataTypeArray(): iterable
-	// {
-	// 	yield ['Hello world!', ['Hello world!']];
-	// 	yield ['', ['']];
-	// 	yield [0, [0]];
-	// 	yield [1, [1]];
-	// 	yield [1.2, [1.2]];
-	// 	yield [-1, [-1]];
-	// 	yield [false, [false]];
-	// 	yield [true, [true]];
-	// 	yield [[], []];
-	// 	yield [['foo', 'bar'], ['foo', 'bar']];
-	// 	yield [['foo' => 'bar'], ['foo' => 'bar']];
+	/**
+	 * @dataProvider dataTypeArray
+	 * @group type-array
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testAddTypeArray($value, $expect): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	yield [null, null];
-	// }
+		add_site_option($this->optionName, $value);
 
-	// /**
-	//  * @dataProvider dataTypeArrayStrictValid
-	//  * @group type-array
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $value The value to add in the option.
-	//  */
-	// public function testGetTypeArrayStrictValid($value): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => $value]);
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([$this->optionName => ['type' => 'array']]);
-	// 	$option->register();
+	/**
+	 * @dataProvider dataTypeArray
+	 * @group type-array
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testUpdateypeArray($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function, and
+		 * updated with the `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize(['bar']));
 
-	// 	$this->assertSame($value, get_site_option($this->optionName));
-	// }
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// public function dataTypeArrayStrictValid(): iterable
-	// {
-	// 	yield [[], []];
-	// 	yield [['foo'], ['foo']];
-	// 	yield [['foo' => 'bar'], ['foo' => 'bar']];
+		update_site_option($this->optionName, $value);
 
-	// 	yield [null, null];
-	// }
+		$this->assertSame($expect, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * @dataProvider dataConstraints
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $constraints  The constraints to be passed in the schema.
-	//  * @param mixed $value        The value to add in the option.
-	//  * @param mixed $errorMessage The expected error message.
-	//  */
-	// public function testAddConstraints($constraints, $value, $errorMessage): void
-	// {
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([
-	// 		$this->optionName => [
-	// 			'type' => 'string',
-	// 			'constraints' => $constraints,
-	// 		],
-	// 	]);
-	// 	$option->register();
+	/**
+	 * Non-strict. Value may be coerced.
+	 */
+	public function dataTypeArray(): iterable
+	{
+		yield ['Hello world!', ['Hello world!']];
+		yield ['', ['']];
+		yield [0, [0]];
+		yield [1, [1]];
+		yield [1.2, [1.2]];
+		yield [-1, [-1]];
+		yield [false, [false]];
+		yield [true, [true]];
+		yield [[], []];
+		yield [['foo', 'bar'], ['foo', 'bar']];
+		yield [['foo' => 'bar'], ['foo' => 'bar']];
 
-	// 	$this->expectException(InvalidArgumentException::class);
-	// 	$this->expectExceptionMessage($errorMessage);
+		yield [null, null];
+	}
 
-	// 	add_site_option($this->optionName, $value);
-	// }
+	/**
+	 * @dataProvider dataTypeArrayStrictValid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testGetTypeArrayStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// /**
-	//  * @dataProvider dataConstraints
-	//  *
-	//  * @param mixed $constraints The constraints to be passed in the schema.
-	//  * @param mixed $value       The value to add in the option.
-	//  */
-	// public function testAddConstraintsNonStrict($constraints, $value): void
-	// {
-	// 	$option = new SiteOption($this->hook);
-	// 	$option->setSchema([
-	// 		$this->optionName => [
-	// 			'type' => 'string',
-	// 			'constraints' => $constraints,
-	// 		],
-	// 	]);
-	// 	$option->register();
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$this->assertTrue(add_site_option($this->optionName, $value));
-	// 	$this->assertSame($value, get_site_option($this->optionName));
-	// }
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-	// /**
-	//  * @dataProvider dataConstraints
-	//  * @group strict-mode
-	//  *
-	//  * @param mixed $constraints  The constraints to be passed in the schema.
-	//  * @param mixed $value        The value to add in the option.
-	//  * @param mixed $errorMessage The expected error message.
-	//  */
-	// public function testUpdateConstraints($constraints, $value, $errorMessage): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => 'email@example.org']);
+	/**
+	 * @dataProvider dataTypeArrayStrictValid
+	 * @group type-array
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testAddTypeArrayStrictValue($value): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$option = new SiteOption($this->hook, null, 1);
-	// 	$option->setSchema([
-	// 		$this->optionName => [
-	// 			'type' => 'string',
-	// 			'constraints' => $constraints,
-	// 		],
-	// 	]);
-	// 	$option->register();
+		add_site_option($this->optionName, $value);
 
-	// 	$this->expectException(InvalidArgumentException::class);
-	// 	$this->expectExceptionMessage($errorMessage);
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-	// 	update_site_option($this->optionName, $value);
-	// }
+	/**
+	 * @dataProvider dataTypeArrayStrictValid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testUpdateTypeArrayStrictValid($value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_site_option` function,
+		 * and updated with the `update_site_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// /**
-	//  * @dataProvider dataConstraints
-	//  *
-	//  * @param mixed $constraints The constraints to be passed in the schema.
-	//  * @param mixed $value       The value to add in the option.
-	//  */
-	// public function testUpdateConstraintsNonStrict($constraints, $value): void
-	// {
-	// 	add_site_option($this->optionName, ['__syntatis' => 'email@example.org']);
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	$option = new SiteOption($this->hook);
-	// 	$option->setSchema([
-	// 		$this->optionName => [
-	// 			'type' => 'string',
-	// 			'constraints' => $constraints,
-	// 		],
-	// 	]);
-	// 	$option->register();
+		update_site_option($this->optionName, $value);
 
-	// 	$this->assertSame('email@example.org', get_site_option($this->optionName));
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
 
-	// 	update_site_option($this->optionName, $value);
+	public function dataTypeArrayStrictValid(): iterable
+	{
+		yield [[], []];
+		yield [['foo'], ['foo']];
+		yield [['foo' => 'bar'], ['foo' => 'bar']];
+		yield [null, null];
+	}
 
-	// 	$this->assertSame($value, get_site_option($this->optionName));
-	// }
+	/**
+	 * @dataProvider dataTypeArrayStrictInvalid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testGetTypeArrayStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
-	// public function dataConstraints(): iterable
-	// {
-	// 	yield ['\Syntatis\Utils\is_email', 'Maybe Email', 'Value does not match the given constraints.'];
-	// 	yield [new Assert\Email(null, 'The email {{ value }} is not a valid email.'), 'Hello Email', 'The email "Hello Email" is not a valid email.'];
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
 
-	// 	// With arrays.
-	// 	yield [['\Syntatis\Utils\is_email'], 'Maybe Email', 'Value does not match the given constraints.'];
-	// 	yield [[new Assert\Email(null, 'The email {{ value }} is not a valid email.')], 'Hello Email', 'The email "Hello Email" is not a valid email.'];
-	// }
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		get_site_option($this->optionName);
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictInvalid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed $value The value to add in the option.
+	 */
+	public function testRegistryAddTypeArrayStrictInvalid($value, string $errorMessage): void
+	{
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataTypeArrayStrictInvalid
+	 * @group type-array
+	 * @group strict-mode
+	 *
+	 * @param mixed  $value        The value to add in the option.
+	 * @param string $errorMessage The expected error message thrown with the `TypeError`.
+	 */
+	public function testRegistryUpdateTypeArrayStrictInvalid($value, string $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function, and
+		 * updated with the `update_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize($value));
+
+		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(TypeError::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_site_option($this->optionName, $value);
+	}
+
+	public function dataTypeArrayStrictInvalid(): iterable
+	{
+		yield ['Hello world!', 'Value must be of type array, string given.'];
+		yield ['', 'Value must be of type array, string given.'];
+		yield [0, 'Value must be of type array, integer given.'];
+		yield [1.2, 'Value must be of type array, number (float) given.'];
+		yield [-1, 'Value must be of type array, integer given.'];
+		yield [false, 'Value must be of type array, boolean given.'];
+		yield [true, 'Value must be of type array, boolean given.'];
+	}
+
+	/**
+	 * @dataProvider dataConstraints
+	 * @group strict-mode
+	 *
+	 * @param mixed $constraints  The constraints to be passed in the schema.
+	 * @param mixed $value        The value to add in the option.
+	 * @param mixed $errorMessage The expected error message.
+	 */
+	public function testAddConstraints($constraints, $value, $errorMessage): void
+	{
+		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		add_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataConstraints
+	 *
+	 * @param mixed $constraints The constraints to be passed in the schema.
+	 * @param mixed $value       The value to add in the option.
+	 */
+	public function testAddConstraintsNonStrict($constraints, $value): void
+	{
+		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertTrue(add_site_option($this->optionName, $value));
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataConstraints
+	 * @group strict-mode
+	 *
+	 * @param mixed $constraints  The constraints to be passed in the schema.
+	 * @param mixed $value        The value to add in the option.
+	 * @param mixed $errorMessage The expected error message.
+	 */
+	public function testUpdateConstraints($constraints, $value, $errorMessage): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize('email@example.org'));
+
+		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)], 1);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage($errorMessage);
+
+		update_site_option($this->optionName, $value);
+	}
+
+	/**
+	 * @dataProvider dataConstraints
+	 *
+	 * @param mixed $constraints The constraints to be passed in the schema.
+	 * @param mixed $value       The value to add in the option.
+	 */
+	public function testUpdateConstraintsNonStrict($constraints, $value): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function.
+		 */
+		add_site_option($this->optionName, (new InputSanitizer())->sanitize('email@example.org'));
+
+		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame('email@example.org', get_site_option($this->optionName));
+
+		update_site_option($this->optionName, $value);
+
+		$this->assertSame($value, get_site_option($this->optionName));
+	}
+
+	public function dataConstraints(): iterable
+	{
+		yield ['\Syntatis\Utils\is_email', 'Maybe Email', 'Value does not match the given constraints.'];
+		yield [new Assert\Email(null, 'The email {{ value }} is not a valid email.'), 'Hello Email', 'The email "Hello Email" is not a valid email.'];
+
+		// With arrays.
+		yield [['\Syntatis\Utils\is_email'], 'Maybe Email', 'Value does not match the given constraints.'];
+		yield [[new Assert\Email(null, 'The email {{ value }} is not a valid email.')], 'Hello Email', 'The email "Hello Email" is not a valid email.'];
+	}
 }

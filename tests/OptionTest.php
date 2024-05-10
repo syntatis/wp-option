@@ -1375,13 +1375,9 @@ class OptionTest extends TestCase
 	{
 		/**
 		 * Assumes that the option is already added with a value since the test only
-		 * concerns about the value retrieved with the `get_option` function, and
-		 * updated with the `update_option` function.
+		 * concerns about the value retrieved with the `get_option` function.
 		 */
-		add_option(
-			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
-		);
+		add_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry([new Option($this->optionName, 'array')]);
 		$registry->hook($this->hook);
