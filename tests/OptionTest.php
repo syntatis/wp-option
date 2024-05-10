@@ -430,7 +430,7 @@ class OptionTest extends TestCase
 	}
 
 	/**
-	 * @dataProvider dataRegistryGetTypeString
+	 * @dataProvider dataRegistryTypeString
 	 * @group type-string
 	 *
 	 * @param mixed $value  The value to add in the option.
@@ -456,9 +456,54 @@ class OptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataRegistryTypeString
+	 * @group type-string
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryAddTypeString($value, $expect): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'string')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataRegistryTypeString
+	 * @group type-string
+	 * @group test-here
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryUpdateTypeString($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function and
+		 * aone retrieved with the `get_option` function.
+		 */
+		add_option($this->optionName, (new InputSanitizer())->sanitize('Initial value!'));
+
+		$registry = new Registry([new Option($this->optionName, 'string')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertTrue(update_option($this->optionName, $value));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
-	public function dataRegistryGetTypeString(): iterable
+	public function dataRegistryTypeString(): iterable
 	{
 		yield ['Hello World!', 'Hello World!'];
 		yield [1, '1'];
