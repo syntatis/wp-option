@@ -26,8 +26,9 @@ class InputSanitizerTest extends TestCase
 	{
 		yield 'string' => ['Hello world!', 'Hello world!'];
 		yield 'integer' => [1, 1];
-		yield 'number (float)' => [1.23, 1.23];
-		yield 'boolean' => [true, true];
+		yield 'number (float)' => [1.23, ['__syntatis' => 1.23]];
+		yield 'boolean (true)' => [true, true];
+		yield 'boolean (false)' => [false, ['__syntatis' => false]];
 		yield 'array' => [['foo'], ['foo']];
 		yield 'null' => [null, ['__syntatis' => null]];
 	}

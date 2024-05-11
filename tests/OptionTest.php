@@ -1373,7 +1373,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize(0.0),
+			(new InputSanitizer())->sanitize(1.0),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
@@ -1381,8 +1381,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_option($this->optionName, $value);
-
+		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
