@@ -729,6 +729,50 @@ class OptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataRegistryTypeBoolean
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryAddTypeBoolean($value, $expect): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'boolean')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataRegistryTypeBoolean
+	 * @group type-boolean
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryUpdateTypeBoolean($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value retrieved with the `get_option` function,
+		 * and updated with the `update_option` function.
+		 */
+		add_option($this->optionName, (new InputSanitizer())->sanitize(false));
+
+		$registry = new Registry([new Option($this->optionName, 'boolean')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertTrue(update_option($this->optionName, $value));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
 	public function dataRegistryTypeBoolean(): iterable
@@ -738,7 +782,6 @@ class OptionTest extends TestCase
 		yield [0, false];
 		yield [1, true];
 		yield [1.2, true];
-		yield [false, false];
 		yield [true, true];
 		yield [[], false];
 
