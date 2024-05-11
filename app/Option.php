@@ -6,104 +6,155 @@ namespace Syntatis\WP\Option;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Support\InputSanitizer;
-use Syntatis\WP\Option\Support\InputValidator;
-use Syntatis\WP\Option\Support\OutputResolver;
 
 use function array_merge;
 
 /**
- * @phpstan-type OptionType 'array'|'boolean'|'float'|'integer'|'string'
- * @phpstan-type OptionConstraints callable|array<callable>|Constraint|ValidatorInterface|null
- * @phpstan-type OptionSchema array{type: OptionType, default?: mixed, priority?: int, constraints?: OptionConstraints}
+ * @phpstan-type Constraints callable|array<callable>|Constraint|ValidatorInterface|null
+ * @phpstan-type ValueDefault bool|float|int|string|array<array-key, bool|float|int|string|array<array-key, mixed>>|null
+ * @phpstan-type ValueFormat 'date-time'|'uri'|'email'|'ip'|'uuid'|'hex-color'
+ * @phpstan-type ValueType 'string'|'boolean'|'integer'|'number'|'array'
+ * @phpstan-type APISchemaProperties array<string, array{type: ValueType, default?: array<mixed>|bool|float|int|string}>
+ * @phpstan-type APISchema array{properties?: APISchemaProperties, items?: array{type?: ValueType, format?: ValueFormat}}
+ * @phpstan-type APIConfig array{name?: string, schema: APISchema}
+ * @phpstan-type SettingVars array{description?: string, show_in_rest?: APIConfig|bool}
+ * @phpstan-type SettingArgs array{type: ValueType, default: ValueDefault, description?: string, show_in_rest?: APIConfig|bool}
  */
 class Option
 {
+	private string $name;
+
+	/** @phpstan-var ValueType */
+	private string $type;
+
+	/** @phpstan-var ValueDefault */
+	private $default;
+
 	private int $priority = 99;
 
-	private int $strict = 0;
-
-	private Hook $hook;
-
-	private ?string $prefix;
-
-	/** @phpstan-var array<string, OptionSchema> */
-	private array $schema = [];
+	/**
+	 * @var mixed
+	 * @phpstan-var Constraints
+	 */
+	private $constraints;
 
 	/**
-	 * @param string|null $prefix The option prefix to apply to all the option anme registered in the schema e.g. 'my_plugin_'.
-	 * @param int         $strict The level of strictness to apply to the option values.
+	 * @var array<string, mixed>
+	 * @phpstan-var SettingVars
 	 */
-	public function __construct(Hook $hook, ?string $prefix = null, int $strict = 0)
+	private array $settingVars = [];
+
+	/** @phpstan-param ValueType $type */
+	public function __construct(string $name, string $type)
 	{
-		$this->hook = $hook;
-		$this->prefix = $prefix;
-		$this->strict = $strict;
+		$this->name = $name;
+		$this->type = $type;
 	}
 
-	/** @phpstan-param array<string, OptionSchema> $schema */
-	public function setSchema(array $schema): void
+	public function getName(): string
 	{
-		$this->schema = array_merge($this->schema, $schema);
+		return $this->name;
 	}
 
-	/** @phpstan-return array<string, OptionSchema> */
-	public function getSchema(): array
+	/** @phpstan-return ValueType */
+	public function getType(): string
 	{
-		return $this->schema;
+		return $this->type;
 	}
 
-	public function register(): void
+	/**
+	 * @param array|bool|float|int|string $value
+	 *
+	 * @phpstan-param ValueDefault $value
+	 */
+	public function setDefault($value): self
 	{
-		foreach ($this->schema as $optionName => $schema) {
-			$optionName = $this->prefix . $optionName;
-			$optionType = $schema['type'];
-			$optionDefault = $schema['default'] ?? null;
-			$optionPriority = $schema['priority'] ?? $this->priority;
+		$this->default = $value;
 
-			$inputSanitizer = new InputSanitizer();
-			$outputResolver = new OutputResolver($optionType, $this->strict);
+		return clone $this;
+	}
 
-			if ($this->strict === 1) {
-				$inputValidator = new InputValidator($optionType, $schema['constraints'] ?? []);
+	/** @phpstan-return ValueDefault */
+	public function getDefault()
+	{
+		return $this->default;
+	}
 
-				$this->hook->addAction(
-					'add_option',
-					static fn ($name, $value) => $inputValidator->validate($value),
-					$optionPriority,
-					2,
-				);
+	public function setDescription(string $value): self
+	{
+		$this->settingVars['description'] = $value;
 
-				$this->hook->addAction(
-					'update_option',
-					static fn ($name, $oldValue, $newValue) => $inputValidator->validate($newValue),
-					$optionPriority,
-					3,
-				);
-			}
+		return clone $this;
+	}
 
-			$this->hook->addFilter(
-				'sanitize_option_' . $optionName,
-				static fn ($value, $option, $originalValue) => $inputSanitizer->sanitize($originalValue),
-				$optionPriority,
-				3,
-			);
+	/**
+	 * Whether to show the option on WordPress REST API endpoint, `/wp/v2/settings`.
+	 *
+	 * @param array|bool $value
+	 *
+	 * @phpstan-param APIConfig|bool $value
+	 */
+	public function apiEnabled($value): self
+	{
+		$this->settingVars['show_in_rest'] = $value;
 
-			$this->hook->addFilter(
-				'default_option_' . $optionName,
-				static fn ($default, $option, $passedDefault) => $outputResolver->resolve($passedDefault ? $default : $optionDefault),
-				$optionPriority,
-				3,
-			);
+		return clone $this;
+	}
 
-			$this->hook->addFilter(
-				'option_' . $optionName,
-				static fn ($value) => $outputResolver->resolve($value),
-				$optionPriority,
-			);
-		}
+	/**
+	 * @param mixed $value
+	 *
+	 * @phpstan-param Constraints $value
+	 */
+	public function setConstraints($value): self
+	{
+		$this->constraints = $value;
 
-		$this->hook->run();
+		return clone $this;
+	}
+
+	/**
+	 * @return mixed
+	 *
+	 * @phpstan-return Constraints
+	 */
+	public function getConstraints()
+	{
+		return $this->constraints;
+	}
+
+	/**
+	 * The priority determines the order in which the `option_` related hooks are executed.
+	 * It is usually not necessary to change this value. However, if there is a conflict
+	 * with other plugins or themes that use the same hook, you can set a specific
+	 * priority to ensure that your hook runs before or after them.
+	 */
+	public function setPriority(int $value): self
+	{
+		$this->priority = $value;
+
+		return clone $this;
+	}
+
+	public function getPriority(): int
+	{
+		return $this->priority;
+	}
+
+	/**
+	 * Retrieve the arguments to pass for the `register_setting` function.
+	 *
+	 * @see https://developer.wordpress.org/reference/functions/register_setting/#parameters
+	 *
+	 * @phpstan-return SettingArgs
+	 */
+	public function getSettingArgs(): array
+	{
+		$settingArgs = [
+			'type' => $this->type,
+			'default' => $this->default,
+		];
+
+		return array_merge($settingArgs, $this->settingVars);
 	}
 }

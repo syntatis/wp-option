@@ -7,8 +7,9 @@ namespace Syntatis\WP\Option\Support;
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 use Syntatis\Utils\Validator\Validator;
+use Syntatis\WP\Option\Exceptions\TypeError;
 use Syntatis\WP\Option\Option;
-use TypeError;
+use TypeError as PHPTypeError;
 
 use function array_key_exists;
 use function gettype;
@@ -20,25 +21,30 @@ use function is_int;
 use function is_string;
 
 /**
- * @phpstan-import-type OptionConstraints from Option
- * @phpstan-import-type OptionType from Option
+ * @phpstan-import-type Constraints from Option
+ * @phpstan-import-type ValueType from Option
  */
 class InputValidator
 {
-	/** @phpstan-var OptionType */
+	/** @phpstan-var ValueType */
 	private string $type;
 
-	/** @phpstan-var array<callable> */
-	private array $constraints = [];
+	/** @phpstan-var Constraints */
+	private $constraints;
 
 	/**
-	 * @phpstan-param OptionType $type
-	 * @phpstan-param OptionConstraints $constraints
+	 * @phpstan-param ValueType $type
+	 * @phpstan-param Constraints $constraints
 	 */
-	public function __construct(string $type, $constraints = [])
+	public function __construct(string $type, $constraints = null)
 	{
 		$this->type = $type;
-		$this->constraints = ! is_array($constraints) ? [$constraints] : $constraints;
+
+		if ($constraints !== null && ! is_array($constraints)) {
+			$constraints = [$constraints];
+		}
+
+		$this->constraints = $constraints;
 	}
 
 	/** @param mixed $value */
@@ -54,11 +60,11 @@ class InputValidator
 		$matchedType = $this->hasMatchedType($value);
 
 		if ($matchedType === false) {
-			throw new TypeError('Value must be of type ' . $this->type . ', ' . $givenType . ' type given.');
+			throw new TypeError($this->type, $value);
 		}
 
 		if ($matchedType === null) {
-			throw new TypeError('Unable to validate of type ' . $this->type . '.');
+			throw new PHPTypeError('Unable to validate of type ' . $this->type . '.');
 		}
 
 		$this->validateWithConstraints($value);
@@ -77,7 +83,7 @@ class InputValidator
 			case 'integer':
 				return is_int($value);
 
-			case 'float':
+			case 'number':
 				return is_float($value) || is_int($value);
 
 			case 'array':
@@ -91,6 +97,10 @@ class InputValidator
 	/** @param mixed $value */
 	private function validateWithConstraints($value): void
 	{
+		if (! is_array($this->constraints)) {
+			return;
+		}
+
 		foreach ($this->constraints as $constraint) {
 			if (is_callable($constraint)) {
 				$result = $constraint($value);

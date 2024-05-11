@@ -9,9 +9,10 @@ use stdClass;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
 use Syntatis\WP\Hook\Hook;
+use Syntatis\WP\Option\Exceptions\TypeError;
 use Syntatis\WP\Option\Support\InputValidator;
 use Syntatis\WP\Option\Tests\TestCase;
-use TypeError;
+use TypeError as PHPTypeError;
 
 class InputValidatorTest extends TestCase
 {
@@ -36,7 +37,7 @@ class InputValidatorTest extends TestCase
 		$validator = new InputValidator($type);
 
 		$this->expectException(TypeError::class);
-		$this->expectExceptionMessage('Value must be of type ' . $type . ', ' . $givenType . ' type given.');
+		$this->expectExceptionMessage('Value must be of type ' . $type . ', ' . $givenType . ' given.');
 
 		$validator->validate($value);
 	}
@@ -50,7 +51,7 @@ class InputValidatorTest extends TestCase
 	{
 		$validator = new InputValidator($type);
 
-		$this->expectException(TypeError::class);
+		$this->expectException(PHPTypeError::class);
 		$this->expectExceptionMessage('Unable to validate of type ' . $type . '.');
 
 		$validator->validate($type, 'foo');
@@ -92,28 +93,28 @@ class InputValidatorTest extends TestCase
 	{
 		yield ['string', true, 'boolean'];
 		yield ['string', 1, 'integer'];
-		yield ['string', 1.0, 'double'];
+		yield ['string', 1.0, 'number (float)'];
 		yield ['string', [], 'array'];
-		yield ['string', new stdClass(), 'object'];
+		yield ['string', new stdClass(), 'stdClass'];
 		yield ['boolean', 'foo', 'string'];
 		yield ['boolean', 1, 'integer'];
-		yield ['boolean', 1.0, 'double'];
+		yield ['boolean', 1.0, 'number (float)'];
 		yield ['boolean', [], 'array'];
-		yield ['boolean', new stdClass(), 'object'];
+		yield ['boolean', new stdClass(), 'stdClass'];
 		yield ['integer', 'foo', 'string'];
 		yield ['integer', true, 'boolean'];
-		yield ['integer', 1.0, 'double'];
+		yield ['integer', 1.0, 'number (float)'];
 		yield ['integer', [], 'array'];
-		yield ['integer', new stdClass(), 'object'];
-		yield ['float', 'foo', 'string'];
-		yield ['float', true, 'boolean'];
-		yield ['float', [], 'array'];
-		yield ['float', new stdClass(), 'object'];
+		yield ['integer', new stdClass(), 'stdClass'];
+		yield ['number', 'foo', 'string'];
+		yield ['number', true, 'boolean'];
+		yield ['number', [], 'array'];
+		yield ['number', new stdClass(), 'stdClass'];
 		yield ['array', 'foo', 'string'];
 		yield ['array', true, 'boolean'];
 		yield ['array', 1, 'integer'];
-		yield ['array', 1.0, 'double'];
-		yield ['array', new stdClass(), 'object'];
+		yield ['array', 1.0, 'number (float)'];
+		yield ['array', new stdClass(), 'stdClass'];
 	}
 
 	public function dataValidateInvalidType(): iterable

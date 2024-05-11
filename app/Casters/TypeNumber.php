@@ -5,15 +5,17 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Casters;
 
 use Syntatis\WP\Option\Contracts\Castable;
+use Syntatis\WP\Option\Exceptions\TypeError;
 
 use function is_bool;
+use function is_float;
+use function is_int;
 use function is_numeric;
-use function is_string;
 
 /**
- * Cast a value to an integer.
+ * Cast a value to an number either integer or float.
  */
-class TypeFloat implements Castable
+class TypeNumber implements Castable
 {
 	/**
 	 * The value to cast to an integer.
@@ -28,9 +30,22 @@ class TypeFloat implements Castable
 		$this->value = $value;
 	}
 
-	public function cast(int $strict = 0): ?float
+	/** @return float|int|null */
+	public function cast(int $strict = 0)
 	{
 		if ($strict === 1) {
+			if (! is_int($this->value) && ! is_float($this->value)) {
+				throw new TypeError('number', $this->value);
+			}
+
+			return $this->value;
+		}
+
+		if (is_bool($this->value)) {
+			return (int) $this->value;
+		}
+
+		if (is_int($this->value) || is_float($this->value)) {
 			return $this->value;
 		}
 
@@ -40,13 +55,8 @@ class TypeFloat implements Castable
 		 *
 		 * @see https://www.php.net/manual/en/language.types.float.php
 		 */
-		if (
-			is_bool($this->value) ||
-			is_numeric($this->value) ||
-			is_string($this->value) ||
-			$this->value === null
-		) {
-			return (float) $this->value;
+		if (is_numeric($this->value)) {
+			return $this->value * 1;
 		}
 
 		return null;

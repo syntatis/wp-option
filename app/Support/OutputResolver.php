@@ -6,22 +6,21 @@ namespace Syntatis\WP\Option\Support;
 
 use Syntatis\WP\Option\Casters\TypeArray;
 use Syntatis\WP\Option\Casters\TypeBoolean;
-use Syntatis\WP\Option\Casters\TypeFloat;
 use Syntatis\WP\Option\Casters\TypeInteger;
+use Syntatis\WP\Option\Casters\TypeNumber;
 use Syntatis\WP\Option\Casters\TypeString;
 use Syntatis\WP\Option\Contracts\Castable;
-use Syntatis\WP\Option\Contracts\Resolvable;
 use Syntatis\WP\Option\Option;
 
 use function array_key_exists;
 use function is_array;
 
 /**
- * @phpstan-import-type OptionType from Option
+ * @phpstan-import-type ValueType from Option
  *
  * @template T of Castable
  */
-class OutputResolver implements Resolvable
+class OutputResolver
 {
 	protected string $type;
 
@@ -29,17 +28,17 @@ class OutputResolver implements Resolvable
 
 	/**
 	 * @var array<string, string>
-	 * @phpstan-var array<OptionType, class-string<T>>
+	 * @phpstan-var array<ValueType, class-string<T>>
 	 */
 	protected array $casters = [
 		'array' => TypeArray::class,
 		'boolean' => TypeBoolean::class,
-		'float' => TypeFloat::class,
+		'number' => TypeNumber::class,
 		'integer' => TypeInteger::class,
 		'string' => TypeString::class,
 	];
 
-	/** @phpstan-param OptionType $type */
+	/** @phpstan-param ValueType $type */
 	public function __construct(string $type, int $strict = 0)
 	{
 		$this->type = $type;

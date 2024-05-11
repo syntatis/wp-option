@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Casters;
 
 use Syntatis\WP\Option\Contracts\Castable;
+use Syntatis\WP\Option\Exceptions\TypeError;
 
 use function is_bool;
+use function is_int;
 use function is_numeric;
 use function is_string;
 
@@ -36,6 +38,10 @@ class TypeInteger implements Castable
 	public function cast(int $strict = 0): ?int
 	{
 		if ($strict === 1) {
+			if (! is_int($this->value)) {
+				throw new TypeError('integer', $this->value);
+			}
+
 			return $this->value;
 		}
 

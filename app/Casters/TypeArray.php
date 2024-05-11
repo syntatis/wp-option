@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Casters;
 
 use Syntatis\WP\Option\Contracts\Castable;
+use Syntatis\WP\Option\Exceptions\TypeError;
+
+use function is_array;
 
 /**
  * Cast a value to an array.
@@ -33,6 +36,10 @@ class TypeArray implements Castable
 	public function cast(int $strict = 0): ?array
 	{
 		if ($strict === 1) {
+			if (! is_array($this->value)) {
+				throw new TypeError('array', $this->value);
+			}
+
 			return $this->value;
 		}
 
