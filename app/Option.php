@@ -6,26 +6,29 @@ namespace Syntatis\WP\Option;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Throwable;
 
-use function array_key_exists;
-use function gettype;
-use function in_array;
-use function strtolower;
+use function array_merge;
 
 /**
  * @phpstan-type Constraints callable|array<callable>|Constraint|ValidatorInterface|null
- * @phpstan-type ValueDefault bool|float|int|string|array<array-key, bool|float|int|string|array<array-key, mixed>>
+ * @phpstan-type ValueDefault bool|float|int|string|array<array-key, bool|float|int|string|array<array-key, mixed>>|null
  * @phpstan-type ValueFormat 'date-time'|'uri'|'email'|'ip'|'uuid'|'hex-color'
  * @phpstan-type ValueType 'string'|'boolean'|'integer'|'number'|'array'
  * @phpstan-type APISchemaProperties array<string, array{type: ValueType, default?: array<mixed>|bool|float|int|string}>
  * @phpstan-type APISchema array{properties?: APISchemaProperties, items?: array{type?: ValueType, format?: ValueFormat}}
  * @phpstan-type APIConfig array{name?: string, schema: APISchema}
- * @phpstan-type SettingArgs array{type?: ValueType, default?: ValueDefault|null, description?: string, show_in_rest?: APIConfig|bool}
+ * @phpstan-type SettingVars array{description?: string, show_in_rest?: APIConfig|bool}
+ * @phpstan-type SettingArgs array{type: ValueType, default: ValueDefault, description?: string, show_in_rest?: APIConfig|bool}
  */
 class Option
 {
 	private string $name;
+
+	/** @phpstan-var ValueType */
+	private string $type;
+
+	/** @phpstan-var ValueDefault */
+	private $default;
 
 	private int $priority = 99;
 
@@ -37,20 +40,26 @@ class Option
 
 	/**
 	 * @var array<string, mixed>
-	 * @phpstan-var SettingArgs
+	 * @phpstan-var SettingVars
 	 */
-	private array $settingArgs = ['default' => null];
+	private array $settingVars = [];
 
 	/** @phpstan-param ValueType $type */
 	public function __construct(string $name, string $type)
 	{
 		$this->name = $name;
-		$this->settingArgs['type'] = $type;
+		$this->type = $type;
 	}
 
 	public function getName(): string
 	{
 		return $this->name;
+	}
+
+	/** @phpstan-return ValueType */
+	public function getType(): string
+	{
+		return $this->type;
 	}
 
 	/**
@@ -60,14 +69,20 @@ class Option
 	 */
 	public function setDefault($value): self
 	{
-		$this->settingArgs['default'] = $value;
+		$this->default = $value;
 
 		return clone $this;
 	}
 
+	/** @phpstan-return ValueDefault */
+	public function getDefault()
+	{
+		return $this->default;
+	}
+
 	public function setDescription(string $value): self
 	{
-		$this->settingArgs['description'] = $value;
+		$this->settingVars['description'] = $value;
 
 		return clone $this;
 	}
@@ -81,7 +96,7 @@ class Option
 	 */
 	public function apiEnabled($value): self
 	{
-		$this->settingArgs['show_in_rest'] = $value;
+		$this->settingVars['show_in_rest'] = $value;
 
 		return clone $this;
 	}
@@ -131,55 +146,15 @@ class Option
 	 *
 	 * @see https://developer.wordpress.org/reference/functions/register_setting/#parameters
 	 *
-	 * @return array<string, mixed>
-	 *
-	 * @phpstan-return SettingArgs|array{}
+	 * @phpstan-return SettingArgs
 	 */
 	public function getSettingArgs(): array
 	{
-		try {
-			if (
-				! array_key_exists('type', $this->settingArgs)
-				&& isset($this->settingArgs['default'])
-				&& $this->settingArgs['default'] !== null
-			) {
-				$default = $this->settingArgs['default'];
-				$inferredType = $this->inferType($default);
-
-				if ($inferredType) {
-					$this->settingArgs['type'] = $inferredType;
-				}
-			}
-
-			return $this->settingArgs;
-		} catch (Throwable $e) {
-			return [];
-		}
-	}
-
-	/**
-	 * @param mixed $value
-	 * @return string Inferred type of the value.
-	 *
-	 * @phpstan-return ValueType|null
-	 */
-	protected function inferType($value): ?string
-	{
-		$type = strtolower(gettype($value));
-		$inferredType = null;
-
-		if (! in_array($type, ['boolean', 'integer', 'double', 'string', 'array'], true)) {
-			return $inferredType;
-		}
-
-		$typeMap = [
-			'boolean' => 'boolean',
-			'integer' => 'integer',
-			'double' => 'number',
-			'string' => 'string',
-			'array' => 'array',
+		$settingArgs = [
+			'type' => $this->type,
+			'default' => $this->default,
 		];
 
-		return $typeMap[$type] ?? null;
+		return array_merge($settingArgs, $this->settingVars);
 	}
 }

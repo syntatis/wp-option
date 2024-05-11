@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Syntatis\WP\Option\Registries;
 
-use InvalidArgumentException;
 use Syntatis\WP\Hook\Contract\WithHook;
 use Syntatis\WP\Hook\Hook;
 use Syntatis\WP\Option\Contracts\Registrable;
@@ -13,9 +12,9 @@ use Syntatis\WP\Option\Support\InputSanitizer;
 use Syntatis\WP\Option\Support\InputValidator;
 use Syntatis\WP\Option\Support\OutputResolver;
 
+use function array_key_exists;
 use function is_array;
 use function is_bool;
-use function Syntatis\Utils\is_blank;
 use function trim;
 
 class NetworkOptionRegistry implements Registrable, WithHook
@@ -54,14 +53,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 			return;
 		}
 
-		$settingArgs = $this->option->getSettingArgs();
-
-		if (! isset($settingArgs['type']) || is_blank($settingArgs['type'])) {
-			throw new InvalidArgumentException('Unable to determine the "type" for ' . $this->option->getName() . ' option.');
-		}
-
-		$optionType = $settingArgs['type'];
-		$optionDefault = $settingArgs['default'] ?? null;
+		$optionType = $this->option->getType();
 		$optionPriority = $this->option->getPriority();
 
 		$inputSanitizer = new InputSanitizer();
@@ -104,8 +96,9 @@ class NetworkOptionRegistry implements Registrable, WithHook
 
 		$this->hook->addFilter(
 			'default_site_option_' . $this->optionName,
-			function ($default) use ($settingArgs, $outputResolver, $optionType) {
+			function ($default) use ($outputResolver, $optionType) {
 				$state = $this->states[$this->optionName] ?? null;
+				$settingArgs = $this->option->getSettingArgs();
 
 				/**
 				 * WordPress will check the cache before making a database call. If the option is not found in the cache,
@@ -144,11 +137,9 @@ class NetworkOptionRegistry implements Registrable, WithHook
 						/**
 						 * Otherwise, check if the schema has a default value set, and pass that instead.
 						 */
-						if (isset($settingArgs['default'])) {
+						if (array_key_exists('default', $settingArgs)) {
 							return $outputResolver->resolve($settingArgs['default']);
 						}
-
-						return null;
 					}
 
 					if ($default !== false) {

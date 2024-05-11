@@ -57,14 +57,7 @@ class OptionRegistry implements Registrable, WithHook
 			throw new InvalidArgumentException('Unable to register an option without a name.');
 		}
 
-		$settingArgs = $this->option->getSettingArgs();
-
-		if (! isset($settingArgs['type']) || is_blank($settingArgs['type'])) {
-			throw new InvalidArgumentException('Unable to determine the "type" for ' . $this->option->getName() . ' option.');
-		}
-
-		$optionType = $settingArgs['type'];
-		$optionDefault = $settingArgs['default'] ?? null;
+		$optionType = $this->option->getType();
 		$optionPriority = $this->option->getPriority();
 
 		$inputSanitizer = new InputSanitizer();
@@ -72,7 +65,7 @@ class OptionRegistry implements Registrable, WithHook
 
 		$this->hook->addFilter(
 			'default_option_' . $this->optionName,
-			static fn ($default, $option, $passedDefault) => $outputResolver->resolve($passedDefault ? $default : $optionDefault),
+			fn ($default, $option, $passedDefault) => $outputResolver->resolve($passedDefault ? $default : $this->option->getDefault()),
 			$optionPriority,
 			3,
 		);
@@ -88,7 +81,7 @@ class OptionRegistry implements Registrable, WithHook
 				$this->optionGroup,
 				$this->optionName,
 				array_merge(
-					$settingArgs,
+					$this->option->getSettingArgs(),
 					[
 						'sanitize_callback' => static fn ($value) => $inputSanitizer->sanitize($value),
 					],
