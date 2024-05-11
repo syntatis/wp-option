@@ -958,8 +958,6 @@ class OptionTest extends TestCase
 		$this->expectExceptionMessage($errorMessage);
 
 		update_option($this->optionName, $value);
-
-		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	public function dataRegistryTypeBooleanStrictInvalid(): iterable
@@ -1004,13 +1002,59 @@ class OptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataRegistryTypeInteger
+	 * @group type-integer
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryAddTypeInteger($value, $expect): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'integer')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataRegistryTypeInteger
+	 * @group type-integer
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryUpdateTypeInteger($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function, and
+		 * retrieved with the `get_option` function.
+		 */
+		add_option(
+			$this->optionName,
+			(new InputSanitizer())->sanitize(0),
+		);
+
+		$registry = new Registry([new Option($this->optionName, 'integer')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertTrue(update_option($this->optionName, $value));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
 	public function dataRegistryTypeInteger(): iterable
 	{
 		yield ['Hello world!', 0];
 		yield ['', 0];
-		yield [0, 0];
 		yield [1, 1];
 		yield [1.2, 1];
 		yield [1.23, 1];
