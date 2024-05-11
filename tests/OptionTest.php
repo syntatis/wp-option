@@ -35,7 +35,6 @@ class OptionTest extends TestCase
 	// phpcs:ignore PSR1.Methods.CamelCapsMethodName.NotCamelCaps
 	public function tear_down(): void
 	{
-		unregister_setting($this->optionGroup, $this->optionName);
 		delete_option($this->optionName);
 
 		parent::tear_down();
