@@ -10,7 +10,6 @@ use Syntatis\WP\Option\Casters\TypeInteger;
 use Syntatis\WP\Option\Casters\TypeNumber;
 use Syntatis\WP\Option\Casters\TypeString;
 use Syntatis\WP\Option\Contracts\Castable;
-use Syntatis\WP\Option\Contracts\Resolvable;
 use Syntatis\WP\Option\Option;
 
 use function array_key_exists;
@@ -21,7 +20,7 @@ use function is_array;
  *
  * @template T of Castable
  */
-class OutputResolver implements Resolvable
+class OutputResolver
 {
 	protected string $type;
 
