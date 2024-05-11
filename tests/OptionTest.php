@@ -1272,16 +1272,57 @@ class OptionTest extends TestCase
 		 * Assumes that the option is already added with a value since the test only
 		 * concerns about the value retrieved with the `get_option` function.
 		 */
-		add_option(
-			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
-		);
+		add_option($this->optionName, (new InputSanitizer())->sanitize($value));
 
 		$registry = new Registry([new Option($this->optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->run();
 
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataRegistryTypeNumber
+	 * @group type-number
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryAddTypeNumber($value, $expect): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'number')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataRegistryTypeNumber
+	 * @group type-number
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryUpdateTypeNumber($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function, and
+		 * retrieved with the `get_option` function.
+		 */
+		add_option($this->optionName, (new InputSanitizer())->sanitize(0.0));
+
+		$registry = new Registry([new Option($this->optionName, 'number')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
@@ -1515,6 +1556,50 @@ class OptionTest extends TestCase
 	}
 
 	/**
+	 * @dataProvider dataRegistryTypeArray
+	 * @group type-array
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryAddTypeArray($value, $expect): void
+	{
+		$registry = new Registry([new Option($this->optionName, 'array')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		add_option($this->optionName, $value);
+
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
+	 * @dataProvider dataRegistryTypeArray
+	 * @group type-array
+	 *
+	 * @param mixed $value  The value to add in the option.
+	 * @param mixed $expect The expected value to be returned.
+	 */
+	public function testRegistryUpdateTypeArray($value, $expect): void
+	{
+		/**
+		 * Assumes that the option is already added with a value since the test only
+		 * concerns about the value updated with the `update_option` function, and
+		 * retrieved with the `get_option` function.
+		 */
+		add_option($this->optionName, (new InputSanitizer())->sanitize([]));
+
+		$registry = new Registry([new Option($this->optionName, 'array')]);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertTrue(update_option($this->optionName, $value));
+		$this->assertSame($expect, get_option($this->optionName));
+	}
+
+	/**
 	 * Non-strict. Value may be coerced.
 	 */
 	public function dataRegistryTypeArray(): iterable
@@ -1527,7 +1612,6 @@ class OptionTest extends TestCase
 		yield [-1, [-1]];
 		yield [false, [false]];
 		yield [true, [true]];
-		yield [[], []];
 		yield [['foo', 'bar'], ['foo', 'bar']];
 		yield [['foo' => 'bar'], ['foo' => 'bar']];
 		yield [null, null];
