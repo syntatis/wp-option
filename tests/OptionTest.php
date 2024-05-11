@@ -590,7 +590,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize('Initial value!'),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
@@ -598,8 +598,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_option($this->optionName, $value);
-
+		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -678,7 +677,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize('Initial value!'),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
@@ -858,7 +857,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize(false),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
@@ -866,15 +865,14 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_option($this->optionName, $value);
-
+		$this->assertFalse(get_option($this->optionName));
+		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	public function dataRegistryTypeBooleanStrictValid(): iterable
 	{
 		yield [true];
-		yield [false];
 		yield [null];
 	}
 
@@ -946,7 +944,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize(false),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
@@ -1144,7 +1142,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize(0),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
@@ -1236,7 +1234,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize(0),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
@@ -1248,8 +1246,6 @@ class OptionTest extends TestCase
 		$this->expectExceptionMessage($errorMessage);
 
 		update_option($this->optionName, $value);
-
-		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	public function dataRegistryTypeIntegerStrictInvalid(): iterable
@@ -1377,7 +1373,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize(0.0),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
@@ -1473,7 +1469,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize(0.0),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
@@ -1599,7 +1595,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize([]),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
@@ -1607,14 +1603,12 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_option($this->optionName, $value);
-
+		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
 	public function dataRegistryTypeArrayStrictValid(): iterable
 	{
-		yield [[]];
 		yield [['foo']];
 		yield [['foo' => 'bar']];
 		yield [null];
@@ -1687,7 +1681,7 @@ class OptionTest extends TestCase
 		 */
 		add_option(
 			$this->optionName,
-			(new InputSanitizer())->sanitize($value),
+			(new InputSanitizer())->sanitize([]),
 		);
 
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
