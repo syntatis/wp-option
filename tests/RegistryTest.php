@@ -27,31 +27,31 @@ class RegistryTest extends TestCase
 	{
 		$registry = new Registry(
 			[
-				(new Option('hello_world', 'string'))->setDefault('Hello, World!'),
-				(new Option('one', 'number'))->setDefault(1),
-				(new Option('list', 'array'))->setDefault(['one', 'two', 'three']),
+				(new Option('say', 'string'))->setDefault('Hello, World!'),
+				(new Option('count', 'number'))->setDefault(1),
+				(new Option('list', 'array'))->setDefault(['count', 'two', 'three']),
 			],
 		);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->run();
 
-		$this->assertSame('Hello, World!', get_option('hello_world'));
-		$this->assertSame(1, get_option('one'));
-		$this->assertSame(['one', 'two', 'three'], get_option('list'));
+		$this->assertSame('Hello, World!', get_option('say'));
+		$this->assertSame(1, get_option('count'));
+		$this->assertSame(['count', 'two', 'three'], get_option('list'));
 
-		$this->assertTrue(update_option('hello_world', 'Hello Earth!'));
-		$this->assertTrue(update_option('one', 2));
+		$this->assertTrue(update_option('say', 'Hello Earth!'));
+		$this->assertTrue(update_option('count', 2));
 		$this->assertTrue(update_option('list', ['four', 'five', 'six']));
 
-		$this->assertSame('Hello Earth!', get_option('hello_world'));
-		$this->assertSame(2, get_option('one'));
+		$this->assertSame('Hello Earth!', get_option('say'));
+		$this->assertSame(2, get_option('count'));
 		$this->assertSame(['four', 'five', 'six'], get_option('list'));
 
 		$registry->deregister();
 
-		$this->assertFalse(get_option('hello_world'));
-		$this->assertFalse(get_option('one'));
+		$this->assertFalse(get_option('say'));
+		$this->assertFalse(get_option('count'));
 		$this->assertFalse(get_option('list'));
 	}
 
@@ -59,7 +59,7 @@ class RegistryTest extends TestCase
 	{
 		$registry = new Registry(
 			[
-				(new Option('hello_world', 'string'))->setDefault('Hello, World!'),
+				(new Option('say', 'string'))->setDefault('Hello, World!'),
 			],
 		);
 		$registry->hook($this->hook);
@@ -68,21 +68,21 @@ class RegistryTest extends TestCase
 
 		$registeredSettings = get_registered_settings();
 
-		$this->assertArrayHasKey('hello_world', $registeredSettings);
-		$this->assertSame('string', $registeredSettings['hello_world']['type']);
-		$this->assertSame('tests', $registeredSettings['hello_world']['group']);
-		$this->assertSame('Hello, World!', $registeredSettings['hello_world']['default']);
+		$this->assertArrayHasKey('say', $registeredSettings);
+		$this->assertSame('string', $registeredSettings['say']['type']);
+		$this->assertSame('tests', $registeredSettings['say']['group']);
+		$this->assertSame('Hello, World!', $registeredSettings['say']['default']);
 
-		$this->assertSame('Hello, World!', get_option('hello_world'));
-		$this->assertTrue(update_option('hello_world', 'Hello, Earth!'));
-		$this->assertSame('Hello, Earth!', get_option('hello_world'));
+		$this->assertSame('Hello, World!', get_option('say'));
+		$this->assertTrue(update_option('say', 'Hello, Earth!'));
+		$this->assertSame('Hello, Earth!', get_option('say'));
 
 		$registry->deregister('tests');
 
 		$registeredSettings = get_registered_settings();
 
-		$this->assertFalse(get_option('hello_world'));
-		$this->assertArrayNotHasKey('hello_world', $registeredSettings);
+		$this->assertFalse(get_option('say'));
+		$this->assertArrayNotHasKey('say', $registeredSettings);
 	}
 
 	/** @group network-option */
@@ -90,31 +90,39 @@ class RegistryTest extends TestCase
 	{
 		$registry = new Registry(
 			[
-				(new NetworkOption('hello_world', 'string'))->setDefault('Hello, World!'),
-				(new NetworkOption('one', 'number'))->setDefault(1),
-				(new NetworkOption('list', 'array'))->setDefault(['one', 'two', 'three']),
+				(new NetworkOption('say', 'string'))->setDefault('Hello, World!'),
+				(new NetworkOption('count', 'number'))->setDefault(1),
+				(new NetworkOption('list', 'array'))->setDefault(['count', 'two', 'three']),
 			],
 		);
 		$registry->hook($this->hook);
 		$registry->register();
 		$this->hook->run();
 
-		$this->assertSame('Hello, World!', get_site_option('hello_world'));
-		$this->assertSame(1, get_site_option('one'));
-		$this->assertSame(['one', 'two', 'three'], get_site_option('list'));
+		$this->assertSame('Hello, World!', get_site_option('say'));
+		$this->assertSame(1, get_site_option('count'));
+		$this->assertSame(['count', 'two', 'three'], get_site_option('list'));
 
-		$this->assertTrue(add_site_option('hello_world', 'Hello Earth!'));
-		$this->assertTrue(add_site_option('one', 2));
+		$this->assertTrue(add_site_option('say', 'Hello Earth!'));
+		$this->assertTrue(add_site_option('count', 2));
 		$this->assertTrue(add_site_option('list', ['four', 'five', 'six']));
 
-		$this->assertSame('Hello Earth!', get_site_option('hello_world'));
-		$this->assertSame(2, get_site_option('one'));
+		$this->assertSame('Hello Earth!', get_site_option('say'));
+		$this->assertSame(2, get_site_option('count'));
 		$this->assertSame(['four', 'five', 'six'], get_site_option('list'));
+
+		$this->assertTrue(update_site_option('say', 'Hello, Milkyway!'));
+		$this->assertTrue(update_site_option('count', 3));
+		$this->assertTrue(update_site_option('list', ['seven']));
+
+		$this->assertSame('Hello, Milkyway!', get_site_option('say'));
+		$this->assertSame(3, get_site_option('count'));
+		$this->assertSame(['seven'], get_site_option('list'));
 
 		$registry->deregister();
 
-		$this->assertFalse(get_site_option('hello_world'));
-		$this->assertFalse(get_site_option('one'));
+		$this->assertFalse(get_site_option('say'));
+		$this->assertFalse(get_site_option('count'));
 		$this->assertFalse(get_site_option('list'));
 	}
 }
