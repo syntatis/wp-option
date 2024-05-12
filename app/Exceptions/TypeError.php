@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Exceptions;
+namespace Syntatis\WPOption\Exceptions;
 
 use Error;
 
@@ -11,7 +11,7 @@ use function gettype;
 use function is_object;
 use function strtolower;
 
-use const Syntatis\WP\Option\TYPE_MAP;
+use const Syntatis\WPOption\TYPE_MAP;
 
 class TypeError extends Error
 {

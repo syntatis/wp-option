@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Tests;
+namespace Syntatis\WPOption\Tests;
 
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Exceptions\TypeError;
-use Syntatis\WP\Option\Option;
-use Syntatis\WP\Option\Registry;
-use Syntatis\WP\Option\Support\InputSanitizer;
+use Syntatis\WPOption\Exceptions\TypeError;
+use Syntatis\WPOption\Option;
+use Syntatis\WPOption\Registry;
+use Syntatis\WPOption\Support\InputSanitizer;
 use WP_REST_Request;
 use WP_UnitTest_Factory;
 

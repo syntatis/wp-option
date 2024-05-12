@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Contracts;
+namespace Syntatis\WPOption\Contracts;
 
 interface Registrable
 {

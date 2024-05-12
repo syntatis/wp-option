@@ -40,7 +40,7 @@ First, create an instance of the `Option` class from the library and define the 
 
 ```php
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Option;
+use Syntatis\WPOption\Option;
 
 $option = new Option(new Hook());
 $option->setSchema([
@@ -68,7 +68,7 @@ If the option is defined in the schema, the default value will be returned inste
 
 ```php
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Option;
+use Syntatis\WPOption\Option;
 
 $option = new Option(new Hook());
 $option->setSchema([

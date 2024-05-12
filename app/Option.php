@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option;
+namespace Syntatis\WPOption;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

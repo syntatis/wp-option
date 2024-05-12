@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Support;
+namespace Syntatis\WPOption\Support;
 
-use Syntatis\WP\Option\Casters\TypeArray;
-use Syntatis\WP\Option\Casters\TypeBoolean;
-use Syntatis\WP\Option\Casters\TypeInteger;
-use Syntatis\WP\Option\Casters\TypeNumber;
-use Syntatis\WP\Option\Casters\TypeString;
-use Syntatis\WP\Option\Contracts\Castable;
-use Syntatis\WP\Option\Option;
+use Syntatis\WPOption\Casters\TypeArray;
+use Syntatis\WPOption\Casters\TypeBoolean;
+use Syntatis\WPOption\Casters\TypeInteger;
+use Syntatis\WPOption\Casters\TypeNumber;
+use Syntatis\WPOption\Casters\TypeString;
+use Syntatis\WPOption\Contracts\Castable;
+use Syntatis\WPOption\Option;
 
 use function array_key_exists;
 use function is_array;

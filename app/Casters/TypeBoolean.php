@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Casters;
+namespace Syntatis\WPOption\Casters;
 
-use Syntatis\WP\Option\Contracts\Castable;
-use Syntatis\WP\Option\Exceptions\TypeError;
+use Syntatis\WPOption\Contracts\Castable;
+use Syntatis\WPOption\Exceptions\TypeError;
 
 use function is_bool;
 

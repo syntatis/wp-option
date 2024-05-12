@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option;
+namespace Syntatis\WPOption;
 
 use Syntatis\WP\Hook\Contract\WithHook;
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Registries\NetworkOptionRegistry;
-use Syntatis\WP\Option\Registries\OptionRegistry;
+use Syntatis\WPOption\Registries\NetworkOptionRegistry;
+use Syntatis\WPOption\Registries\OptionRegistry;
 
 class Registry implements WithHook
 {

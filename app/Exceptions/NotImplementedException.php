@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Exceptions;
+namespace Syntatis\WPOption\Exceptions;
 
 use BadMethodCallException;
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Tests;
+namespace Syntatis\WPOption\Tests;
 
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\NetworkOption;
-use Syntatis\WP\Option\Option;
-use Syntatis\WP\Option\Registry;
+use Syntatis\WPOption\NetworkOption;
+use Syntatis\WPOption\Option;
+use Syntatis\WPOption\Registry;
 
 class RegistryTest extends TestCase
 {

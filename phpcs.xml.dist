@@ -26,8 +26,8 @@
 	<rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
 		<properties>
 			<property name="rootNamespaces" type="array">
-				<element key="app" value="Syntatis\WP\Option"/>
-				<element key="tests" value="Syntatis\WP\Option\Tests"/>
+				<element key="app" value="Syntatis\WPOption"/>
+				<element key="tests" value="Syntatis\WPOption\Tests"/>
 			</property>
 		</properties>
 	</rule>

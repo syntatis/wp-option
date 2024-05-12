@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Registries;
+namespace Syntatis\WPOption\Registries;
 
 use InvalidArgumentException;
 use Syntatis\WP\Hook\Contract\WithHook;
 use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Contracts\Registrable;
-use Syntatis\WP\Option\NetworkOption;
-use Syntatis\WP\Option\Support\InputSanitizer;
-use Syntatis\WP\Option\Support\InputValidator;
-use Syntatis\WP\Option\Support\OutputResolver;
+use Syntatis\WPOption\Contracts\Registrable;
+use Syntatis\WPOption\NetworkOption;
+use Syntatis\WPOption\Support\InputSanitizer;
+use Syntatis\WPOption\Support\InputValidator;
+use Syntatis\WPOption\Support\OutputResolver;
 
 use function array_key_exists;
 use function is_array;

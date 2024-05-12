@@ -20,7 +20,7 @@
 			"inc/consts.php"
 		],
 		"psr-4": {
-			"Syntatis\\WP\\Option\\": "app/"
+			"Syntatis\\WPOption\\": "app/"
 		}
 	},
 	"autoload-dev": {
@@ -28,7 +28,7 @@
 			"inc/consts.php"
 		],
 		"psr-4": {
-			"Syntatis\\WP\\Option\\Tests\\": "tests/"
+			"Syntatis\\WPOption\\Tests\\": "tests/"
 		}
 	},
 	"require": {
