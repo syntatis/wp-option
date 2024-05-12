@@ -126,7 +126,7 @@ class OptionRegistry implements Registrable, WithHook
 		);
 	}
 
-	public function unregister(): void
+	public function deregister(): void
 	{
 		if (is_blank($this->optionName)) {
 			throw new InvalidArgumentException('Unable to unregister an option without a name.');

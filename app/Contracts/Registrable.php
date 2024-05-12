@@ -8,5 +8,5 @@ interface Registrable
 {
 	public function register(): void;
 
-	public function unregister(): void;
+	public function deregister(): void;
 }

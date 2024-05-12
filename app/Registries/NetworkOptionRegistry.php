@@ -183,7 +183,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 		);
 	}
 
-	public function unregister(): void
+	public function deregister(): void
 	{
 		if (! is_multisite()) {
 			return;
