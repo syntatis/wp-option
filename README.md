@@ -21,7 +21,7 @@ WordPress option can handle various type of values including strings, booleans, 
 - `'1'` returns `string(1) "1"`
 - `null` returns `string(0) ""`
 
-It is the responsibility of developers to ensure that the value of the option aligns with the expected type. This library aims to help handling this situation better by enabling developers to implement validations, ensuring the correct type of values when adding, updating, and retrieving an option value.
+This library aims to help handling this situation better by enabling developers to implement validations, ensuring the correct type of values when adding, updating, and retrieving an option value.
 
 ## Installation
 
