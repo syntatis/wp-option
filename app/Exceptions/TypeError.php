@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Exceptions;
+namespace Syntatis\WPOption\Exceptions;
 
 use Error;
 
@@ -11,17 +11,17 @@ use function gettype;
 use function is_object;
 use function strtolower;
 
-use const Syntatis\WP\Option\TYPE_MAP;
-
 class TypeError extends Error
 {
+	private const TYPE_MAP = ['double' => 'number (float)'];
+
 	/**
 	 * @param string $expected The expected type of the value e.g. 'string', 'integer', 'array', etc.
 	 * @param mixed  $value    The value given.
 	 */
 	public function __construct(string $expected, $value)
 	{
-		$expected = TYPE_MAP[$expected] ?? $expected;
+		$expected = self::TYPE_MAP[$expected] ?? $expected;
 
 		parent::__construct('Value must be of type ' . $expected . ', ' . $this->inferType($value) . ' given.');
 	}
@@ -39,6 +39,6 @@ class TypeError extends Error
 
 		$inferredType = strtolower(gettype($value));
 
-		return TYPE_MAP[$inferredType] ?? $inferredType;
+		return self::TYPE_MAP[$inferredType] ?? $inferredType;
 	}
 }

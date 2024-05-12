@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Tests\Support;
+namespace Syntatis\WPOption\Tests\Support;
 
 use InvalidArgumentException;
 use stdClass;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
-use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Exceptions\TypeError;
-use Syntatis\WP\Option\Support\InputValidator;
-use Syntatis\WP\Option\Tests\TestCase;
+use Syntatis\WPHook\Hook;
+use Syntatis\WPOption\Exceptions\TypeError;
+use Syntatis\WPOption\Support\InputValidator;
+use Syntatis\WPOption\Tests\TestCase;
 use TypeError as PHPTypeError;
 
 class InputValidatorTest extends TestCase

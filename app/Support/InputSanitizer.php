@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Support;
+namespace Syntatis\WPOption\Support;
 
-use Syntatis\WP\Option\Option;
+use Syntatis\WPOption\Option;
 
 use function is_float;
 

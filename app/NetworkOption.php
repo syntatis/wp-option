@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option;
+namespace Syntatis\WPOption;
 
-use Syntatis\WP\Option\Exceptions\NotImplementedException;
+use Syntatis\WPOption\Exceptions\NotImplementedException;
 
 class NetworkOption extends Option
 {

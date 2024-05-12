@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Support;
+namespace Syntatis\WPOption\Support;
 
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 use Syntatis\Utils\Validator\Validator;
-use Syntatis\WP\Option\Exceptions\TypeError;
-use Syntatis\WP\Option\Option;
+use Syntatis\WPOption\Exceptions\TypeError;
+use Syntatis\WPOption\Option;
 use TypeError as PHPTypeError;
 
 use function array_key_exists;

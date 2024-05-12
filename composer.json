@@ -16,26 +16,20 @@
 		}
 	],
 	"autoload": {
-		"files": [
-			"inc/consts.php"
-		],
 		"psr-4": {
-			"Syntatis\\WP\\Option\\": "app/"
+			"Syntatis\\WPOption\\": "app/"
 		}
 	},
 	"autoload-dev": {
-		"files": [
-			"inc/consts.php"
-		],
 		"psr-4": {
-			"Syntatis\\WP\\Option\\Tests\\": "tests/"
+			"Syntatis\\WPOption\\Tests\\": "tests/"
 		}
 	},
 	"require": {
 		"php": ">=7.4",
 		"symfony/polyfill-php81": "^1.29",
 		"syntatis/utils": "^1.0",
-		"syntatis/wp-hook": "^1.0"
+		"syntatis/wp-hook": "^2.0"
 	},
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Tests;
+namespace Syntatis\WPOption\Tests;
 
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
-use Syntatis\WP\Hook\Hook;
-use Syntatis\WP\Option\Exceptions\TypeError;
-use Syntatis\WP\Option\NetworkOption;
-use Syntatis\WP\Option\Registry;
-use Syntatis\WP\Option\Support\InputSanitizer;
+use Syntatis\WPHook\Hook;
+use Syntatis\WPOption\Exceptions\TypeError;
+use Syntatis\WPOption\NetworkOption;
+use Syntatis\WPOption\Registry;
+use Syntatis\WPOption\Support\InputSanitizer;
 
 /** @group network-option */
 class NetworkOptionTest extends TestCase
@@ -33,6 +33,81 @@ class NetworkOptionTest extends TestCase
 		delete_site_option($this->optionName);
 
 		parent::tear_down();
+	}
+
+	/** @testdox should return the name */
+	public function testName(): void
+	{
+		$option = new NetworkOption($this->optionName, 'string');
+
+		$this->assertEquals($this->optionName, $option->getName());
+	}
+
+	/** @testdox should throw error when name is blank */
+	public function testBlankName(): void
+	{
+		$this->expectException(InvalidArgumentException::class);
+		$option = new NetworkOption('', 'string');
+	}
+
+	/** @testdox should set and return the constraints */
+	public function testConstraints(): void
+	{
+		$option = new NetworkOption($this->optionName, 'string');
+		$option = $option->setConstraints('is_string');
+
+		$this->assertEquals('is_string', $option->getConstraints());
+
+		$option = new NetworkOption($this->optionName, 'string');
+		$option = $option->setConstraints(['is_string', 'is_numeric']);
+
+		$this->assertEquals(
+			['is_string', 'is_numeric'],
+			$option->getConstraints(),
+		);
+	}
+
+	/** @testdox should set and return the priority */
+	public function testPriority(): void
+	{
+		$option = new NetworkOption($this->optionName, 'string');
+
+		$this->assertSame(99, $option->getPriority());
+
+		$option = $option->setPriority(100);
+
+		$this->assertSame(100, $option->getPriority());
+	}
+
+	/** @testdox should set and return the default value set */
+	public function testSettingArgsDefault(): void
+	{
+		$option = new NetworkOption($this->optionName, 'string');
+		$option->setDefault('bar');
+
+		$this->assertEquals(
+			[
+				'type' => 'string',
+				'default' => 'bar',
+			],
+			$option->getSettingArgs(),
+		);
+	}
+
+	/** @testdox should set and return the description */
+	public function testSettingArgsDescription(): void
+	{
+		$option = new NetworkOption($this->optionName, 'string');
+		$option->setDescription('This is the description');
+
+		$this->assertEquals(
+			[
+				'type' => 'string',
+				'description' => 'This is the description',
+				'default' => null,
+			],
+			$option->getSettingArgs(),
+		);
 	}
 
 	/**
@@ -312,8 +387,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -405,8 +479,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -559,8 +632,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -653,8 +725,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
@@ -817,8 +888,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -921,8 +991,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
@@ -1082,8 +1151,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -1200,8 +1268,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
@@ -1343,8 +1410,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -1430,8 +1496,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 

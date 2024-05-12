@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Syntatis\WP\Option\Tests\Support;
+namespace Syntatis\WPOption\Tests\Support;
 
-use Syntatis\WP\Option\Support\InputSanitizer;
-use Syntatis\WP\Option\Tests\TestCase;
+use Syntatis\WPOption\Support\InputSanitizer;
+use Syntatis\WPOption\Tests\TestCase;
 
 class InputSanitizerTest extends TestCase
 {
