@@ -79,7 +79,6 @@ $hook->run();
 get_option('wporg_custom_option'); // int(0)
 ```
 
-
 For more advanced usage, please refer to the [Wiki](https://github.com/syntatis/wp-option/wiki).
 
 ## Reference
