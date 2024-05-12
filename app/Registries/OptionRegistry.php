@@ -29,9 +29,6 @@ class OptionRegistry implements Registrable, WithHook
 
 	private ?string $optionGroup = null;
 
-	/** @phpstan-var array<'actions'|'filters', array<string, callable>> */
-	private array $callbacks = [];
-
 	public function __construct(Option $option, int $strict = 0)
 	{
 		$this->option = $option;
@@ -66,22 +63,22 @@ class OptionRegistry implements Registrable, WithHook
 		$inputSanitizer = new InputSanitizer();
 		$outputResolver = new OutputResolver($optionType, $this->strict);
 
-		$this->callbacks['filters']['default_option_' . $this->optionName] = function ($default, $option, $passedDefault) use ($outputResolver) {
-			return $outputResolver->resolve($passedDefault ? $default : $this->option->getDefault());
-		};
 		$this->hook->addFilter(
 			'default_option_' . $this->optionName,
-			$this->callbacks['filters']['default_option_' . $this->optionName],
+			function ($default, $option, $passedDefault) use ($outputResolver) {
+				return $outputResolver->resolve($passedDefault ? $default : $this->option->getDefault());
+			},
 			$optionPriority,
 			3,
 		);
 
-		$this->callbacks['actions']['option_' . $this->optionName] = static fn ($value) => $outputResolver->resolve($value);
 		$this->hook->addFilter(
 			'option_' . $this->optionName,
-			$this->callbacks['actions']['option_' . $this->optionName],
+			static fn ($value) => $outputResolver->resolve($value),
 			$optionPriority,
 		);
+
+		$sanitizeCallback = static fn ($value) => $inputSanitizer->sanitize($value);
 
 		if ($this->optionGroup) {
 			register_setting(
@@ -89,16 +86,13 @@ class OptionRegistry implements Registrable, WithHook
 				$this->optionName,
 				array_merge(
 					$this->option->getSettingArgs(),
-					[
-						'sanitize_callback' => static fn ($value) => $inputSanitizer->sanitize($value),
-					],
+					['sanitize_callback' => $sanitizeCallback],
 				),
 			);
 		} else {
-			$this->callbacks['filters']['sanitize_option_' . $this->optionName] = static fn ($value) => $inputSanitizer->sanitize($value);
 			$this->hook->addFilter(
 				'sanitize_option_' . $this->optionName,
-				$this->callbacks['filters']['sanitize_option_' . $this->optionName],
+				$sanitizeCallback,
 				$optionPriority,
 			);
 		}
@@ -109,18 +103,16 @@ class OptionRegistry implements Registrable, WithHook
 
 		$inputValidator = new InputValidator($optionType, $this->option->getConstraints());
 
-		$this->callbacks['actions']['add_option'] = static fn ($name, $value) => $inputValidator->validate($value);
 		$this->hook->addAction(
 			'add_option',
-			$this->callbacks['actions']['add_option'],
+			static fn ($name, $value) => $inputValidator->validate($value),
 			$optionPriority,
 			2,
 		);
 
-		$this->callbacks['actions']['update_option'] = static fn ($name, $oldValue, $newValue) => $inputValidator->validate($newValue);
 		$this->hook->addAction(
 			'update_option',
-			$this->callbacks['actions']['update_option'],
+			static fn ($name, $oldValue, $newValue) => $inputValidator->validate($newValue),
 			$optionPriority,
 			3,
 		);
@@ -136,16 +128,8 @@ class OptionRegistry implements Registrable, WithHook
 			unregister_setting($this->optionGroup, $this->optionName);
 		}
 
-		$filters = $this->callbacks['filters'] ?? [];
-		$actions = $this->callbacks['actions'] ?? [];
-
-		foreach ($filters as $name => $callback) {
-			remove_filter($name, $callback, $this->option->getPriority());
-		}
-
-		foreach ($actions as $name => $callback) {
-			remove_action($name, $callback, $this->option->getPriority());
-		}
+		$this->hook->removeAllActions();
+		$this->hook->removeAllFilters();
 
 		delete_option($this->optionName);
 	}
