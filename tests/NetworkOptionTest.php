@@ -312,8 +312,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -405,8 +404,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -559,8 +557,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -653,8 +650,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
@@ -817,8 +813,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -921,8 +916,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
@@ -1082,8 +1076,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -1200,8 +1193,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
@@ -1343,8 +1335,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -1430,8 +1421,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_site_option($this->optionName, $value);
-
+		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
