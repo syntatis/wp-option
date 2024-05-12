@@ -31,7 +31,7 @@ composer require syntatis/wp-option
 
 ## Usage
 
-First, create an instance of the `Option` class from the library and define the name and the type for the option:
+First, create an instance of the `Option` class from the library and define the name and the type for the option. The type can be one of the following: `string`, `boolean`, `integer`, `array`, and `number`.
 
 ```php
 use Syntatis\WPHook\Hook;
