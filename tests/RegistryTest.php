@@ -48,7 +48,7 @@ class RegistryTest extends TestCase
 		$this->assertSame(2, get_option('one'));
 		$this->assertSame(['four', 'five', 'six'], get_option('list'));
 
-		$registry->unregister();
+		$registry->deregister();
 
 		$this->assertFalse(get_option('hello_world'));
 		$this->assertFalse(get_option('one'));
@@ -77,7 +77,7 @@ class RegistryTest extends TestCase
 		$this->assertTrue(update_option('hello_world', 'Hello, Earth!'));
 		$this->assertSame('Hello, Earth!', get_option('hello_world'));
 
-		$registry->unregister('tests');
+		$registry->deregister('tests');
 
 		$registeredSettings = get_registered_settings();
 
@@ -85,10 +85,7 @@ class RegistryTest extends TestCase
 		$this->assertArrayNotHasKey('hello_world', $registeredSettings);
 	}
 
-	/**
-	 * @group network-option
-	 * @group test-here
-	 */
+	/** @group network-option */
 	public function testUninstallNetworkOptions(): void
 	{
 		$registry = new Registry(
@@ -114,7 +111,7 @@ class RegistryTest extends TestCase
 		$this->assertSame(2, get_site_option('one'));
 		$this->assertSame(['four', 'five', 'six'], get_site_option('list'));
 
-		$registry->unregister();
+		$registry->deregister();
 
 		$this->assertFalse(get_site_option('hello_world'));
 		$this->assertFalse(get_site_option('one'));

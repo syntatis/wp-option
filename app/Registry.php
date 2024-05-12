@@ -49,7 +49,8 @@ class Registry implements WithHook
 	 * @param string|null $optionGroup The option group to register the options with.
 	 *                                 When it is provided, the options will be registered with the WordPress settings API,
 	 *                                 `register_setting`, and would make the option available in the WordPress API
-	 *                                 `/wp/v2/settings` endpoint.
+	 *                                 `/wp/v2/settings` endpoint. This argument is not applicable to the network
+	 *                                 options as they are currently not supported by the WordPress settings API.
 	 */
 	public function register(?string $optionGroup = null): void
 	{
@@ -78,7 +79,12 @@ class Registry implements WithHook
 		}
 	}
 
-	public function unregister(?string $optionGroup = null): void
+	/**
+	 * Remove options from the registry and delete all the existing options. Optionally,
+	 * if the `$optionGroup` argument is provided it will also deregister the options
+	 * from the WordPress settings API.
+	 */
+	public function deregister(?string $optionGroup = null): void
 	{
 		foreach ($this->options as $option) {
 			if ($option instanceof NetworkOption) {
@@ -89,7 +95,7 @@ class Registry implements WithHook
 				}
 
 				$registry->setPrefix($this->prefix);
-				$registry->unregister();
+				$registry->deregister();
 
 				continue;
 			}
@@ -106,7 +112,7 @@ class Registry implements WithHook
 
 			$registry->setOptionGroup($optionGroup);
 			$registry->setPrefix($this->prefix);
-			$registry->unregister();
+			$registry->deregister();
 		}
 	}
 }
