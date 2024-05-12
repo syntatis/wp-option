@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Syntatis\WP\Option\Tests;
 
 use Syntatis\WP\Hook\Hook;
+use Syntatis\WP\Option\NetworkOption;
 use Syntatis\WP\Option\Option;
 use Syntatis\WP\Option\Registry;
 
@@ -82,5 +83,41 @@ class RegistryTest extends TestCase
 
 		$this->assertFalse(get_option('hello_world'));
 		$this->assertArrayNotHasKey('hello_world', $registeredSettings);
+	}
+
+	/**
+	 * @group network-option
+	 * @group test-here
+	 */
+	public function testUninstallNetworkOptions(): void
+	{
+		$registry = new Registry(
+			[
+				(new NetworkOption('hello_world', 'string'))->setDefault('Hello, World!'),
+				(new NetworkOption('one', 'number'))->setDefault(1),
+				(new NetworkOption('list', 'array'))->setDefault(['one', 'two', 'three']),
+			],
+		);
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame('Hello, World!', get_site_option('hello_world'));
+		$this->assertSame(1, get_site_option('one'));
+		$this->assertSame(['one', 'two', 'three'], get_site_option('list'));
+
+		$this->assertTrue(add_site_option('hello_world', 'Hello Earth!'));
+		$this->assertTrue(add_site_option('one', 2));
+		$this->assertTrue(add_site_option('list', ['four', 'five', 'six']));
+
+		$this->assertSame('Hello Earth!', get_site_option('hello_world'));
+		$this->assertSame(2, get_site_option('one'));
+		$this->assertSame(['four', 'five', 'six'], get_site_option('list'));
+
+		$registry->unregister();
+
+		$this->assertFalse(get_site_option('hello_world'));
+		$this->assertFalse(get_site_option('one'));
+		$this->assertFalse(get_site_option('list'));
 	}
 }

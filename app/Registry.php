@@ -82,6 +82,15 @@ class Registry implements WithHook
 	{
 		foreach ($this->options as $option) {
 			if ($option instanceof NetworkOption) {
+				$registry = $this->registries[NetworkOptionRegistry::class][$option->getName()] ?? null;
+
+				if (! $registry instanceof NetworkOptionRegistry) {
+					continue;
+				}
+
+				$registry->setPrefix($this->prefix);
+				$registry->unregister();
+
 				continue;
 			}
 
