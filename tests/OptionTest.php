@@ -468,8 +468,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
@@ -567,8 +566,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -739,8 +737,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
@@ -835,8 +832,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -1011,8 +1007,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
@@ -1119,8 +1114,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -1148,8 +1142,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_option($this->optionName, $value);
-
+		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -1294,8 +1287,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
@@ -1391,8 +1383,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -1567,8 +1558,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
 	}
 
@@ -1655,8 +1645,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -1821,8 +1810,7 @@ class OptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		add_option($this->optionName, $value);
-
+		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
@@ -1879,9 +1867,7 @@ class OptionTest extends TestCase
 		$this->hook->run();
 
 		$this->assertSame('email@example.org', get_option($this->optionName));
-
-		update_option($this->optionName, $value);
-
+		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
 	}
 
