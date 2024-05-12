@@ -476,7 +476,6 @@ class OptionTest extends TestCase
 	/**
 	 * @dataProvider dataRegistryTypeString
 	 * @group type-string
-	 * @group test-here
 	 *
 	 * @param mixed $value  The value to add in the option.
 	 * @param mixed $expect The expected value to be returned.

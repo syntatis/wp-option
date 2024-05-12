@@ -17,12 +17,15 @@ class Registry implements WithHook
 
 	private string $prefix = '';
 
-	/** @var array<Option> */
+	/** @var array<Option|NetworkOption> */
 	private array $options = [];
 
+	/** @var array<string, array<string, OptionRegistry|NetworkOptionRegistry>> */
+	private array $registries = [];
+
 	/**
-	 * @param array<Option> $options The options to register.
-	 * @param int           $strict  The level of strictness to apply to the option values.
+	 * @param array<Option|NetworkOption> $options The options to register.
+	 * @param int                         $strict  The level of strictness to apply to the option values.
 	 */
 	public function __construct(array $options, int $strict = 0)
 	{
@@ -46,7 +49,8 @@ class Registry implements WithHook
 	 * @param string|null $optionGroup The option group to register the options with.
 	 *                                 When it is provided, the options will be registered with the WordPress settings API,
 	 *                                 `register_setting`, and would make the option available in the WordPress API
-	 *                                 `/wp/v2/settings` endpoint.
+	 *                                 `/wp/v2/settings` endpoint. This argument is not applicable to the network
+	 *                                 options as they are currently not supported by the WordPress settings API.
 	 */
 	public function register(?string $optionGroup = null): void
 	{
@@ -56,6 +60,8 @@ class Registry implements WithHook
 				$registry->setPrefix($this->prefix);
 				$registry->hook($this->hook);
 				$registry->register();
+
+				$this->registries[NetworkOptionRegistry::class][$option->getName()] = $registry;
 				continue;
 			}
 
@@ -68,6 +74,45 @@ class Registry implements WithHook
 			$registry->setPrefix($this->prefix);
 			$registry->hook($this->hook);
 			$registry->register();
+
+			$this->registries[OptionRegistry::class][$option->getName()] = $registry;
+		}
+	}
+
+	/**
+	 * Remove options from the registry and delete all the existing options. Optionally,
+	 * if the `$optionGroup` argument is provided it will also deregister the options
+	 * from the WordPress settings API.
+	 */
+	public function deregister(?string $optionGroup = null): void
+	{
+		foreach ($this->options as $option) {
+			if ($option instanceof NetworkOption) {
+				$registry = $this->registries[NetworkOptionRegistry::class][$option->getName()] ?? null;
+
+				if (! $registry instanceof NetworkOptionRegistry) {
+					continue;
+				}
+
+				$registry->setPrefix($this->prefix);
+				$registry->deregister();
+
+				continue;
+			}
+
+			if (! $option instanceof Option) {
+				continue;
+			}
+
+			$registry = $this->registries[OptionRegistry::class][$option->getName()] ?? null;
+
+			if (! $registry instanceof OptionRegistry) {
+				continue;
+			}
+
+			$registry->setOptionGroup($optionGroup);
+			$registry->setPrefix($this->prefix);
+			$registry->deregister();
 		}
 	}
 }

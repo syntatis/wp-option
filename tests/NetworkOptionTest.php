@@ -338,8 +338,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_site_option($this->optionName, $value);
-
+		$this->assertTrue(update_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
@@ -433,8 +432,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_site_option($this->optionName, $value);
-
+		$this->assertTrue(update_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
 
@@ -587,8 +585,7 @@ class NetworkOptionTest extends TestCase
 		$registry->register();
 		$this->hook->run();
 
-		update_site_option($this->optionName, $value);
-
+		$this->assertTrue(update_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
 
