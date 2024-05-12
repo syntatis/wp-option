@@ -35,6 +35,21 @@ class NetworkOptionTest extends TestCase
 		parent::tear_down();
 	}
 
+	/** @testdox should return the name */
+	public function testName(): void
+	{
+		$option = new NetworkOption($this->optionName, 'string');
+
+		$this->assertEquals($this->optionName, $option->getName());
+	}
+
+	/** @testdox should throw error when name is blank */
+	public function testBlankName(): void
+	{
+		$this->expectException(InvalidArgumentException::class);
+		$option = new NetworkOption('', 'string');
+	}
+
 	/**
 	 * @dataProvider dataNoDefaultSet
 	 *

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Syntatis\WPOption\Registries;
 
-use InvalidArgumentException;
 use Syntatis\WPHook\Contract\WithHook;
 use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Contracts\Registrable;
@@ -16,7 +15,6 @@ use Syntatis\WPOption\Support\OutputResolver;
 use function array_key_exists;
 use function is_array;
 use function is_bool;
-use function Syntatis\Utils\is_blank;
 use function trim;
 
 class NetworkOptionRegistry implements Registrable, WithHook
@@ -27,7 +25,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 
 	private int $strict;
 
-	private ?string $optionName = null;
+	private string $optionName;
 
 	/** @var array<string, mixed> */
 	private array $states = [];
@@ -179,10 +177,6 @@ class NetworkOptionRegistry implements Registrable, WithHook
 	{
 		if (! is_multisite()) {
 			return;
-		}
-
-		if (is_blank($this->optionName)) {
-			throw new InvalidArgumentException('Unable to unregister an option without a name.');
 		}
 
 		$this->hook->removeAllActions();

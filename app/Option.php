@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Syntatis\WPOption;
 
+use InvalidArgumentException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 use function array_merge;
+use function Syntatis\Utils\is_blank;
 
 /**
  * @phpstan-type Constraints callable|array<callable>|Constraint|ValidatorInterface|null
@@ -47,6 +49,10 @@ class Option
 	/** @phpstan-param ValueType $type */
 	public function __construct(string $name, string $type)
 	{
+		if (is_blank($name)) {
+			throw new InvalidArgumentException('Option name must not be blank.');
+		}
+
 		$this->name = $name;
 		$this->type = $type;
 	}

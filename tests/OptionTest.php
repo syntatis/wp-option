@@ -58,6 +58,13 @@ class OptionTest extends TestCase
 		$this->assertEquals($this->optionName, $option->getName());
 	}
 
+	/** @testdox should throw error when name is blank */
+	public function testBlankName(): void
+	{
+		$this->expectException(InvalidArgumentException::class);
+		$option = new Option('', 'string');
+	}
+
 	/** @testdox should set and return the constraints */
 	public function testConstraints(): void
 	{

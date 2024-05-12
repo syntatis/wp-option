@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Syntatis\WPOption\Registries;
 
-use InvalidArgumentException;
 use Syntatis\WPHook\Contract\WithHook;
 use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Contracts\Registrable;
@@ -14,7 +13,6 @@ use Syntatis\WPOption\Support\InputValidator;
 use Syntatis\WPOption\Support\OutputResolver;
 
 use function array_merge;
-use function Syntatis\Utils\is_blank;
 use function trim;
 
 class OptionRegistry implements Registrable, WithHook
@@ -25,7 +23,7 @@ class OptionRegistry implements Registrable, WithHook
 
 	private int $strict;
 
-	private ?string $optionName = null;
+	private string $optionName;
 
 	private ?string $optionGroup = null;
 
@@ -53,10 +51,6 @@ class OptionRegistry implements Registrable, WithHook
 
 	public function register(): void
 	{
-		if (is_blank($this->optionName)) {
-			throw new InvalidArgumentException('Unable to register an option without a name.');
-		}
-
 		$optionType = $this->option->getType();
 		$optionPriority = $this->option->getPriority();
 
@@ -120,10 +114,6 @@ class OptionRegistry implements Registrable, WithHook
 
 	public function deregister(): void
 	{
-		if (is_blank($this->optionName)) {
-			throw new InvalidArgumentException('Unable to unregister an option without a name.');
-		}
-
 		if ($this->optionGroup) {
 			unregister_setting($this->optionGroup, $this->optionName);
 		}
