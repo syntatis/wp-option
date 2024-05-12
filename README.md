@@ -31,12 +31,7 @@ composer require syntatis/wp-option
 
 ## Usage
 
-First, create an instance of the `Option` class from the library and define the schema of the options. The schema is an array of options where the key is the name of the option and the value is an array of the option's schema defining:
-
-| Schema | Description | Values |
-| --- | --- | --- |
-| `type` | The type of the option value | The value can be one of the following: `string`, `boolean`, `integer`, `float`, and `array`. |
-| `default` | The default value of the option | Ideally, the value should be of the same type as the `type` value. |
+First, create an instance of the `Option` class from the library and define the name and the type for the option:
 
 ```php
 use Syntatis\WPHook\Hook;
