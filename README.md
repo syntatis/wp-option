@@ -41,14 +41,13 @@ First, create an instance of the `Option` class from the library and define the 
 ```php
 use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Option;
+use Syntatis\WPOption\Registry;
 
-$option = new Option(new Hook());
-$option->setSchema([
-  'wporg_custom_option' => [
-    'type' => 'integer',
-  ],
-]);
-$option->register();
+$hook = new Hook();
+$registry = new Registry([new Option('wporg_custom_option', 'integer')]);
+$registry->hook($hook);
+$registry->register();
+$hook->run();
 ```
 
 After the schema defined and registered, it will ensure that the returned value of the option is of the correct type. For example, if the option value is `"1"` (numeric string) and the type defined in the schema for the option is `integer`, the value will be converted to `1` when retrieved.
@@ -69,15 +68,13 @@ If the option is defined in the schema, the default value will be returned inste
 ```php
 use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Option;
+use Syntatis\WPOption\Registry;
 
-$option = new Option(new Hook());
-$option->setSchema([
-  'wporg_custom_option' => [
-    'type' => 'integer',
-    'default' => 0,
-  ],
-]);
-$option->register();
+$hook = new Hook();
+$registry = new Registry([(new Option('wporg_custom_option', 'integer'))->setDefault(0)]);
+$registry->hook($hook);
+$registry->register();
+$hook->run();
 
 get_option('wporg_custom_option'); // int(0)
 ```
