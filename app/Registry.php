@@ -17,12 +17,15 @@ class Registry implements WithHook
 
 	private string $prefix = '';
 
-	/** @var array<Option> */
+	/** @var array<Option|NetworkOption> */
 	private array $options = [];
 
+	/** @var array<string, array<string, OptionRegistry|NetworkOptionRegistry>> */
+	private array $registries = [];
+
 	/**
-	 * @param array<Option> $options The options to register.
-	 * @param int           $strict  The level of strictness to apply to the option values.
+	 * @param array<Option|NetworkOption> $options The options to register.
+	 * @param int                         $strict  The level of strictness to apply to the option values.
 	 */
 	public function __construct(array $options, int $strict = 0)
 	{
@@ -56,6 +59,8 @@ class Registry implements WithHook
 				$registry->setPrefix($this->prefix);
 				$registry->hook($this->hook);
 				$registry->register();
+
+				$this->registries[NetworkOptionRegistry::class][$option->getName()] = $registry;
 				continue;
 			}
 
@@ -68,6 +73,31 @@ class Registry implements WithHook
 			$registry->setPrefix($this->prefix);
 			$registry->hook($this->hook);
 			$registry->register();
+
+			$this->registries[OptionRegistry::class][$option->getName()] = $registry;
+		}
+	}
+
+	public function unregister(?string $optionGroup = null): void
+	{
+		foreach ($this->options as $option) {
+			if ($option instanceof NetworkOption) {
+				continue;
+			}
+
+			if (! $option instanceof Option) {
+				continue;
+			}
+
+			$registry = $this->registries[OptionRegistry::class][$option->getName()] ?? null;
+
+			if (! $registry instanceof OptionRegistry) {
+				continue;
+			}
+
+			$registry->setOptionGroup($optionGroup);
+			$registry->setPrefix($this->prefix);
+			$registry->unregister();
 		}
 	}
 }

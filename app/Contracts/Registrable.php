@@ -7,4 +7,6 @@ namespace Syntatis\WP\Option\Contracts;
 interface Registrable
 {
 	public function register(): void;
+
+	public function unregister(): void;
 }
