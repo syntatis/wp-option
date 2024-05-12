@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Syntatis\WPOption\Tests;
 
-use Syntatis\WP\Hook\Hook;
+use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\NetworkOption;
 use Syntatis\WPOption\Option;
 use Syntatis\WPOption\Registry;

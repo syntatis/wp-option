@@ -39,7 +39,7 @@ First, create an instance of the `Option` class from the library and define the 
 | `default` | The default value of the option | Ideally, the value should be of the same type as the `type` value. |
 
 ```php
-use Syntatis\WP\Hook\Hook;
+use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Option;
 
 $option = new Option(new Hook());
@@ -67,7 +67,7 @@ get_option('wporg_custom_option'); // null
 If the option is defined in the schema, the default value will be returned instead.
 
 ```php
-use Syntatis\WP\Hook\Hook;
+use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Option;
 
 $option = new Option(new Hook());

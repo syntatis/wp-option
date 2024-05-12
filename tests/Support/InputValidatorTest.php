@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use stdClass;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Constraints as Assert;
-use Syntatis\WP\Hook\Hook;
+use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Exceptions\TypeError;
 use Syntatis\WPOption\Support\InputValidator;
 use Syntatis\WPOption\Tests\TestCase;

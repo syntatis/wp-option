@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Syntatis\WPOption\Registries;
 
 use InvalidArgumentException;
-use Syntatis\WP\Hook\Contract\WithHook;
-use Syntatis\WP\Hook\Hook;
+use Syntatis\WPHook\Contract\WithHook;
+use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Contracts\Registrable;
 use Syntatis\WPOption\Option;
 use Syntatis\WPOption\Support\InputSanitizer;

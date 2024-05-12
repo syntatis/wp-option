@@ -6,7 +6,7 @@ namespace Syntatis\WPOption\Tests;
 
 use InvalidArgumentException;
 use Symfony\Component\Validator\Constraints as Assert;
-use Syntatis\WP\Hook\Hook;
+use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Exceptions\TypeError;
 use Syntatis\WPOption\NetworkOption;
 use Syntatis\WPOption\Registry;

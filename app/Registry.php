@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Syntatis\WPOption;
 
-use Syntatis\WP\Hook\Contract\WithHook;
-use Syntatis\WP\Hook\Hook;
+use Syntatis\WPHook\Contract\WithHook;
+use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Registries\NetworkOptionRegistry;
 use Syntatis\WPOption\Registries\OptionRegistry;
 
