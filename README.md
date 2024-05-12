@@ -50,7 +50,7 @@ $registry->register();
 $hook->run();
 ```
 
-After the schema defined and registered, it will ensure that the returned value of the option is of the correct type. For example, if the option value is `"1"` (numeric string) and the type defined in the schema for the option is `integer`, the value will be converted to `1` when retrieved.
+After the option is registered, it will ensure that the returned value of the option is of the correct type. For example, if the option value is `"1"` (numeric string) and the type defined for the option is `integer`, the value will be converted to `1` when retrieved.
 
 ```php
 add_option('wporg_custom_option', '1');
@@ -63,7 +63,7 @@ By default, when a default is not set for the option registered, the value retur
 get_option('wporg_custom_option'); // null
 ```
 
-If the option is defined in the schema, the default value will be returned instead.
+If the option default is defined, the default value will be returned instead of returning `null`.
 
 ```php
 use Syntatis\WPHook\Hook;
