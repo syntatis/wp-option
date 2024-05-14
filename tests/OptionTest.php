@@ -779,6 +779,10 @@ class OptionTest extends TestCase
 	public function dataRegistryTypeBoolean(): iterable
 	{
 		yield ['Hello world!', true];
+		yield ['true', true];
+		yield ['false', false];
+		yield ['0', false];
+		yield ['1', true];
 		yield ['', false];
 		yield [0, false];
 		yield [1, true];

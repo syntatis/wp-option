@@ -7,6 +7,7 @@ namespace Syntatis\WPOption\Casters;
 use Syntatis\WPOption\Contracts\Castable;
 use Syntatis\WPOption\Exceptions\TypeError;
 
+use function in_array;
 use function is_bool;
 
 /**
@@ -40,6 +41,14 @@ class TypeBoolean implements Castable
 			}
 
 			return $this->value;
+		}
+
+		if (in_array($this->value, ['false', '0'], true)) {
+			return false;
+		}
+
+		if (in_array($this->value, ['true', '1'], true)) {
+			return true;
 		}
 
 		return (bool) $this->value;
