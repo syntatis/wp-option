@@ -39,9 +39,20 @@ class OptionRegistry implements Registrable, WithHook
 		$this->optionGroup = $optionGroup;
 	}
 
+	/**
+	 * Set the option prefix. e.g. `wp_starter_plugin_`.
+	 */
 	public function setPrefix(string $prefix = ''): void
 	{
 		$this->optionName = trim($prefix) . $this->optionName;
+	}
+
+	/**
+	 * Retrieve the option name to register, which may contain the prefix if set.
+	 */
+	public function getName(): string
+	{
+		return $this->optionName;
 	}
 
 	public function hook(Hook $hook): void
@@ -120,7 +131,5 @@ class OptionRegistry implements Registrable, WithHook
 
 		$this->hook->removeAllActions();
 		$this->hook->removeAllFilters();
-
-		delete_option($this->optionName);
 	}
 }

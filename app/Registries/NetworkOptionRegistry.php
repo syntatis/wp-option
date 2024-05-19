@@ -42,6 +42,14 @@ class NetworkOptionRegistry implements Registrable, WithHook
 		$this->optionName = trim($prefix) . $this->optionName;
 	}
 
+	/**
+	 * Retrieve the option name to register, which may contain the prefix if set.
+	 */
+	public function getName(): string
+	{
+		return $this->optionName;
+	}
+
 	public function hook(Hook $hook): void
 	{
 		$this->hook = $hook;

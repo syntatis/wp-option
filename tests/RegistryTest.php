@@ -9,6 +9,10 @@ use Syntatis\WPOption\NetworkOption;
 use Syntatis\WPOption\Option;
 use Syntatis\WPOption\Registry;
 
+use function json_encode;
+
+use const JSON_THROW_ON_ERROR;
+
 class RegistryTest extends TestCase
 {
 	private Hook $hook;
@@ -124,5 +128,29 @@ class RegistryTest extends TestCase
 		$this->assertFalse(get_site_option('say'));
 		$this->assertFalse(get_site_option('count'));
 		$this->assertFalse(get_site_option('list'));
+	}
+
+	public function testJsonSerializable(): void
+	{
+		$registry = new Registry(
+			[
+				(new Option('one', 'string'))->setDefault('Hello, World!'),
+				(new Option('two', 'number'))->setDefault(1),
+				(new Option('three', 'array'))->setDefault(['count', 'two', 'three']),
+				(new NetworkOption('foo', 'string'))->setDefault('Hello, World!'),
+				(new NetworkOption('bar', 'number'))->setDefault(1),
+				(new NetworkOption('baz', 'array'))->setDefault(['count', 'two', 'three']),
+			],
+		);
+
+		$registry->setPrefix('tests_');
+		$registry->hook($this->hook);
+		$registry->register();
+		$this->hook->run();
+
+		$this->assertSame(
+			'{"options":{"tests_one":"Hello, World!","tests_two":1,"tests_three":["count","two","three"]},"network_options":{"tests_foo":false,"tests_bar":false,"tests_baz":false}}',
+			json_encode($registry),
+		);
 	}
 }
