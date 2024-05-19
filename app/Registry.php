@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Syntatis\WPOption;
 
+use JsonSerializable;
 use Syntatis\WPHook\Contract\WithHook;
 use Syntatis\WPHook\Hook;
 use Syntatis\WPOption\Registries\NetworkOptionRegistry;
 use Syntatis\WPOption\Registries\OptionRegistry;
 
-class Registry implements WithHook
+class Registry implements WithHook, JsonSerializable
 {
 	private int $strict = 0;
 
@@ -113,6 +114,34 @@ class Registry implements WithHook
 			$registry->setOptionGroup($optionGroup);
 			$registry->setPrefix($this->prefix);
 			$registry->deregister();
+
+			delete_option($registry->getName());
 		}
+	}
+
+	/** @return array<'options'|'network_options', array<string, mixed>> */
+	public function jsonSerialize(): array
+	{
+		$serizalized = [];
+
+		foreach ($this->registries as $registryType => $options) {
+			if ($registryType === OptionRegistry::class) {
+				foreach ($options as $optionRegistry) {
+					$optionName = $optionRegistry->getName();
+					$serizalized['options'][$optionName] = get_option($optionName);
+				}
+			}
+
+			if ($registryType !== NetworkOptionRegistry::class) {
+				continue;
+			}
+
+			foreach ($options as $optionRegistry) {
+				$optionName = $optionRegistry->getName();
+				$serizalized['network_options'][$optionName] = get_option($optionName);
+			}
+		}
+
+		return $serizalized;
 	}
 }
