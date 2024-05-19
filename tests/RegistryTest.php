@@ -11,8 +11,6 @@ use Syntatis\WPOption\Registry;
 
 use function json_encode;
 
-use const JSON_THROW_ON_ERROR;
-
 class RegistryTest extends TestCase
 {
 	private Hook $hook;
