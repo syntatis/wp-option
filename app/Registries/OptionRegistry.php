@@ -25,7 +25,7 @@ class OptionRegistry implements Registrable, WithHook
 
 	private string $optionName;
 
-	private ?string $optionGroup = null;
+	private ?string $settingGroup = null;
 
 	public function __construct(Option $option, int $strict = 0)
 	{
@@ -34,9 +34,15 @@ class OptionRegistry implements Registrable, WithHook
 		$this->strict = $strict;
 	}
 
-	public function setOptionGroup(?string $optionGroup = null): void
+	/**
+	 * Set the name of the setting group for the option. By setting the group,
+	 * the option will be registered with the WordPress settings API.
+	 *
+	 * @see https://developer.wordpress.org/reference/functions/register_setting/
+	 */
+	public function setSettingGroup(?string $settingGroup = null): void
 	{
-		$this->optionGroup = $optionGroup;
+		$this->settingGroup = $settingGroup;
 	}
 
 	public function setPrefix(string $prefix = ''): void
@@ -74,9 +80,9 @@ class OptionRegistry implements Registrable, WithHook
 
 		$sanitizeCallback = static fn ($value) => $inputSanitizer->sanitize($value);
 
-		if ($this->optionGroup) {
+		if ($this->settingGroup) {
 			register_setting(
-				$this->optionGroup,
+				$this->settingGroup,
 				$this->optionName,
 				array_merge(
 					$this->option->getSettingArgs(),
@@ -114,8 +120,8 @@ class OptionRegistry implements Registrable, WithHook
 
 	public function deregister(): void
 	{
-		if ($this->optionGroup) {
-			unregister_setting($this->optionGroup, $this->optionName);
+		if ($this->settingGroup) {
+			unregister_setting($this->settingGroup, $this->optionName);
 		}
 
 		$this->hook->removeAllActions();
