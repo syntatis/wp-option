@@ -1,6 +1,6 @@
 {
 	"name": "syntatis/wp-option",
-	"description": "WordPress option with safeguard",
+	"description": "WordPress option with some safeguards",
 	"keywords": [
 		"wordpress",
 		"option",
