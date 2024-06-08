@@ -135,7 +135,8 @@ class OptionRegistry implements Registrable, WithHook
 			unregister_setting($this->settingGroup, $this->optionName);
 		}
 
-		$this->hook->removeAllActions();
-		$this->hook->removeAllFilters();
+		$this->hook->deregister();
+
+		delete_option($this->optionName);
 	}
 }

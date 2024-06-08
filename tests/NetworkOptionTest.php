@@ -120,7 +120,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertNull(get_site_option($this->optionName));
 	}
@@ -144,7 +144,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($defaultReturned, get_site_option($this->optionName));
 	}
@@ -173,7 +173,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($default, get_site_option($this->optionName));
 	}
@@ -200,7 +200,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -229,7 +229,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($default, get_site_option($this->optionName));
 		$this->assertSame($defaultPassedReturned, get_site_option($this->optionName, $defaultPassed));
@@ -260,7 +260,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($default, get_site_option($this->optionName));
 		$this->assertSame($defaultPassed, get_site_option($this->optionName, $defaultPassed));
@@ -301,7 +301,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($default, get_site_option($this->optionName));
 
@@ -335,7 +335,7 @@ class NetworkOptionTest extends TestCase
 		$this->assertFalse(has_filter('site_option_syntatis_' . $this->optionName));
 
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(has_filter('default_site_option_syntatis_' . $this->optionName));
 		$this->assertTrue(has_filter('site_option_syntatis_' . $this->optionName));
@@ -368,7 +368,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
@@ -385,7 +385,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -410,7 +410,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -459,7 +459,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
@@ -477,7 +477,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -503,7 +503,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
@@ -535,7 +535,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -555,7 +555,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -582,7 +582,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -613,7 +613,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
@@ -630,7 +630,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -655,7 +655,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -706,7 +706,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
@@ -723,7 +723,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
@@ -748,7 +748,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		update_site_option($this->optionName, $value);
 
@@ -781,7 +781,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -801,7 +801,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -828,7 +828,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -869,7 +869,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
@@ -886,7 +886,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -911,7 +911,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		update_site_option($this->optionName, $value);
 
@@ -972,7 +972,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
@@ -989,7 +989,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
@@ -1014,7 +1014,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		update_site_option($this->optionName, $value);
 
@@ -1050,7 +1050,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1070,7 +1070,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1097,7 +1097,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1132,7 +1132,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
@@ -1149,7 +1149,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -1174,7 +1174,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		update_site_option($this->optionName, $value);
 
@@ -1226,7 +1226,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
@@ -1249,7 +1249,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
@@ -1266,7 +1266,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
@@ -1307,7 +1307,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1328,7 +1328,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1356,7 +1356,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1391,7 +1391,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_site_option($this->optionName));
 	}
@@ -1408,7 +1408,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($expect, get_site_option($this->optionName));
@@ -1433,7 +1433,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		update_site_option($this->optionName, $value);
 
@@ -1478,7 +1478,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_site_option($this->optionName));
 	}
@@ -1494,7 +1494,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
@@ -1519,7 +1519,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		update_site_option($this->optionName, $value);
 
@@ -1553,7 +1553,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1573,7 +1573,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1601,7 +1601,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([new NetworkOption($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1633,7 +1633,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1652,7 +1652,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_site_option($this->optionName, $value));
 		$this->assertSame($value, get_site_option($this->optionName));
@@ -1677,7 +1677,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1702,7 +1702,7 @@ class NetworkOptionTest extends TestCase
 		$registry = new Registry([(new NetworkOption($this->optionName, 'string'))->setConstraints($constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame('email@example.org', get_site_option($this->optionName));
 

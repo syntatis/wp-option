@@ -36,7 +36,7 @@ class RegistryTest extends TestCase
 		);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame('Hello, World!', get_option('say'));
 		$this->assertSame(1, get_option('count'));
@@ -66,7 +66,7 @@ class RegistryTest extends TestCase
 		);
 		$registry->hook($this->hook);
 		$registry->register('tests');
-		$this->hook->run();
+		$this->hook->register();
 
 		$registeredSettings = get_registered_settings();
 
@@ -99,7 +99,7 @@ class RegistryTest extends TestCase
 		);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame('Hello, World!', get_site_option('say'));
 		$this->assertSame(1, get_site_option('count'));
@@ -144,7 +144,7 @@ class RegistryTest extends TestCase
 		$registry->setPrefix('tests_');
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame(
 			'{"options":{"tests_one":"Hello, World!","tests_two":1,"tests_three":["count","two","three"]},"network_options":{"tests_foo":false,"tests_bar":false,"tests_baz":false}}',

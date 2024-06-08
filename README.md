@@ -42,7 +42,7 @@ $hook = new Hook();
 $registry = new Registry([new Option('wporg_custom_option', 'integer')]);
 $registry->hook($hook);
 $registry->register();
-$hook->run();
+$hook->register();
 ```
 
 After the option is registered, it will ensure that the returned value of the option is of the correct type. For example, if the option value is `"1"` (numeric string) and the type defined for the option is `integer`, the value will be converted to `1` when retrieved.
@@ -69,7 +69,7 @@ $hook = new Hook();
 $registry = new Registry([(new Option('wporg_custom_option', 'integer'))->setDefault(0)]);
 $registry->hook($hook);
 $registry->register();
-$hook->run();
+$hook->register();
 
 get_option('wporg_custom_option'); // int(0)
 ```
