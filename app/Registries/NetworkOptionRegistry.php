@@ -187,8 +187,7 @@ class NetworkOptionRegistry implements Registrable, WithHook
 			return;
 		}
 
-		$this->hook->removeAllActions();
-		$this->hook->removeAllFilters();
+		$this->hook->deregister();
 
 		delete_site_option($this->optionName);
 	}

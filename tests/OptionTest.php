@@ -173,7 +173,7 @@ class OptionTest extends TestCase
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertNull(get_option($this->optionName));
 	}
@@ -199,7 +199,7 @@ class OptionTest extends TestCase
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($return, get_option($this->optionName));
 	}
@@ -239,7 +239,7 @@ class OptionTest extends TestCase
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($return, get_option($this->optionName));
 	}
@@ -277,7 +277,7 @@ class OptionTest extends TestCase
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($message);
@@ -309,7 +309,7 @@ class OptionTest extends TestCase
 		$registry = new Registry($option);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($coerced, get_option($this->optionName, $defaultPassed));
 	}
@@ -341,7 +341,7 @@ class OptionTest extends TestCase
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($defaultPassed, get_option($this->optionName, $defaultPassed));
 	}
@@ -378,7 +378,7 @@ class OptionTest extends TestCase
 		$registry = new Registry($option, 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -415,7 +415,7 @@ class OptionTest extends TestCase
 		$this->assertFalse(has_filter('option_syntatis_' . $this->optionName));
 
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(has_filter('default_option_syntatis_' . $this->optionName));
 		$this->assertTrue(has_filter('option_syntatis_' . $this->optionName));
@@ -456,7 +456,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_option($this->optionName));
 	}
@@ -473,7 +473,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -498,7 +498,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -554,7 +554,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_option($this->optionName));
 	}
@@ -571,7 +571,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -599,7 +599,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -635,7 +635,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -656,7 +656,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -686,7 +686,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -725,7 +725,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_option($this->optionName));
 	}
@@ -742,7 +742,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -767,7 +767,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -824,7 +824,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_option($this->optionName));
 	}
@@ -841,7 +841,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -868,7 +868,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertFalse(get_option($this->optionName));
 		$this->assertTrue(update_option($this->optionName, $value));
@@ -903,7 +903,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -924,7 +924,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -955,7 +955,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'boolean')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -999,7 +999,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_option($this->optionName));
 	}
@@ -1016,7 +1016,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -1044,7 +1044,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -1106,7 +1106,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_option($this->optionName));
 	}
@@ -1123,7 +1123,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -1151,7 +1151,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -1190,7 +1190,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1211,7 +1211,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1242,7 +1242,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'integer')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1279,7 +1279,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_option($this->optionName));
 	}
@@ -1296,7 +1296,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -1321,7 +1321,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -1375,7 +1375,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_option($this->optionName));
 	}
@@ -1392,7 +1392,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -1420,7 +1420,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -1464,7 +1464,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 
@@ -1484,7 +1484,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1515,7 +1515,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'number')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1550,7 +1550,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($expect, get_option($this->optionName));
 	}
@@ -1567,7 +1567,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -1592,7 +1592,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($expect, get_option($this->optionName));
@@ -1637,7 +1637,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame($value, get_option($this->optionName));
 	}
@@ -1654,7 +1654,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -1682,7 +1682,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(update_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -1717,7 +1717,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1737,7 +1737,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1768,7 +1768,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'array')], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(TypeError::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1800,7 +1800,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([(new Option($this->optionName, 'string'))->setConstraints($constraints)], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1819,7 +1819,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([(new Option($this->optionName, 'string'))->setConstraints($constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertTrue(add_option($this->optionName, $value));
 		$this->assertSame($value, get_option($this->optionName));
@@ -1847,7 +1847,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([(new Option($this->optionName, 'string'))->setConstraints($constraints)], 1);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->expectException(InvalidArgumentException::class);
 		$this->expectExceptionMessage($errorMessage);
@@ -1875,7 +1875,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([(new Option($this->optionName, 'string'))->setConstraints($constraints)]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertSame('email@example.org', get_option($this->optionName));
 		$this->assertTrue(update_option($this->optionName, $value));
@@ -1898,7 +1898,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([new Option($this->optionName, 'string')]);
 		$registry->hook($this->hook);
 		$registry->register();
-		$this->hook->run();
+		$this->hook->register();
 
 		$this->assertArrayNotHasKey($this->optionName, get_registered_settings());
 	}
@@ -1913,7 +1913,7 @@ class OptionTest extends TestCase
 		]);
 		$registry->hook($this->hook);
 		$registry->register($this->optionGroup);
-		$this->hook->run();
+		$this->hook->register();
 
 		$registeredSettings = get_registered_settings();
 
@@ -1931,7 +1931,7 @@ class OptionTest extends TestCase
 	{
 		$registry->hook($this->hook);
 		$registry->register($this->optionGroup);
-		$this->hook->run();
+		$this->hook->register();
 
 		do_action('rest_api_init');
 
@@ -2007,7 +2007,7 @@ class OptionTest extends TestCase
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
 		$registry->register($this->optionGroup);
-		$this->hook->run();
+		$this->hook->register();
 
 		do_action('rest_api_init');
 
@@ -2040,7 +2040,7 @@ class OptionTest extends TestCase
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
 		$registry->register($this->optionGroup);
-		$this->hook->run();
+		$this->hook->register();
 
 		do_action('rest_api_init');
 
