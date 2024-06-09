@@ -34,7 +34,7 @@
 	"require-dev": {
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
 		"phpcompatibility/php-compatibility": "^9.3",
-		"phpstan/extension-installer": "^1.3",
+		"phpstan/extension-installer": "^1.4",
 		"phpstan/phpstan": "^1.11",
 		"phpunit/phpunit": "^9.6",
 		"roots/wordpress": "^6.5",
