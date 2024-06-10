@@ -9,7 +9,7 @@ use Syntatis\WPOption\Exceptions\NotImplementedException;
 class NetworkOption extends Option
 {
 	/** @inheritDoc */
-	public function apiEnabled($value): self
+	public function apiEnabled($value = true): self
 	{
 		/**
 		 * @see https://core.trac.wordpress.org/ticket/37181

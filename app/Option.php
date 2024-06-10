@@ -100,7 +100,7 @@ class Option
 	 *
 	 * @phpstan-param APIConfig|bool $value
 	 */
-	public function apiEnabled($value): self
+	public function apiEnabled($value = true): self
 	{
 		$this->settingVars['show_in_rest'] = $value;
 
