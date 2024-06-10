@@ -27,7 +27,8 @@
 		<properties>
 			<property name="rootNamespaces" type="array">
 				<element key="app" value="Syntatis\WPOption"/>
-				<element key="tests" value="Syntatis\WPOption\Tests"/>
+				<element key="tests/phpunit" value="Syntatis\WPOption\Tests"/>
+				<element key="tests/app" value="Syntatis\WPOption\Tests"/>
 			</property>
 		</properties>
 	</rule>
@@ -36,5 +37,5 @@
 	<rule ref="PHPCompatibility"/>
 
 	<exclude-pattern>/cache/</exclude-pattern>
-	<exclude-pattern>/tests/intelephense-alias.php</exclude-pattern>
+	<exclude-pattern>/tests/phpunit/intelephense-alias.php</exclude-pattern>
 </ruleset>

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
 	backupGlobals="false"
-	bootstrap="tests/bootstrap.php"
+	bootstrap="tests/phpunit/bootstrap.php"
 	cacheResult="true"
 	cacheResultFile="tmp/phpunit/.phpunit.result.cache"
 	colors="true"
@@ -19,7 +19,7 @@
 		</report>
 	</coverage>
 	<php>
-		<env name="WP_PHPUNIT__TESTS_CONFIG" value="tests/wp-tests-config.php"/>
+		<env name="WP_PHPUNIT__TESTS_CONFIG" value="tests/phpunit/wp-tests-config.php"/>
 		<const name="WP_ENVIRONMENT_TYPE" value="development"/>
 		<const name="WP_TESTS_MULTISITE" value="1"/>
 	</php>

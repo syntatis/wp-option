@@ -22,7 +22,10 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Syntatis\\WPOption\\Tests\\": "tests/"
+			"Syntatis\\WPOption\\Tests\\": [
+				"tests/app/",
+				"tests/phpunit/"
+			]
 		}
 	},
 	"require": {

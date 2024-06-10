@@ -2,7 +2,6 @@ parameters:
 	level: 9
 	paths:
 		- app
-	checkGenericClassInNonGenericObjectType: false
 	ignoreErrors:
 		-
 			message: '#^Cannot cast mixed to string\.$#'
