@@ -19,7 +19,7 @@
 		</report>
 	</coverage>
 	<php>
-		<env name="WP_PHPUNIT__TESTS_CONFIG" value="tests/wp-tests-config.php"/>
+		<env name="WP_PHPUNIT__TESTS_CONFIG" value="tests/phpunit/wp-tests-config.php"/>
 		<const name="WP_ENVIRONMENT_TYPE" value="development"/>
 		<const name="WP_TESTS_MULTISITE" value="1"/>
 	</php>
