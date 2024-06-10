@@ -1951,7 +1951,7 @@ class OptionTest extends TestCase
 				(new Option($this->optionName, 'string'))
 					->setDefault('Hello world!')
 					->setDescription('This is the description.')
-					->apiEnabled(true),
+					->apiEnabled(),
 			]),
 			[
 				'type' => 'string',
@@ -2002,7 +2002,7 @@ class OptionTest extends TestCase
 			(new Option($this->optionName, 'string'))
 				->setDefault('Hello world!')
 				->setDescription('This is the description.')
-				->apiEnabled(true),
+				->apiEnabled(),
 		]);
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
@@ -2035,7 +2035,7 @@ class OptionTest extends TestCase
 		$registry = new Registry([
 			(new Option($this->optionName, 'integer'))
 				->setDefault(1)
-				->apiEnabled(true),
+				->apiEnabled(),
 		], 1);
 		$registry->hook($this->hook);
 		$registry->setPrefix('wp_starter_plugin_');
